@@ -1,8 +1,9 @@
 "use client";
 
-import { BlockNoteEditor, PartialBlock } from "@blocknote/core";
-import { BlockNoteView, useBlockNote } from "@blocknote/react";
-import "@blocknote/core/style.css";
+import "@blocknote/core/fonts/inter.css";
+import { useCreateBlockNote } from "@blocknote/react";
+import { BlockNoteView } from "@blocknote/mantine";
+import "@blocknote/mantine/style.css";
 import { FileService } from "@/services/file.service";
 
 interface EditorProps {
@@ -22,20 +23,25 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
     }
   };
 
-  const editor: BlockNoteEditor = useBlockNote({
-    editable,
-    initialContent: initialContent
-      ? (JSON.parse(initialContent) as PartialBlock[])
-      : undefined,
-    onEditorContentChange: (editor) => {
-      onChange(JSON.stringify(editor.topLevelBlocks, null, 2));
-    },
+  const editor = useCreateBlockNote({
+    initialContent: initialContent ? JSON.parse(initialContent) : undefined,
     uploadFile: handleUpload,
   });
+  if (!editor) {
+    return <div>Loading editor...</div>;
+  }
+  const onEditorChange = async () => {
+    const markdown = await editor.blocksToHTMLLossy(editor.document);
+    onChange(markdown);
+  };
 
   return (
     <div>
-      <BlockNoteView editor={editor} theme={"light"} />
+      <BlockNoteView
+        onChange={onEditorChange}
+        editor={editor}
+        theme={"light"}
+      />
     </div>
   );
 };

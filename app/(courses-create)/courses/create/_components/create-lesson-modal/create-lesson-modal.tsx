@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Submissions from "../submissions/submissions";
 import axios from "axios";
 import { baseUrl } from "@/lib/config";
+import { getMaxId } from "@/lib/ArrayHelpers/ArrayHelpers";
 const CreateLessonModal = () => {
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
@@ -57,7 +58,7 @@ const CreateLessonModal = () => {
     try {
       const res1 = await axios.post(
         `${baseUrl}/courses/6667760f255b05556e58b41a/lessons`,
-        currentLesson
+        { id: getMaxId(lessonsArray), ...currentLesson }
       );
       const res = await axios.get(
         `${baseUrl}/courses/6667760f255b05556e58b41a`

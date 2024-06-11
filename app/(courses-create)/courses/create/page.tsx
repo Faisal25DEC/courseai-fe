@@ -17,6 +17,7 @@ import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { currentCourseId } from "@/lib/constants";
 import { toast } from "sonner";
 import { StrictModeDroppable } from "@/components/shared/strict-mode-droppable/strict-mode-droppable";
+import Link from "next/link";
 
 const CreateCourse = () => {
   const [currentCourse, setCurrentCourse] =
@@ -111,6 +112,9 @@ const CreateCourse = () => {
           <div className="flex justify-end gap-4 items-center">
             <div className="flex items-center gap-[24px]">
               <Button onClick={onCreateLessonModalOpen}>Create Lesson</Button>
+              <Link href="/courses/preview">
+                <Button variant={"outline"}>Preview Course</Button>
+              </Link>
             </div>
           </div>
         </div>

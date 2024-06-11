@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import React, { useEffect, useMemo } from "react";
 import { useRecoilState } from "recoil";
 
-const RichTextEditor = dynamic(() => import("@/components/rich-text-editor"), {
+const Editor = dynamic(() => import("@/components/editor"), {
   ssr: false,
 });
 
@@ -21,17 +21,12 @@ const TextContent = () => {
       },
     }));
   }, []);
+  console.log(currentLesson);
   return (
-    <div className="px-8">
+    <div className="px-8 flex flex-col gap-4">
+      <h1 className="text-gray-700 font-medium text-xl">Lesson Content</h1>
       {currentLesson && currentLesson.content ? (
-        <RichTextEditor
-          initialValue={currentLesson?.content?.text}
-          getValue={(content: any) =>
-            setCurrentLesson((prev) => {
-              return { ...prev, content: { text: content } };
-            })
-          }
-        />
+        <Editor onChange={onChange} initialContent={""} editable={true} />
       ) : (
         <p>Loading...</p>
       )}

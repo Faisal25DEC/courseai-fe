@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@blocknote/core": "^0.9.6",
-    "@blocknote/react": "^0.9.6",
+    "@blocknote/core": "^0.14.0",
+    "@blocknote/mantine": "^0.14.0",
+    "@blocknote/react": "^0.14.0",
+    "@clerk/nextjs": "^5.1.4",
     "@google-cloud/storage": "^7.11.2",
     "@iconify/react": "^5.0.1",
     "@mux/mux-node": "^7.3.3",

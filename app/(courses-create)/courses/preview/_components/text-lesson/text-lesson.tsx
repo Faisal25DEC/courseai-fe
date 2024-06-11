@@ -6,7 +6,7 @@ const Editor = dynamic(() => import("@/components/editor"), {
 });
 const TextLesson = ({ lesson }: { lesson: any }) => {
   return (
-    <div>
+    <div className="py-4 h-full overflow-auto">
       <Editor
         editable={false}
         onChange={() => null}

@@ -7,6 +7,9 @@ import { useRecoilState } from "recoil";
 import {
   avatarsAtom,
   currentCourseAtom,
+  lessonAtom,
+  lessonCreateStepsAtom,
+  lessonModalTypeAtom,
   lessonsArrayAtom,
   voicesAtom,
 } from "@/store/atoms";
@@ -24,13 +27,20 @@ import { toast } from "sonner";
 import { StrictModeDroppable } from "@/components/shared/strict-mode-droppable/strict-mode-droppable";
 import Link from "next/link";
 import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelpers";
+import { updateCourse } from "@/services/lesson.service";
 
 const CreateCourse = () => {
   const [avatars, setAvatars] = useRecoilState<any>(avatarsAtom);
   const [voices, setVoices] = useRecoilState<any>(voicesAtom);
   const [currentCourse, setCurrentCourse] =
     useRecoilState<any>(currentCourseAtom);
+  const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
+  const [lessonModalType, setLessonModalType] =
+    useRecoilState(lessonModalTypeAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
+  const [lessonCreateSteps, setLessonCreateSteps] = useRecoilState(
+    lessonCreateStepsAtom
+  );
   useEffect(() => {
     const fetchCurrentCourse = async () => {
       try {
@@ -89,22 +99,18 @@ const CreateCourse = () => {
       console.log(newLessonsArray, "Dragged");
       toast.loading("Saving changes...", { duration: 2000 });
       setLessonsArray(newLessonsArray);
-      setTimeout(() => {
-        toast.dismiss();
-      }, 2000);
-      // updateCourseLessons({
-      //   id: currentCourseId,
-      //   lessonsArray: newLessonsArray,
-      // })
-      //   .then(() => {
-      //     toast.success("Changes saved successfully!");
-      //     toast.dismiss();
-      //   })
-      //   .catch(() => {
-      //     setLessonsArray(copiedLessonsArray);
-      //     toast.error("Failed to save changes!");
-      //     toast.dismiss();
-      //   });
+      updateCourse(currentCourseId, {
+        lessons: newLessonsArray,
+      })
+        .then(() => {
+          toast.success("Changes saved successfully!");
+          toast.dismiss();
+        })
+        .catch(() => {
+          setLessonsArray(copiedLessonsArray);
+          toast.error("Failed to save changes!");
+          toast.dismiss();
+        });
     }
   };
   const fetchAvatarsAndVoices = async () => {
@@ -165,6 +171,20 @@ const CreateCourse = () => {
   useEffect(() => {
     fetchAvatarsAndVoices();
   }, []);
+  useEffect(() => {
+    if (!isCreateLessonModalOpen) {
+      setCurrentLesson({
+        title: "",
+        description: "",
+        type: "",
+        content: null,
+        submission: "",
+        submission_status: "",
+      });
+      setLessonModalType(null);
+      setLessonCreateSteps(1);
+    }
+  }, [isCreateLessonModalOpen]);
   const lastItem = popoverContent[popoverContent.length - 1];
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -187,7 +207,7 @@ const CreateCourse = () => {
         <StrictModeDroppable droppableId="Visuals">
           {(provided) => (
             <div
-              className=" w-[90%] mx-auto flex flex-col mt-2 gap-4"
+              className=" w-[90%] mx-auto flex flex-col my-2 gap-4"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >

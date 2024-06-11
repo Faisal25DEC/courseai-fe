@@ -6,6 +6,7 @@ export const createLessonModalAtom = atom({
 });
 
 interface LessonInterface {
+  id?: any;
   title: string;
   type: string;
   description: string;
@@ -17,6 +18,7 @@ interface LessonInterface {
 export const lessonAtom = atom<LessonInterface>({
   key: "lessonAtom",
   default: {
+    id: null,
     title: "",
     description: "",
     type: "",

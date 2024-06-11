@@ -114,7 +114,7 @@ const AvatarContent = () => {
     }));
   };
   return (
-    <div className="px-8 flex flex-col gap-8 overflow-y-scroll h-[calc(80vh-200px)]">
+    <div className="px-8 flex flex-col gap-8 my-2 overflow-y-scroll h-[calc(80vh-200px)]">
       <div className="label-container">
         <p className="label">Avatars</p>
 

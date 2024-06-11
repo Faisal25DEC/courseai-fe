@@ -192,6 +192,7 @@ export default function AvatarLesson({
       },
       body: JSON.stringify({ session_id, sdp }),
     });
+    toast.dismiss();
     if (response.status === 500) {
       console.error("Server error");
 

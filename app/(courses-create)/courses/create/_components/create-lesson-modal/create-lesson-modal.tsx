@@ -17,6 +17,7 @@ import {
   decrementLessonCreateStepSelector,
   incrementLessonCreateStepSelector,
 } from "@/store/selectors";
+import { Icon } from "@iconify/react";
 import CreateContent from "../create-content/create-content";
 import { Textarea } from "@/components/ui/textarea";
 import Submissions from "../submissions/submissions";
@@ -56,6 +57,25 @@ const CreateLessonModal = () => {
 
   const handleSubmit = async () => {
     try {
+      if (lessonModalType?.type === "edit") {
+        const res1 = await axios.patch(
+          `${baseUrl}/courses/6667760f255b05556e58b41a/lessons/${currentLesson.id}`,
+          {
+            ...currentLesson,
+            submission_status:
+              currentLesson.submission?.toLowerCase() === "automatic"
+                ? "approved"
+                : "pending",
+          }
+        );
+        const res = await axios.get(
+          `${baseUrl}/courses/6667760f255b05556e58b41a`
+        );
+        setCurrentCourse(res.data);
+        setLessonsArray(res.data.lessons);
+        onCreateLessonModalClose();
+        return;
+      }
       const res1 = await axios.post(
         `${baseUrl}/courses/6667760f255b05556e58b41a/lessons`,
         {
@@ -79,49 +99,37 @@ const CreateLessonModal = () => {
   };
   useEffect(() => {
     setCurrentLesson({ ...currentLesson, content: null });
-    return () => {
-      setCurrentLesson({
-        title: "",
-        description: "",
-        type: "",
-        content: null,
-        submission: "",
-        submission_status: "",
-      });
-      setLessonCreateSteps(1);
-    };
-  }, [currentLesson.type]);
-  useEffect(() => {
     if (lessonModalType?.type === "edit") {
       setCurrentLesson(lessonModalType.lesson);
     }
-    return () => {
-      setLessonModalType(null);
-      setCurrentLesson({
-        title: "",
-        description: "",
-        type: "",
-        content: null,
-        submission: "",
-        submission_status: "",
-      });
-    };
-  }, [lessonModalType]);
+    // return () => {
+    //   setCurrentLesson({
+    //     title: "",
+    //     description: "",
+    //     type: "",
+    //     content: null,
+    //     submission: "",
+    //     submission_status: "",
+    //   });
+    //   setLessonCreateSteps(1);
+    // };
+  }, [currentLesson.type, lessonModalType]);
+
   console.log(currentLesson);
   return (
     <Modal
-      className="min-h-[80vh]"
+      className="min-h-[80vh] "
       showIcon
       isOpen={isCreateLessonModalOpen}
       onClose={onCreateLessonModalClose}
     >
-      <div className="flex flex-col gap-6 overflow-hidden rounded-[20px] relative">
+      <div className="relative flex flex-col gap-6 overflow-hidden rounded-[20px] relative">
         <div className=" text-xl bg-gray-100 ">
           <h1 className=" px-8 h-[80px] flex items-center">Create Lesson</h1>
           <hr className="bg-white" />
         </div>
         {lessonCreateSteps === 1 && (
-          <div className="flex flex-col gap-8 px-8 bg-white">
+          <div className="flex flex-col gap-8 px-8 pb-2 bg-white">
             <div className="label-container">
               <label className="label">Title</label>
               <Input
@@ -210,16 +218,26 @@ const CreateLessonModal = () => {
             </Button>
             <Button
               onClick={() => handleSubmit()}
-              disabled={!currentLesson.title || !currentLesson.type}
+              disabled={
+                !currentLesson.title ||
+                !currentLesson.type ||
+                !currentLesson.description
+              }
               className="w-[50%]"
             >
-              Create Lesson
+              {lessonModalType?.type === "edit" ? "Update" : "Create"} Lesson
             </Button>
           </div>
         )}
 
         {lessonCreateSteps === 2 && <CreateContent />}
         {lessonCreateSteps === 3 && <Submissions />}
+        <div
+          onClick={onCreateLessonModalClose}
+          className="absolute cursor-pointer transition-all duration-300 ease-in top-[15px] hover:bg-slate-200 right-[15px] p-[3px] rounded-full "
+        >
+          <Icon icon="system-uicons:cross" style={{ color: "rgb(25,25,25)" }} />
+        </div>
       </div>
     </Modal>
   );

@@ -50,6 +50,7 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
   return (
     <div>
       <BlockNoteView
+        style={{ height: "calc(70vh-300px)" }}
         editable={editable}
         onChange={onEditorChange}
         editor={editor}

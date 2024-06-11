@@ -9,12 +9,14 @@ import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import { useRecoilState } from "recoil";
 import {
   currentCourseAtom,
+  lessonAtom,
   lessonModalTypeAtom,
   lessonsArrayAtom,
 } from "@/store/atoms";
 import { deleteLesson, getCourse } from "@/services/lesson.service";
 import { currentCourseId } from "@/lib/constants";
 const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
+  const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
   const [currentCourse, setCurrentCourse] =
@@ -35,6 +37,7 @@ const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
     {
       title: "Edit",
       onClick: async () => {
+        console.log(lesson);
         setLessonModalType({
           type: "edit",
           lesson,

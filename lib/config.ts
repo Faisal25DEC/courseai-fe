@@ -1,1 +1,1 @@
-export const baseUrl = "https://course-ai-dev-jmo7qt4qrq-uc.a.run.app";
+export const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;

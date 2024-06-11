@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/shared/navbar";
 import RecoilProvider from "@/components/providers/RecoilProvider";
 import { Toaster } from "sonner";
+import CreateLessonModal from "./(courses-create)/courses/create/_components/create-lesson-modal/create-lesson-modal";
 
 const inter = Inter({ subsets: ["latin"] });
 

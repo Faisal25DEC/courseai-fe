@@ -12,13 +12,13 @@ import { EditIcon2 } from "@/assets/icons/EditIcon";
 import { TrashIcon2 } from "@/assets/icons/TrashIcon";
 import CustomPopover from "@/components/shared/custom-popover/custom-popover";
 import useDisclosure from "@/hooks/useDisclosure";
+import LessonCard from "./_components/lesson-card/lesson-card";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
+import { currentCourseId } from "@/lib/constants";
+import { toast } from "sonner";
+import { StrictModeDroppable } from "@/components/shared/strict-mode-droppable/strict-mode-droppable";
+
 const CreateCourse = () => {
-  const {
-    isOpen: isPopoverOpen,
-    onOpen: onPopoverOpen,
-    onClose: onPopoverClose,
-    setIsOpen: setIsPopoverOpen,
-  } = useDisclosure();
   const [currentCourse, setCurrentCourse] =
     useRecoilState<any>(currentCourseAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
@@ -54,95 +54,85 @@ const CreateCourse = () => {
       icon: TrashIcon2,
     },
   ];
+  const updateCourseLessons = (data: any) => {
+    return null;
+  };
+  const onDragEnd = (result: DropResult) => {
+    console.log(result, "Dragged");
+    const { destination, source, draggableId } = result;
+    if (!destination) {
+      return;
+    }
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+    if (
+      source.droppableId === "Visuals" &&
+      destination.droppableId === "Visuals"
+    ) {
+      const copiedLessonsArray = Array.from(lessonsArray);
+      const newLessonsArray = Array.from(lessonsArray);
+      const [removed] = newLessonsArray.splice(source.index, 1);
+      newLessonsArray.splice(destination.index, 0, removed);
+      console.log(newLessonsArray, "Dragged");
+      toast.loading("Saving changes...", { duration: 2000 });
+      setLessonsArray(newLessonsArray);
+      setTimeout(() => {
+        toast.dismiss();
+      }, 2000);
+      // updateCourseLessons({
+      //   id: currentCourseId,
+      //   lessonsArray: newLessonsArray,
+      // })
+      //   .then(() => {
+      //     toast.success("Changes saved successfully!");
+      //     toast.dismiss();
+      //   })
+      //   .catch(() => {
+      //     setLessonsArray(copiedLessonsArray);
+      //     toast.error("Failed to save changes!");
+      //     toast.dismiss();
+      //   });
+    }
+  };
+
   const lastItem = popoverContent[popoverContent.length - 1];
   return (
-    <div className="w-[100%] mx-auto flex flex-col gap-2">
-      {" "}
-      <div className="flex w-[90%] m-auto justify-between items-center py-8">
-        <div>
-          <h1 className=" font-normal text-gray-600 text-2xl">Lessons</h1>
-        </div>
-        <div className="flex justify-end gap-4 items-center">
-          <div className="flex items-center gap-[24px]">
-            <Button onClick={onCreateLessonModalOpen}>Create Lesson</Button>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="w-[100%] mx-auto flex flex-col gap-2">
+        {" "}
+        <div className="flex w-[90%] m-auto justify-between items-center py-8">
+          <div>
+            <h1 className=" font-normal text-gray-600 text-2xl">Lessons</h1>
           </div>
-        </div>
-      </div>
-      <hr />
-      <div className="w-[90%] mx-auto flex flex-col mt-2">
-        {lessonsArray.map((lesson: any, idx: number) => (
-          <div
-            key={idx}
-            className="w-full p-4 rounded-[10px] shadow-1 flex justify-between items-center"
-          >
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-lg font-normal text-gray-600">
-                    {lesson.title}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">{lesson.description}</p>
-              </div>
-              {/* <div>
-                <p className="text-sm text-gray-400">Type : {lesson.type}</p>
-              </div> */}
-            </div>
-            <div>
-              <CustomPopover
-                open={isPopoverOpen}
-                onOpenChange={setIsPopoverOpen}
-                align="end"
-                className="p-0 w-[fit-content] min-w-[150px] shadow-2 rounded-[8px]"
-                trigger={
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      isPopoverOpen ? onPopoverClose() : onPopoverOpen();
-                    }}
-                  >
-                    <Icon className="w-6 h-6" icon="pepicons-pencil:dots-y" />
-                  </div>
-                }
-              >
-                <div className="p-2 flex flex-col gap-[0px] ">
-                  {popoverContent
-                    .slice(0, popoverContent.length - 1)
-                    .map((item, idx) => (
-                      <div
-                        key={idx}
-                        onClick={item.onClick}
-                        className="text-gray-500 hover:text-gray-700  cursor-pointer flex p-[6px] px-2 gap-[6px] w-[100%] items-center hover:bg-gray-100 rounded-md transition-all font-medium duration-200 ease-in"
-                      >
-                        <div>
-                          <item.icon />
-                        </div>
-                        <p className="text-[14px] cursor-pointer">
-                          {item.title}
-                        </p>
-                      </div>
-                    ))}
-                  <div
-                    onClick={lastItem.onClick}
-                    className="text-red-500 cursor-pointer flex p-[6px] gap-[6px] w-full items-center hover:bg-red-500 hover:text-white rounded-md transition-all duration-200 ease-in"
-                  >
-                    <div>
-                      <lastItem.icon />
-                    </div>
-                    <p className="text-[14px]  font-medium cursor-pointer">
-                      {lastItem.title}
-                    </p>
-                  </div>
-                </div>
-              </CustomPopover>
+          <div className="flex justify-end gap-4 items-center">
+            <div className="flex items-center gap-[24px]">
+              <Button onClick={onCreateLessonModalOpen}>Create Lesson</Button>
             </div>
           </div>
-        ))}
+        </div>
+        <hr />
+        <StrictModeDroppable droppableId="Visuals">
+          {(provided) => (
+            <div
+              className=" w-[90%] mx-auto flex flex-col mt-2 gap-4"
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
+              {lessonsArray.map((lesson: any, idx: number) => (
+                <LessonCard key={idx} lesson={lesson} index={idx} />
+              ))}
+
+              {provided.placeholder}
+            </div>
+          )}
+        </StrictModeDroppable>
+        <CreateLessonModal />
       </div>
-      <CreateLessonModal />
-    </div>
+    </DragDropContext>
   );
 };
 

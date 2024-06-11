@@ -6,7 +6,13 @@ import { Input } from "@/components/ui/input";
 import { buttons } from "./constants";
 import { Button } from "@/components/ui/button";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { lessonAtom, lessonCreateStepsAtom } from "@/store/atoms";
+import {
+  currentCourseAtom,
+  lessonAtom,
+  lessonCreateStepsAtom,
+  lessonModalTypeAtom,
+  lessonsArrayAtom,
+} from "@/store/atoms";
 import {
   decrementLessonCreateStepSelector,
   incrementLessonCreateStepSelector,
@@ -17,6 +23,12 @@ import Submissions from "../submissions/submissions";
 import axios from "axios";
 import { baseUrl } from "@/lib/config";
 const CreateLessonModal = () => {
+  const [lessonModalType, setLessonModalType] =
+    useRecoilState(lessonModalTypeAtom);
+  const [currentCourse, setCurrentCourse] =
+    useRecoilState<any>(currentCourseAtom);
+  const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
+
   const [currentLesson, setCurrentLesson] = useRecoilState(lessonAtom);
   const [lessonCreateSteps, setLessonCreateSteps] = useRecoilState(
     lessonCreateStepsAtom
@@ -43,7 +55,15 @@ const CreateLessonModal = () => {
 
   const handleSubmit = async () => {
     try {
-      const res = axios.post(`${baseUrl}/lessons`, currentLesson);
+      const res1 = await axios.post(
+        `${baseUrl}/courses/6667760f255b05556e58b41a/lessons`,
+        currentLesson
+      );
+      const res = await axios.get(
+        `${baseUrl}/courses/6667760f255b05556e58b41a`
+      );
+      setCurrentCourse(res.data);
+      setLessonsArray(res.data.lessons);
       onCreateLessonModalClose();
     } catch (error) {
       console.log(error);
@@ -52,6 +72,22 @@ const CreateLessonModal = () => {
   useEffect(() => {
     setCurrentLesson({ ...currentLesson, content: null });
   }, [currentLesson.type]);
+  useEffect(() => {
+    if (lessonModalType?.type === "edit") {
+      setCurrentLesson(lessonModalType.lesson);
+    }
+    return () => {
+      setLessonModalType(null);
+      setCurrentLesson({
+        title: "",
+        description: "",
+        type: "",
+        content: null,
+        submission: "",
+        submission_status: "",
+      });
+    };
+  }, [lessonModalType]);
   console.log(currentLesson);
   return (
     <Modal

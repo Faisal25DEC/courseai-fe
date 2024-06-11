@@ -48,3 +48,18 @@ export const lessonsArrayAtom = atom({
   key: "lessonsArrayAtom",
   default: [],
 });
+
+export const editLessonModalAtom = atom({
+  key: "editLessonModalAtom",
+  default: false,
+});
+
+interface LessonModalTypeInterface {
+  type: string;
+  lesson: LessonInterface;
+}
+
+export const lessonModalTypeAtom = atom<LessonModalTypeInterface | null>({
+  key: "lessonModalTypeAtom",
+  default: null,
+});

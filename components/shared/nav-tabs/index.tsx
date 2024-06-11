@@ -8,8 +8,7 @@ export default function NavTabs() {
   const pathname = usePathname();
 
   const tabs = [
-    { name: "Courses", href: "/dashboard" },
-    { name: "Create Course", href: "/courses/create" },
+    { name: "Course", href: "/courses/create" },
     { name: "Analytics", href: "/analytics" },
     { name: "Settings", href: "/settings" },
   ];

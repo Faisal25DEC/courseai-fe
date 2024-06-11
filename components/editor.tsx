@@ -5,10 +5,11 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { FileService } from "@/services/file.service";
+import { useEffect } from "react";
 
 interface EditorProps {
   onChange: (value: string) => void;
-  initialContent?: string;
+  initialContent?: any;
   editable?: boolean;
 }
 
@@ -24,12 +25,20 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
   };
 
   const editor = useCreateBlockNote({
-    initialContent: initialContent ? JSON.parse(initialContent) : undefined,
     uploadFile: handleUpload,
   });
+  useEffect(() => {
+    if (!initialContent) return;
+    async function loadInitialHTML() {
+      const blocks = await editor.tryParseHTMLToBlocks(initialContent);
+      editor.replaceBlocks(editor.document, blocks);
+    }
+    loadInitialHTML();
+  }, [editor]);
   if (!editor) {
     return <div>Loading editor...</div>;
   }
+
   const onEditorChange = async () => {
     const markdown = await editor.blocksToHTMLLossy(editor.document);
     onChange(markdown);
@@ -38,6 +47,7 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
   return (
     <div>
       <BlockNoteView
+        editable={editable}
         onChange={onEditorChange}
         editor={editor}
         theme={"light"}

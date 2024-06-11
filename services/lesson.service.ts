@@ -38,3 +38,12 @@ export const deleteLesson = async (courseId: string, lessonId: string) => {
     console.error("Error:", error);
   }
 };
+export const getCourse = async (courseId: string) => {
+  try {
+    const response = await axios.get(`${baseUrl}/courses/${courseId}`);
+
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};

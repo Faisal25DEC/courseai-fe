@@ -9,3 +9,12 @@ export const getMaxId = (array: any) => {
   }
   return maxId;
 };
+export const getFilteredVoiceAndAvatarObjects = (
+  items: any,
+  gender: string,
+  count: number
+) => {
+  return items
+    .filter((item: any) => item.gender.toLowerCase() === gender.toLowerCase())
+    .slice(0, count);
+};

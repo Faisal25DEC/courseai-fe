@@ -58,7 +58,14 @@ const CreateLessonModal = () => {
     try {
       const res1 = await axios.post(
         `${baseUrl}/courses/6667760f255b05556e58b41a/lessons`,
-        { id: getMaxId(lessonsArray), ...currentLesson }
+        {
+          id: getMaxId(lessonsArray),
+          ...currentLesson,
+          submission_status:
+            currentLesson.submission?.toLowerCase() === "automatic"
+              ? "approved"
+              : "pending",
+        }
       );
       const res = await axios.get(
         `${baseUrl}/courses/6667760f255b05556e58b41a`
@@ -72,6 +79,17 @@ const CreateLessonModal = () => {
   };
   useEffect(() => {
     setCurrentLesson({ ...currentLesson, content: null });
+    return () => {
+      setCurrentLesson({
+        title: "",
+        description: "",
+        type: "",
+        content: null,
+        submission: "",
+        submission_status: "",
+      });
+      setLessonCreateSteps(1);
+    };
   }, [currentLesson.type]);
   useEffect(() => {
     if (lessonModalType?.type === "edit") {

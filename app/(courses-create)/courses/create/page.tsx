@@ -4,7 +4,12 @@ import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import React, { useEffect } from "react";
 import CreateLessonModal from "./_components/create-lesson-modal/create-lesson-modal";
 import { useRecoilState } from "recoil";
-import { currentCourseAtom, lessonsArrayAtom } from "@/store/atoms";
+import {
+  avatarsAtom,
+  currentCourseAtom,
+  lessonsArrayAtom,
+  voicesAtom,
+} from "@/store/atoms";
 import { baseUrl } from "@/lib/config";
 import axios from "axios";
 import { Icon } from "@iconify/react";
@@ -14,12 +19,15 @@ import CustomPopover from "@/components/shared/custom-popover/custom-popover";
 import useDisclosure from "@/hooks/useDisclosure";
 import LessonCard from "./_components/lesson-card/lesson-card";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
-import { currentCourseId } from "@/lib/constants";
+import { apiKey, currentCourseId, heygenBaseUrl } from "@/lib/constants";
 import { toast } from "sonner";
 import { StrictModeDroppable } from "@/components/shared/strict-mode-droppable/strict-mode-droppable";
 import Link from "next/link";
+import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelpers";
 
 const CreateCourse = () => {
+  const [avatars, setAvatars] = useRecoilState<any>(avatarsAtom);
+  const [voices, setVoices] = useRecoilState<any>(voicesAtom);
   const [currentCourse, setCurrentCourse] =
     useRecoilState<any>(currentCourseAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
@@ -99,7 +107,64 @@ const CreateCourse = () => {
       //   });
     }
   };
+  const fetchAvatarsAndVoices = async () => {
+    if (avatars.length > 0 && voices.length > 0) return;
+    const { data: voicesData } = await axios.get(
+      `${heygenBaseUrl}/v1/voice.list`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Api-Key": apiKey,
+        },
+      }
+    );
+    const { data: avatarsData } = await axios.get(
+      `${heygenBaseUrl}/v1/avatar.list`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Api-Key": apiKey,
+        },
+      }
+    );
+    const filteredAvatars = avatarsData.data.avatars.map(
+      (item: any) => item.avatar_states[0]
+    );
+    const filteredVoices = voicesData.data.list.filter(
+      (item: any) => item.language === "English"
+    );
 
+    const maleAvatars = getFilteredVoiceAndAvatarObjects(
+      filteredAvatars,
+      "male",
+      5
+    );
+    const femaleAvatars = getFilteredVoiceAndAvatarObjects(
+      filteredAvatars,
+      "female",
+      5
+    );
+    const selectedAvatars = [...maleAvatars, ...femaleAvatars];
+
+    const maleVoices = getFilteredVoiceAndAvatarObjects(
+      filteredVoices,
+      "male",
+      5
+    );
+    const femaleVoices = getFilteredVoiceAndAvatarObjects(
+      filteredVoices,
+      "female",
+      5
+    );
+    const selectedVoices = [...maleVoices, ...femaleVoices];
+
+    setAvatars(selectedAvatars || []);
+    setVoices(selectedVoices || []);
+  };
+
+  useEffect(() => {
+    fetchAvatarsAndVoices();
+  }, []);
   const lastItem = popoverContent[popoverContent.length - 1];
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -134,7 +199,7 @@ const CreateCourse = () => {
             </div>
           )}
         </StrictModeDroppable>
-        <CreateLessonModal />
+        {isCreateLessonModalOpen && <CreateLessonModal />}
       </div>
     </DragDropContext>
   );

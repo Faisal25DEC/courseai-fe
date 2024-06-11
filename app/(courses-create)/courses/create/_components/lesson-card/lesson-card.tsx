@@ -7,10 +7,19 @@ import { Icon } from "@iconify/react";
 import { Draggable } from "react-beautiful-dnd";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import { useRecoilState } from "recoil";
-import { lessonModalTypeAtom } from "@/store/atoms";
+import {
+  currentCourseAtom,
+  lessonModalTypeAtom,
+  lessonsArrayAtom,
+} from "@/store/atoms";
+import { deleteLesson, getCourse } from "@/services/lesson.service";
+import { currentCourseId } from "@/lib/constants";
 const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
+  const [currentCourse, setCurrentCourse] =
+    useRecoilState<any>(currentCourseAtom);
+  const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   const {
     isOpen: isCreateLessonModalOpen,
     onOpen: onCreateLessonModalOpen,
@@ -38,7 +47,14 @@ const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
 
     {
       title: "Delete",
-      onClick: () => {},
+      onClick: async () => {
+        deleteLesson(currentCourseId, lesson.id).then(() => {
+          getCourse(currentCourseId).then((res) => {
+            setCurrentCourse(res);
+            setLessonsArray(res.lessons);
+          });
+        });
+      },
       icon: TrashIcon2,
     },
   ];

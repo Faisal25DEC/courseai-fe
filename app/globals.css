@@ -85,9 +85,11 @@
 }
 .mux-player {
   --media-object-fit: fill display: inline;
-  width: 100vw;
+
   /* --controls: none; */
   aspect-ratio: 16/9 !important;
+  max-height: 80vh;
+  max-width: 70%;
   border-top-left-radius: 10px !important;
   border-bottom-left-radius: 10px !important;
   border-bottom-right-radius: 0 !important;
@@ -104,4 +106,32 @@
 }
 .shadow-1:hover {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+* {
+  --sb-track-color: #ffffff;
+  --sb-thumb-color: #e8e8e8;
+  --sb-size: 8px;
+}
+
+*::-webkit-scrollbar {
+  width: var(--sb-size)
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 7px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 7px;
+  
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
 }

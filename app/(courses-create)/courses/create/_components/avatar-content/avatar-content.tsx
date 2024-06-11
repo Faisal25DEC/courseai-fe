@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelpers";
 import { apiKey, heygenBaseUrl } from "@/lib/constants";
 import { avatarsAtom, lessonAtom, voicesAtom } from "@/store/atoms";
 import axios from "axios";
@@ -10,11 +11,7 @@ const AvatarContent = () => {
   const [currentLesson, setCurrentLesson] = useRecoilState(lessonAtom);
   const [avatars, setAvatars] = useRecoilState<any>(avatarsAtom);
   const [voices, setVoices] = useRecoilState<any>(voicesAtom);
-  const getFilteredObjects = (items: any, gender: string, count: number) => {
-    return items
-      .filter((item: any) => item.gender.toLowerCase() === gender.toLowerCase())
-      .slice(0, count);
-  };
+
   const fetchAvatarsAndVoices = async () => {
     if (avatars.length > 0 && voices.length > 0) return;
     const { data: voicesData } = await axios.get(
@@ -42,12 +39,28 @@ const AvatarContent = () => {
       (item: any) => item.language === "English"
     );
 
-    const maleAvatars = getFilteredObjects(filteredAvatars, "male", 5);
-    const femaleAvatars = getFilteredObjects(filteredAvatars, "female", 5);
+    const maleAvatars = getFilteredVoiceAndAvatarObjects(
+      filteredAvatars,
+      "male",
+      5
+    );
+    const femaleAvatars = getFilteredVoiceAndAvatarObjects(
+      filteredAvatars,
+      "female",
+      5
+    );
     const selectedAvatars = [...maleAvatars, ...femaleAvatars];
 
-    const maleVoices = getFilteredObjects(filteredVoices, "male", 5);
-    const femaleVoices = getFilteredObjects(filteredVoices, "female", 5);
+    const maleVoices = getFilteredVoiceAndAvatarObjects(
+      filteredVoices,
+      "male",
+      5
+    );
+    const femaleVoices = getFilteredVoiceAndAvatarObjects(
+      filteredVoices,
+      "female",
+      5
+    );
     const selectedVoices = [...maleVoices, ...femaleVoices];
 
     setAvatars(selectedAvatars || []);

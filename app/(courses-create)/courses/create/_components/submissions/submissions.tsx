@@ -7,11 +7,11 @@ const Submissions = () => {
   const submissionButtons = [
     {
       label: "Mannual",
-      value: "Mannual",
+      value: "mannual",
     },
     {
       label: "Automatic",
-      value: "Automatic",
+      value: "automatic",
     },
   ];
   const handleChangeType = (value: string) => {

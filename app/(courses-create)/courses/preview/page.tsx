@@ -2,14 +2,14 @@
 import { currentCourseId } from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
 import { getCourse } from "@/services/lesson.service";
-import { lessonsArrayAtom } from "@/store/atoms";
+import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import VideoLesson from "./_components/video-lesson/video-lesson";
 import TextLesson from "./_components/text-lesson/text-lesson";
-
+import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
 const PreivewCourse = () => {
-  const [activeLesson, setActiveLesson] = useState(0);
+  const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   useEffect(() => {
     getCourse(currentCourseId).then((res) => {
@@ -63,6 +63,17 @@ const PreivewCourse = () => {
           )}
           {lessonsArray[activeLesson]?.type === "text" && (
             <TextLesson lesson={lessonsArray[activeLesson].content} />
+          )}
+          {lessonsArray[activeLesson]?.type === "avatar" && (
+            <AvatarLesson
+              voice_id={lessonsArray[activeLesson].content?.voice_id}
+              avatar_id={lessonsArray[activeLesson].content?.avatar_id}
+              thumbnail={
+                lessonsArray[activeLesson].content?.avatar
+                  ?.normal_thumbnail_medium
+              }
+              avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
+            />
           )}
         </div>
       </div>

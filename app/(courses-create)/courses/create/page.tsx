@@ -127,9 +127,9 @@ const CreateCourse = () => {
         },
       }
     );
-    const filteredAvatars = avatarsData.data.avatars.map(
-      (item: any) => item.avatar_states[0]
-    );
+    const filteredAvatars = avatarsData.data.avatars.map((item: any) => {
+      return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
+    });
     const filteredVoices = voicesData.data.list.filter(
       (item: any) => item.language === "English"
     );

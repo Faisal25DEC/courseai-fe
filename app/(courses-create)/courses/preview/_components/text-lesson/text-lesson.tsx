@@ -1,6 +1,9 @@
-import Editor from "@/components/editor";
+import dynamic from "next/dynamic";
 import React from "react";
 
+const Editor = dynamic(() => import("@/components/editor"), {
+  ssr: false,
+});
 const TextLesson = ({ lesson }: { lesson: any }) => {
   return (
     <div>

@@ -6,6 +6,8 @@ import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { FileService } from "@/services/file.service";
 import { useEffect } from "react";
+import { activeLessonAtom } from "@/store/atoms";
+import { useRecoilValue } from "recoil";
 
 interface EditorProps {
   onChange: (value: string) => void;
@@ -14,6 +16,7 @@ interface EditorProps {
 }
 
 const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
+  const activeLesson = useRecoilValue(activeLessonAtom);
   const handleUpload = async (file: File) => {
     try {
       const res = await FileService.uploadImage(file);
@@ -34,7 +37,7 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
       editor.replaceBlocks(editor.document, blocks);
     }
     loadInitialHTML();
-  }, [editor]);
+  }, [editor, activeLesson, initialContent]);
   if (!editor) {
     return <div>Loading editor...</div>;
   }

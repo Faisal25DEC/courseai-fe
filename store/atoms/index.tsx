@@ -63,3 +63,8 @@ export const lessonModalTypeAtom = atom<LessonModalTypeInterface | null>({
   key: "lessonModalTypeAtom",
   default: null,
 });
+
+export const activeLessonAtom = atom<any>({
+  key: "activeLessonAtom",
+  default: 0,
+});

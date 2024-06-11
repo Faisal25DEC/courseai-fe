@@ -32,9 +32,9 @@ const AvatarContent = () => {
         },
       }
     );
-    const filteredAvatars = avatarsData.data.avatars.map(
-      (item: any) => item.avatar_states[0]
-    );
+    const filteredAvatars = avatarsData.data.avatars.map((item: any) => {
+      return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
+    });
     const filteredVoices = voicesData.data.list.filter(
       (item: any) => item.language === "English"
     );
@@ -77,7 +77,7 @@ const AvatarContent = () => {
         type: "avatar",
         avatar: avatars[0] || {},
         voice: voices[0] || {},
-        avatar_id: avatars[0]?.id || "",
+        avatar_id: avatars[0]?.avatar_id || "",
         voice_id: voices[0]?.voice_id || "",
         prompt: "",
       },
@@ -89,7 +89,7 @@ const AvatarContent = () => {
       content: {
         ...prev.content,
         avatar: avatar || {},
-        avatar_id: avatar?.id || "",
+        avatar_id: avatar?.avatar_id || "",
       },
     }));
   };
@@ -127,7 +127,7 @@ const AvatarContent = () => {
             >
               <img
                 className={`${
-                  currentLesson.content?.avatar_id === avatar.id
+                  currentLesson.content?.avatar_id === avatar.avatar_id
                     ? "border-[2px] border-blue-500"
                     : ""
                 } w-24 h-24 rounded-[20px] object-cover`}

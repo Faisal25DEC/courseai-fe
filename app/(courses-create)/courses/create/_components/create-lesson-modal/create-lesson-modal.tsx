@@ -59,7 +59,7 @@ const CreateLessonModal = () => {
       const res1 = await axios.post(
         `${baseUrl}/courses/6667760f255b05556e58b41a/lessons`,
         {
-          id: getMaxId(lessonsArray),
+          id: getMaxId(lessonsArray) + 1,
           ...currentLesson,
           submission_status:
             currentLesson.submission?.toLowerCase() === "automatic"

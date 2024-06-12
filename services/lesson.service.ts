@@ -47,3 +47,41 @@ export const getCourse = async (courseId: string) => {
     console.error("Error:", error);
   }
 };
+
+export const updateLessonDuration = async ({
+  user_id,
+  course_id,
+  lesson_id,
+  data,
+}: {
+  user_id: string;
+  course_id: string;
+  lesson_id: string;
+  data: any;
+}) => {
+  try {
+    const response = await axios.patch(
+      `${baseUrl}/users/${user_id}/analytics/${course_id}/lessons/${lesson_id}`,
+      data
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
+export const approveLessonRequest = async (data: {
+  lesson_id: number;
+  course_id: string;
+  user_id: string;
+  status: string;
+}) => {
+  try {
+    const response = await axios.post(`${baseUrl}/lesson-approvals`, data);
+
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};

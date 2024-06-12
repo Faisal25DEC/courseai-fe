@@ -2,11 +2,12 @@
 import { Button } from "@/components/ui/button";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import React, { useEffect } from "react";
-import CreateLessonModal from "./_components/create-lesson-modal/create-lesson-modal";
+import CreateLessonModal from "../_components/create-lesson-modal/create-lesson-modal";
 import { useRecoilState } from "recoil";
 import {
   avatarsAtom,
   currentCourseAtom,
+  currentUserRoleAtom,
   lessonAtom,
   lessonCreateStepsAtom,
   lessonModalTypeAtom,
@@ -20,9 +21,9 @@ import { EditIcon2 } from "@/assets/icons/EditIcon";
 import { TrashIcon2 } from "@/assets/icons/TrashIcon";
 import CustomPopover from "@/components/shared/custom-popover/custom-popover";
 import useDisclosure from "@/hooks/useDisclosure";
-import LessonCard from "./_components/lesson-card/lesson-card";
+import LessonCard from "../_components/lesson-card/lesson-card";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
-import { apiKey, currentCourseId, heygenBaseUrl } from "@/lib/constants";
+import { admin, apiKey, currentCourseId, heygenBaseUrl } from "@/lib/constants";
 import { toast } from "sonner";
 import { StrictModeDroppable } from "@/components/shared/strict-mode-droppable/strict-mode-droppable";
 import Link from "next/link";
@@ -30,6 +31,8 @@ import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelper
 import { updateCourse } from "@/services/lesson.service";
 
 const CreateCourse = () => {
+  const [currentUserRole, setCurrentUserRole] =
+    useRecoilState(currentUserRoleAtom);
   const [avatars, setAvatars] = useRecoilState<any>(avatarsAtom);
   const [voices, setVoices] = useRecoilState<any>(voicesAtom);
   const [currentCourse, setCurrentCourse] =
@@ -195,19 +198,21 @@ const CreateCourse = () => {
             <h1 className=" font-normal text-gray-600 text-2xl">Lessons</h1>
           </div>
           <div className="flex justify-end gap-4 items-center">
-            <div className="flex items-center gap-[24px]">
-              <Button
-                onClick={() => {
-                  onCreateLessonModalOpen();
-                  setLessonModalType(null);
-                }}
-              >
-                Create Lesson
-              </Button>
-              <Link href="/courses/preview">
-                <Button variant={"outline"}>Preview Course</Button>
-              </Link>
-            </div>
+            {currentUserRole === admin && (
+              <div className="flex items-center gap-[24px]">
+                <Button
+                  onClick={() => {
+                    onCreateLessonModalOpen();
+                    setLessonModalType(null);
+                  }}
+                >
+                  Create Lesson
+                </Button>
+                <Link href="/courses/preview">
+                  <Button variant={"outline"}>Preview Course</Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
         <hr />

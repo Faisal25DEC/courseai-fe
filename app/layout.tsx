@@ -5,6 +5,7 @@ import Navbar from "@/components/shared/navbar";
 import RecoilProvider from "@/components/providers/RecoilProvider";
 import { Toaster } from "sonner";
 import CreateLessonModal from "./(courses-create)/courses/create/_components/create-lesson-modal/create-lesson-modal";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,11 +22,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <RecoilProvider>
-          <Toaster />
-          <Navbar />
-          {children}
-        </RecoilProvider>
+        <ClerkProvider>
+          <RecoilProvider>
+            <Toaster />
+            <Navbar />
+            {children}
+          </RecoilProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

@@ -70,3 +70,17 @@ export const activeLessonAtom = atom<any>({
   key: "activeLessonAtom",
   default: 0,
 });
+
+export const noOrgnizationModalAtom = atom({
+  key: "noOrgnizationModalAtom",
+  default: false,
+});
+
+export const currentUserRoleAtom = atom({
+  key: "currentUserRoleAtom",
+  default: "",
+});
+export const lessonLockedModalAtom = atom({
+  key: "lessonLockedModalAtom",
+  default: false,
+});

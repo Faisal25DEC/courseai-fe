@@ -5,6 +5,14 @@ import { usePathname } from "next/navigation";
 import Divider from "@/assets/icons/Divider";
 import NavTabs from "../nav-tabs";
 import { StringFormats } from "@/lib/StringFormats";
+import {
+  OrganizationProfile,
+  OrganizationSwitcher,
+  SignedIn,
+  UserButton,
+} from "@clerk/nextjs";
+import { useState } from "react";
+import Modal from "../modal";
 
 // import { Button } from "./ui/button";
 
@@ -13,6 +21,7 @@ import { StringFormats } from "@/lib/StringFormats";
 // import TooltipComp from "./tooltip-comp";
 
 const Navbar = () => {
+  const [invite, setIsInvite] = useState(false);
   // if (isLoaded && !isSignedIn) {
   //   return redirect('/sign-in');
   // }
@@ -45,7 +54,9 @@ const Navbar = () => {
             <div>
               <Link href="/dashboard">
                 <p className="text-gray-600 hover:text-gray-900 text-sm">
-                  {StringFormats.capitalizeFirstLetter(pathname.split("/")[1])}
+                  {StringFormats.capitalizeFirstLetter(
+                    pathname.split("/")[1]
+                  ) || "Home"}
                 </p>
               </Link>
             </div>
@@ -103,22 +114,37 @@ const Navbar = () => {
             </Link>
           </div>
         </SignedOut> */}
-        {/* <SignedIn>
+        <SignedIn>
           <div className="flex items-center gap-[28px]">
             <div className="hidden md:flex items-center gap-[32px]">
-              <p className="text-sm text-effect cursor-pointer">Changelog</p>
+              <p
+                onClick={() => setIsInvite(true)}
+                className="text-sm text-effect cursor-pointer"
+              >
+                Invite User
+              </p>
               <p className="text-sm text-effect cursor-pointer">Help</p>
             </div>
             <div className="flex items-center gap-2">
+              <OrganizationSwitcher></OrganizationSwitcher>
               <UserButton afterSignOutUrl="/sign-in" />
             </div>
-           
-          </div> */}
-        {/* </SignedIn> */}
+          </div>
+        </SignedIn>
       </div>
       <div className=" w-[90%] m-auto">
         <NavTabs />
       </div>
+      <Modal
+        className="w-fit justify-center items-center flex"
+        isOpen={invite}
+        onClose={() => setIsInvite(false)}
+      >
+        <div>
+          {" "}
+          <OrganizationProfile routing="virtual" />
+        </div>
+      </Modal>
     </div>
   ) : null;
 };

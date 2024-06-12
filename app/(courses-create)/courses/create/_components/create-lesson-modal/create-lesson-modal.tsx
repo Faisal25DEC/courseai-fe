@@ -63,10 +63,7 @@ const CreateLessonModal = () => {
           `${baseUrl}/courses/6667760f255b05556e58b41a/lessons/${currentLesson.id}`,
           {
             ...currentLessonWithoutId,
-            submission_status:
-              currentLesson.submission?.toLowerCase() === "automatic"
-                ? "approved"
-                : "pending",
+            submission_status: currentLesson.submission_status || "pending",
           }
         );
         const res = await axios.get(
@@ -82,10 +79,7 @@ const CreateLessonModal = () => {
         {
           id: getMaxId(lessonsArray) + 1,
           ...currentLesson,
-          submission_status:
-            currentLesson.submission?.toLowerCase() === "automatic"
-              ? "approved"
-              : "pending",
+          submission_status: "pending",
         }
       );
       const res = await axios.get(

@@ -5,9 +5,9 @@ import { getCourse } from "@/services/lesson.service";
 import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import VideoLesson from "./_components/video-lesson/video-lesson";
-import TextLesson from "./_components/text-lesson/text-lesson";
-import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
+import VideoLesson from "../_components/video-lesson/video-lesson";
+import TextLesson from "../_components/text-lesson/text-lesson";
+import AvatarLesson from "../_components/avatar-lesson/avatar-lesson";
 const PreivewCourse = () => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
@@ -62,7 +62,10 @@ const PreivewCourse = () => {
             <VideoLesson video={lessonsArray[activeLesson].content} />
           )}
           {lessonsArray[activeLesson]?.type === "text" && (
-            <TextLesson lesson={lessonsArray[activeLesson].content} />
+            <TextLesson
+              lesson_id={lessonsArray[activeLesson].id}
+              lesson={lessonsArray[activeLesson].content}
+            />
           )}
           {lessonsArray[activeLesson]?.type === "avatar" && (
             <AvatarLesson

@@ -79,20 +79,24 @@ const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
           }`}
         >
           <div className="w-full p-4 rounded-[10px] shadow-1 flex justify-between items-center">
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-lg font-normal text-gray-600">
-                    {lesson.title}
-                  </p>
+            <div className="flex items-center gap-2">
+              <Icon icon="ri:draggable" className="" />
+
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-lg font-normal text-gray-600">
+                      {lesson.title}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">{lesson.description}</p>
-              </div>
-              {/* <div>
+                <div>
+                  <p className="text-sm text-gray-400">{lesson.description}</p>
+                </div>
+                {/* <div>
         <p className="text-sm text-gray-400">Type : {lesson.type}</p>
       </div> */}
+              </div>
             </div>
             <div>
               <CustomPopover

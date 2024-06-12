@@ -58,10 +58,11 @@ const CreateLessonModal = () => {
   const handleSubmit = async () => {
     try {
       if (lessonModalType?.type === "edit") {
+        const { id, ...currentLessonWithoutId } = currentLesson;
         const res1 = await axios.patch(
           `${baseUrl}/courses/6667760f255b05556e58b41a/lessons/${currentLesson.id}`,
           {
-            ...currentLesson,
+            ...currentLessonWithoutId,
             submission_status:
               currentLesson.submission?.toLowerCase() === "automatic"
                 ? "approved"
@@ -199,7 +200,11 @@ const CreateLessonModal = () => {
             </Button>
             <Button
               onClick={() => incrementStep(1)}
-              disabled={!currentLesson.title || !currentLesson.type}
+              disabled={
+                !currentLesson.title ||
+                !currentLesson.description ||
+                !currentLesson.type
+              }
               className="w-[50%]"
             >
               Next
@@ -216,15 +221,7 @@ const CreateLessonModal = () => {
             >
               Back
             </Button>
-            <Button
-              onClick={() => handleSubmit()}
-              disabled={
-                !currentLesson.title ||
-                !currentLesson.type ||
-                !currentLesson.description
-              }
-              className="w-[50%]"
-            >
+            <Button onClick={() => handleSubmit()} className="w-[50%]">
               {lessonModalType?.type === "edit" ? "Update" : "Create"} Lesson
             </Button>
           </div>

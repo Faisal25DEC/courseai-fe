@@ -196,7 +196,14 @@ const CreateCourse = () => {
           </div>
           <div className="flex justify-end gap-4 items-center">
             <div className="flex items-center gap-[24px]">
-              <Button onClick={onCreateLessonModalOpen}>Create Lesson</Button>
+              <Button
+                onClick={() => {
+                  onCreateLessonModalOpen();
+                  setLessonModalType(null);
+                }}
+              >
+                Create Lesson
+              </Button>
               <Link href="/courses/preview">
                 <Button variant={"outline"}>Preview Course</Button>
               </Link>

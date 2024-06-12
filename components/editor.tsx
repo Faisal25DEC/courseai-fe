@@ -37,7 +37,7 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
       editor.replaceBlocks(editor.document, blocks);
     }
     loadInitialHTML();
-  }, [editor, activeLesson, initialContent]);
+  }, [editor, activeLesson]);
   if (!editor) {
     return <div>Loading editor...</div>;
   }

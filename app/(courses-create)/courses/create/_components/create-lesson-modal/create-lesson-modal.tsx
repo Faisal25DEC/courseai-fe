@@ -100,9 +100,7 @@ const CreateLessonModal = () => {
   };
   useEffect(() => {
     setCurrentLesson({ ...currentLesson, content: null });
-    if (lessonModalType?.type === "edit") {
-      setCurrentLesson(lessonModalType.lesson);
-    }
+
     // return () => {
     //   setCurrentLesson({
     //     title: "",
@@ -114,9 +112,8 @@ const CreateLessonModal = () => {
     //   });
     //   setLessonCreateSteps(1);
     // };
-  }, [currentLesson.type, lessonModalType]);
+  }, [currentLesson.type]);
 
-  console.log(currentLesson);
   return (
     <Modal
       className="min-h-[80vh] "

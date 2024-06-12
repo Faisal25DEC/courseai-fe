@@ -42,6 +42,7 @@ const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
           type: "edit",
           lesson,
         });
+        setCurrentLesson(lesson);
 
         onCreateLessonModalOpen();
       },

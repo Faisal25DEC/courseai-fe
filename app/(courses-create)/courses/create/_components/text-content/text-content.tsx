@@ -1,7 +1,7 @@
 "use client";
 import { lessonAtom, lessonModalTypeAtom } from "@/store/atoms";
 import dynamic from "next/dynamic";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useRecoilState } from "recoil";
 
 const Editor = dynamic(() => import("@/components/editor"), {
@@ -16,14 +16,17 @@ const TextContent = () => {
     setCurrentLesson({ ...currentLesson, content: { text: content } });
   };
 
-  console.log(currentLesson);
   return (
     <div className="px-8 flex flex-col gap-4 h-[60vh] overflow-auto">
       <h1 className="text-gray-700 font-medium text-xl">Lesson Content</h1>
       {currentLesson ? (
         <Editor
           onChange={onChange}
-          initialContent={currentLesson.content?.text || ""}
+          initialContent={
+            lessonModalType?.type === "edit"
+              ? lessonModalType.lesson?.content?.text || ""
+              : ""
+          }
           editable={true}
         />
       ) : (

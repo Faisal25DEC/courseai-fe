@@ -27,15 +27,7 @@ const PreivewCourse = () => {
       setActiveLesson(0);
     });
   }, []);
-  const handleChangeLesson = (idx: number) => {
-    if (idx > 0) {
-      if (lessonsArray[idx - 1].submission_status === "pending") {
-        onLessonLockedModalOpen();
-        return;
-      }
-    }
-    setActiveLesson(idx);
-  };
+
   const checkIfLessonIsLocked = (idx: number) => {
     if (idx === 0) return false;
     for (let j = idx - 1; j >= 0; j--) {
@@ -44,6 +36,14 @@ const PreivewCourse = () => {
       }
     }
     return false;
+  };
+  const handleChangeLesson = (idx: number) => {
+    if (checkIfLessonIsLocked(idx)) {
+      onLessonLockedModalOpen();
+      return;
+    } else {
+      setActiveLesson(idx);
+    }
   };
   const getLockedLessons = (lessonsArray: any) => {
     const lockedLessons = [];

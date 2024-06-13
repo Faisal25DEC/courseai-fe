@@ -15,7 +15,6 @@ import {
   useContext,
 } from "react";
 import { utteranceText } from "@/lib/helpers";
-import { MicrophoneIcon } from "@/assets/icons/microphone-icon";
 import { DeepgramContextProvider, useDeepgram } from "@/context/Deepgram";
 import {
   MicrophoneContext,
@@ -23,8 +22,7 @@ import {
   useMicrophone,
 } from "@/context/Microphone";
 import Image from "next/image";
-import { Button } from "@nextui-org/react";
-import { start } from "repl";
+
 interface MicrophoneProps {
   setCaption?: (caption: string) => void;
   send: (value: string) => void;

@@ -13,6 +13,9 @@ import {
 } from "@clerk/nextjs";
 import { useState } from "react";
 import Modal from "../modal";
+import { currentUserRoleAtom } from "@/store/atoms";
+import { useRecoilState } from "recoil";
+import { admin } from "@/lib/constants";
 
 // import { Button } from "./ui/button";
 
@@ -21,6 +24,8 @@ import Modal from "../modal";
 // import TooltipComp from "./tooltip-comp";
 
 const Navbar = () => {
+  const [currentUserRole, setCurrentUserRole] =
+    useRecoilState(currentUserRoleAtom);
   const [invite, setIsInvite] = useState(false);
   // if (isLoaded && !isSignedIn) {
   //   return redirect('/sign-in');
@@ -117,16 +122,17 @@ const Navbar = () => {
         <SignedIn>
           <div className="flex items-center gap-[28px]">
             <div className="hidden md:flex items-center gap-[32px]">
-              <p
-                onClick={() => setIsInvite(true)}
-                className="text-sm text-effect cursor-pointer"
-              >
-                Invite User
-              </p>
+              {currentUserRole === admin && (
+                <p
+                  onClick={() => setIsInvite(true)}
+                  className="text-sm text-effect cursor-pointer"
+                >
+                  Invite User
+                </p>
+              )}
               <p className="text-sm text-effect cursor-pointer">Help</p>
             </div>
             <div className="flex items-center gap-2">
-              <OrganizationSwitcher></OrganizationSwitcher>
               <UserButton afterSignOutUrl="/sign-in" />
             </div>
           </div>

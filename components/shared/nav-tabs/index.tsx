@@ -19,15 +19,25 @@ export default function NavTabs() {
         currentUserRole === admin
           ? "/courses/create"
           : `/courses/${currentCourseId}`,
+      hidden: false,
     },
-    { name: "Analytics", href: "/analytics" },
-    { name: "Settings", href: "/settings" },
+    {
+      name: "Analytics",
+      href: "/analytics",
+      hidden: currentUserRole !== admin,
+    },
+    { name: "Settings", href: "/settings", hidden: currentUserRole !== admin },
   ];
 
   return (
     <div className="hide-scrollbar mb-[-3px] flex h-12 items-center justify-start space-x-2 overflow-x-auto">
-      {tabs.map(({ name, href }) => (
-        <Link key={href} href={href} className="relative">
+      {tabs.map(({ name, href, hidden }) => (
+        <Link
+          key={href}
+          href={href}
+          className="relative"
+          style={{ display: hidden ? "none" : "block" }}
+        >
           <div className="m-1 flex items-center gap-[8px] rounded-md px-3 py-2 relative transition-all duration-75 hover:bg-gray-100 active:bg-gray-200">
             <p className="text-sm text-gray-600 hover:text-black">{name}</p>
           </div>

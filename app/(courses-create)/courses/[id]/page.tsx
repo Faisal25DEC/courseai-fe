@@ -30,7 +30,7 @@ const PreivewCourse = () => {
     getCourse(id as string)
       .then((res) => {
         getUserAnalytics(user?.id as string).then((analyticsRes) => {
-          setUserAnalytics(analyticsRes.analytics);
+          setUserAnalytics(analyticsRes?.analytics);
         });
         setLessonsArray(res.lessons);
       })

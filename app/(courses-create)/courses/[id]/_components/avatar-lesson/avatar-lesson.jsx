@@ -14,6 +14,8 @@ import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
 import { activeLessonAtom } from "@/store/atoms";
 import Modal from "@/components/shared/modal/index";
+import Webcam from "react-webcam";
+
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
   serverUrl: "https://api.heygen.com",
@@ -21,6 +23,12 @@ const heygen_API = {
 
 const apiKey = heygen_API.apiKey;
 const SERVER_URL = heygen_API.serverUrl;
+
+const videoConstraints = {
+  width: 1280,
+  height: 720,
+  facingMode: "user"
+};
 
 export default function AvatarLesson({
   avatar_id,
@@ -364,6 +372,15 @@ export default function AvatarLesson({
                 display: sessionState === "connected" ? "block" : "none",
               }}
             />
+            <Webcam
+              className="rounded-full flex items-center justify-center"
+              height={100}
+              screenshotFormat="image/jpeg"
+              width={100}
+              videoConstraints={videoConstraints}
+            >
+              
+            </Webcam>
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
             {peerConnection && sessionInfo && sessionState === "connected" && (
               <div className="flex gap-2 items-end absolute bottom-2">

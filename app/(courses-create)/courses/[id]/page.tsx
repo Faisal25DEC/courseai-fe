@@ -1,7 +1,7 @@
 "use client";
 import { currentCourseId } from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
-import { getCourse } from "@/services/lesson.service";
+import { getCourse, getUserAnalytics } from "@/services/lesson.service";
 import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -11,8 +11,11 @@ import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
 import { useParams } from "next/navigation";
 import useLessonLockedModal from "@/hooks/useLessonLockedModal";
 import LessonLockedModal from "./_components/lesson-locked-modal/lesson-locked-modal";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 const PreivewCourse = () => {
+  const { user } = useUser();
   const { id } = useParams();
   const {
     isLessonLockedModalOpen,
@@ -21,19 +24,28 @@ const PreivewCourse = () => {
   } = useLessonLockedModal();
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
+  const [userAnalytics, setUserAnalytics] = useState<any>(null);
   useEffect(() => {
-    getCourse(id as string).then((res) => {
-      setLessonsArray(res.lessons);
-      setActiveLesson(0);
-    });
-  }, []);
+    if (!user && userAnalytics === null) return;
+    getCourse(id as string)
+      .then((res) => {
+        getUserAnalytics(user?.id as string).then((analyticsRes) => {
+          setUserAnalytics(analyticsRes.analytics);
+        });
+        setLessonsArray(res.lessons);
+      })
+      .catch(() => {
+        toast.error("Failed to fetch course");
+      });
+  }, [user]);
 
   const checkIfLessonIsLocked = (idx: number) => {
     if (idx === 0) return false;
     for (let j = idx - 1; j >= 0; j--) {
-      if (lessonsArray[j]?.submission_status !== "approved") {
-        return true;
-      }
+      const lessonId = lessonsArray[j].id;
+      console.log(userAnalytics?.[lessonId], "analytics");
+      if (userAnalytics?.[lessonId] === null) return true;
+      if (userAnalytics?.[lessonId]?.status !== "approved") return true;
     }
     return false;
   };
@@ -50,13 +62,13 @@ const PreivewCourse = () => {
     for (let i = 0; i < lessonsArray.length; i++) {
       lockedLessons.push({
         ...lessonsArray[i],
+        status: userAnalytics?.[lessonsArray[i].id]?.status || "pending",
         locked: checkIfLessonIsLocked(i),
       });
     }
     return lockedLessons;
   };
   const filteredLessons = getLockedLessons(lessonsArray);
-  console.log(filteredLessons);
   return (
     <div className="w-full h-[calc(100vh-120px)] overflow-y-scroll">
       <div className="flex h-full w-[90%] mx-auto">
@@ -102,14 +114,14 @@ const PreivewCourse = () => {
           {lessonsArray[activeLesson]?.type === "video" && (
             <VideoLesson
               video={lessonsArray[activeLesson].content}
-              lesson={lessonsArray[activeLesson]}
+              lesson={filteredLessons[activeLesson]}
             />
           )}
           {lessonsArray[activeLesson]?.type === "text" && (
             <TextLesson
               content={lessonsArray[activeLesson].content}
               lesson_id={lessonsArray[activeLesson].id}
-              lesson={lessonsArray[activeLesson]}
+              lesson={filteredLessons[activeLesson]}
             />
           )}
           {lessonsArray[activeLesson]?.type === "avatar" && (

@@ -4,7 +4,7 @@ import { currentCourseId } from "@/lib/constants";
 import {
   approveLessonRequest,
   getCourse,
-  updateLesson,
+  updateLessonForUser,
 } from "@/services/lesson.service";
 import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
@@ -28,8 +28,13 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
   }, [activeLesson]);
   const markComplete = () => {
     if (lesson.submission === "automatic") {
-      updateLesson(currentCourseId, lesson.id, {
-        submission_status: "approved",
+      updateLessonForUser({
+        user_id: user?.id,
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        data: {
+          status: "approved",
+        },
       })
         .then(() => {
           getCourse(currentCourseId).then((res) => {
@@ -40,8 +45,13 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
           toast.error("Failed to mark lesson as complete");
         });
     } else {
-      updateLesson(currentCourseId, lesson.id, {
-        submission_status: "approval-pending",
+      updateLessonForUser({
+        user_id: user?.id,
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        data: {
+          status: "approval-pending",
+        },
       })
         .then(() => {
           approveLessonRequest({
@@ -72,7 +82,7 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
         />
       )}
       <div className="absolute top-2 right-2">
-        {lesson.submission_status === "approved" ? (
+        {lesson.status === "approved" ? (
           <Button variant={"outline"}>Completed</Button>
         ) : (
           <Button onClick={markComplete}>Mark Complete</Button>

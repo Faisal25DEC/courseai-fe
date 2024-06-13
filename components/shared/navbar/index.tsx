@@ -16,6 +16,7 @@ import Modal from "../modal";
 import { currentUserRoleAtom } from "@/store/atoms";
 import { useRecoilState } from "recoil";
 import { admin } from "@/lib/constants";
+import useSetOrganization from "@/hooks/useSetOrganization";
 
 // import { Button } from "./ui/button";
 
@@ -27,6 +28,7 @@ const Navbar = () => {
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);
   const [invite, setIsInvite] = useState(false);
+  useSetOrganization();
   // if (isLoaded && !isSignedIn) {
   //   return redirect('/sign-in');
   // }

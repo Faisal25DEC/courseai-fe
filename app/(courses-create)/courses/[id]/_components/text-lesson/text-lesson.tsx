@@ -5,7 +5,7 @@ import {
   approveLessonRequest,
   getCourse,
   updateLesson,
-  updateLessonDuration,
+  updateLessonForUser,
 } from "@/services/lesson.service";
 import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
@@ -36,7 +36,7 @@ const TextLesson = ({
 
     return () => {
       const duration = Date.now() - currenTimeRef.current;
-      updateLessonDuration({
+      updateLessonForUser({
         course_id: currentCourseId,
         lesson_id: lesson_id,
 
@@ -50,8 +50,13 @@ const TextLesson = ({
   }, [activeLesson]);
   const markComplete = () => {
     if (lesson.submission === "automatic") {
-      updateLesson(currentCourseId, lesson.id, {
-        submission_status: "approved",
+      updateLessonForUser({
+        user_id: user?.id,
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        data: {
+          status: "approved",
+        },
       })
         .then(() => {
           getCourse(currentCourseId).then((res) => {
@@ -62,8 +67,13 @@ const TextLesson = ({
           toast.error("Failed to mark lesson as complete");
         });
     } else {
-      updateLesson(currentCourseId, lesson.id, {
-        submission_status: "approval-pending",
+      updateLessonForUser({
+        user_id: user?.id,
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        data: {
+          status: "approval-pending",
+        },
       })
         .then(() => {
           approveLessonRequest({
@@ -91,9 +101,9 @@ const TextLesson = ({
         initialContent={content.text}
       />
       <div className="absolute top-2 right-2">
-        {lesson.submission_status === "approved" ? (
+        {lesson.status === "approved" ? (
           <Button variant={"outline"}>Completed</Button>
-        ) : lesson.submission_status === "approval-pending" ? (
+        ) : lesson.status === "approval-pending" ? (
           <Button>Approval Pending</Button>
         ) : (
           <Button onClick={markComplete}>Mark Complete</Button>

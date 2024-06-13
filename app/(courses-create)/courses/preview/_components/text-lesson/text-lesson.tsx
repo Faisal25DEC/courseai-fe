@@ -1,6 +1,6 @@
 "use client";
 import { currentCourseId } from "@/lib/constants";
-import { updateLessonDuration } from "@/services/lesson.service";
+import { updateLessonForUser } from "@/services/lesson.service";
 import { activeLessonAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
@@ -19,7 +19,7 @@ const TextLesson = ({ lesson, lesson_id }: { lesson: any; lesson_id: any }) => {
 
     return () => {
       const duration = Date.now() - currenTimeRef.current;
-      updateLessonDuration({
+      updateLessonForUser({
         course_id: currentCourseId,
         lesson_id: lesson_id,
 

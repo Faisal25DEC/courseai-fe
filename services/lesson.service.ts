@@ -48,15 +48,15 @@ export const getCourse = async (courseId: string) => {
   }
 };
 
-export const updateLessonDuration = async ({
+export const updateLessonForUser = async ({
   user_id,
   course_id,
   lesson_id,
   data,
 }: {
-  user_id: string;
+  user_id: any;
   course_id: string;
-  lesson_id: string;
+  lesson_id: any;
   data: any;
 }) => {
   try {
@@ -79,6 +79,16 @@ export const approveLessonRequest = async (data: {
 }) => {
   try {
     const response = await axios.post(`${baseUrl}/lesson-approvals`, data);
+
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
+export const getUserAnalytics = async (userId: string) => {
+  try {
+    const response = await axios.get(`${baseUrl}/users/${userId}/analytics`);
 
     return response.data;
   } catch (error) {

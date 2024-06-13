@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
 import { activeLessonAtom } from "@/store/atoms";
-// import Modal from "@/components/shared/modal/modal";
+import Modal from "@/components/shared/modal/index";
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
   serverUrl: "https://api.heygen.com",
@@ -344,6 +344,17 @@ export default function AvatarLesson({
             </div>
           )}
           <div className="flex flex-col justify-center gap-3 items-center relative">
+            {peerConnection && sessionInfo && sessionState === "connected" && (
+              <div className="w-[98%] mx-auto flex justify-end">
+                <Button
+                  onClick={onOpen}
+                  variant={"outline"}
+                  className="self-end"
+                >
+                  Knowledge Base
+                </Button>{" "}
+              </div>
+            )}
             <video
               align="center"
               className="video_player shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
@@ -393,6 +404,42 @@ export default function AvatarLesson({
           </div>
         </div>
       </div>
+      <Modal isOpen={isOpen} onClose={onClose} className={"w-[100%]"}>
+        <div className="flex flex-col gap-2 p-3 ">
+          <div>
+            <h2 className="text-[18px] font-medium text-gray-600">
+              Knowledge Base
+            </h2>
+          </div>
+          <div>
+            <textarea
+              onChange={(e) => setKnowledgeBase(e.target.value)}
+              value={knowledgeBase}
+              rows={15}
+              className="w-[100%] border border-gray-300 rounded-md p-2"
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant={"outline"} onClick={onClose}>
+              Close
+            </Button>
+            <Button
+              onClick={async () => {
+                if (knowledgeBase.trim() === "") {
+                  toast.error("Knowledge base cannot be empty");
+                  onClose();
+                  return;
+                } else {
+                  await talkToOpenAI(knowledgeBase, true);
+                  onClose();
+                }
+              }}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

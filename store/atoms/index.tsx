@@ -84,3 +84,7 @@ export const lessonLockedModalAtom = atom({
   key: "lessonLockedModalAtom",
   default: false,
 });
+export const currentUserAnalyticsModalAtom = atom({
+  key: "currentUserAnalyticsModalAtom",
+  default: false,
+});

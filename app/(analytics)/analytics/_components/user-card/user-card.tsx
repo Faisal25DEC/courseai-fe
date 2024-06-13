@@ -1,14 +1,40 @@
 import { Progress } from "@/components/ui/progress";
+import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
+import { currentCourseId } from "@/lib/constants";
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
-import React from "react";
+import { getUserAnalytics } from "@/services/lesson.service";
+import React, { useEffect, useState } from "react";
 
 const UserCard = ({ user }: { user: any }) => {
+  const {
+    isCurrentUserAnalyticsModalOpen,
+    onCurrentUserAnalyticsModalOpen,
+    onCurrentUserAnalyticsModalClose,
+    setCurrentUserAnalyticsModalOpen,
+  } = useCurrentUserAnalyticsModal();
+  const [userAnalytics, setUserAnalytics] = useState<any>(null);
+  useEffect(() => {
+    if (userAnalytics !== null) return;
+    const fetchUserAnalytics = async () => {
+      try {
+        const res = await getUserAnalytics(user.id, currentCourseId);
+        setUserAnalytics(res);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchUserAnalytics();
+  }, []);
+  const onUserCardClick = () => {
+    onCurrentUserAnalyticsModalOpen();
+  };
   return (
     <div
+      onClick={onUserCardClick}
       key={user.id}
-      className="p-4 shadow-1 flex justify-between items-center rounded-md"
+      className="p-4 shadow-1 cursor-pointer flex justify-between items-center rounded-md"
     >
-      <div className="flex items-center gap-2">
+      <div className="w-[25%] flex items-center gap-2">
         <img
           src={user.imageUrl}
           alt="avatar"
@@ -18,13 +44,16 @@ const UserCard = ({ user }: { user: any }) => {
           {user.firstName} {user.lastName}
         </div>
       </div>
-      <div>
+      <div className="w-[25%]">
+        <p className="text-[12px]">{user.emailAddresses[0].emailAddress}</p>
+      </div>
+      <div className="w-[25%]">
         <p className="text-[12px]">
           {FormatDate.getDateInDDMMYYYY(user.enrolled_at)}
         </p>
       </div>
-      <div>
-        <Progress className="w-20 h-2 border border-gray-100" value={10} />
+      <div className="w-[25%]">
+        <Progress className="w-[200px] h-2 border border-gray-100" value={10} />
       </div>
     </div>
   );

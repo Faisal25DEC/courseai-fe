@@ -29,9 +29,11 @@ const PreivewCourse = () => {
     if (!user && userAnalytics === null) return;
     getCourse(id as string)
       .then((res) => {
-        getUserAnalytics(user?.id as string).then((analyticsRes) => {
-          setUserAnalytics(analyticsRes?.analytics);
-        });
+        getUserAnalytics(user?.id as string, currentCourseId).then(
+          (analyticsRes) => {
+            setUserAnalytics(analyticsRes?.analytics);
+          }
+        );
         setLessonsArray(res.lessons);
       })
       .catch(() => {

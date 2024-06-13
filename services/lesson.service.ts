@@ -86,9 +86,22 @@ export const approveLessonRequest = async (data: {
   }
 };
 
-export const getUserAnalytics = async (userId: string) => {
+export const getUserAnalytics = async (userId: string, courseId: string) => {
   try {
-    const response = await axios.get(`${baseUrl}/users/${userId}/analytics`);
+    const response = await axios.get(
+      `${baseUrl}/users/${userId}/courses/${courseId}/analytics`
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+export const getCourseAnalytics = async (courseId: string) => {
+  try {
+    const response = await axios.get(
+      `${baseUrl}/courses/${courseId}/analytics`
+    );
 
     return response.data;
   } catch (error) {

@@ -1,8 +1,4 @@
-import {
-  createLessonModalAtom,
-  noOrgnizationModalAtom,
-} from "@/store/atoms/index";
-import React from "react";
+import { noOrgnizationModalAtom } from "@/store/atoms/index";
 import { useRecoilState } from "recoil";
 
 const useNoOrganizationModal = () => {

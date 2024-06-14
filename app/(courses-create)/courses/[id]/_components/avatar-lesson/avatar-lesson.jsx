@@ -27,7 +27,7 @@ const SERVER_URL = heygen_API.serverUrl;
 const videoConstraints = {
   width: 1280,
   height: 720,
-  facingMode: "user"
+  facingMode: "user",
 };
 
 export default function AvatarLesson({
@@ -351,7 +351,7 @@ export default function AvatarLesson({
               />
             </div>
           )}
-          <div className="max-h-[60vh] flex flex-col justify-center gap-3 items-center relative">
+          <div className="h-fit flex flex-col justify-center gap-3 items-center relative py-8">
             {peerConnection && sessionInfo && sessionState === "connected" && (
               <div className="w-[98%] mx-auto flex justify-end">
                 <Button
@@ -365,7 +365,7 @@ export default function AvatarLesson({
             )}
             <video
               align="center"
-              className="max-h-[60vh] shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
+              className="h-[60vh] shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
               ref={mediaElementRef}
               autoPlay
               style={{
@@ -374,17 +374,14 @@ export default function AvatarLesson({
             />
             {peerConnection && sessionInfo && sessionState === "connected" && (
               <Webcam
-                className="absolute bottom-2 right-2 rounded-full flex items-center justify-center"
-                height={100}
+                className="absolute bottom-[2.5rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
                 screenshotFormat="image/jpeg"
-                width={100}
                 videoConstraints={videoConstraints}
-              >
-              </Webcam>
+              ></Webcam>
             )}
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex gap-2 items-end absolute bottom-2">
+              <div className="flex gap-2 items-end absolute bottom-[3rem]">
                 <div className="flex flex-col gap-2">
                   <div className="relative">
                     <input

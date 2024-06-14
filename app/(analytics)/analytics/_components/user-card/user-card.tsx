@@ -1,3 +1,4 @@
+import PopoverHover from "@/components/shared/popover-hover/popover-hover";
 import { Progress } from "@/components/ui/progress";
 import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
 import useFetchLessons from "@/hooks/useFetchLesson";
@@ -48,7 +49,7 @@ const UserCard = ({ user }: { user: any }) => {
     let pendingApproval = 0;
     lessonsArray.forEach((lesson: any) => {
       if (
-        userAnalytics.analytics[lesson.id]?.status ===
+        userAnalytics?.analytics[lesson.id]?.status ===
         lessonStatuses.approvalPending
       ) {
         pendingApproval += 1;
@@ -59,7 +60,7 @@ const UserCard = ({ user }: { user: any }) => {
   const getCourseProgress = (userAnalytics: any, lessonsArray: any) => {
     let completedLessons = 0;
     lessonsArray.forEach((lesson: any) => {
-      if (userAnalytics.analytics[lesson.id]?.status === "approved") {
+      if (userAnalytics?.analytics[lesson.id]?.status === "approved") {
         completedLessons += 1;
       }
     });
@@ -87,9 +88,14 @@ const UserCard = ({ user }: { user: any }) => {
             className="w-[40px] h-[40px] rounded-full object-cover"
           />
           {pendingApprovals > 0 && (
-            <div className="absolute top-[-4px] text-white text-[10px] right-[-5px] w-4 h-4 rounded-full bg-red-500 flex justify-center items-center">
-              {pendingApprovals}
-            </div>
+            <PopoverHover
+              trigger={
+                <div className="absolute top-[-4px] text-white text-[10px] right-[-5px] w-4 h-4 rounded-full bg-red-500 flex justify-center items-center">
+                  {pendingApprovals}
+                </div>
+              }
+              value={"Approval Request Pending"}
+            />
           )}
         </div>
         <div className="text-gray-700 font-medium">

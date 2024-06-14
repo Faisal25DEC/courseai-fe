@@ -13,10 +13,12 @@ import {
 } from "@clerk/nextjs";
 import { useState } from "react";
 import Modal from "../modal";
-import { currentUserRoleAtom } from "@/store/atoms";
+import { currentUserRoleAtom, enrollCourseModalAtom } from "@/store/atoms";
 import { useRecoilState } from "recoil";
 import { admin } from "@/lib/constants";
 import useSetOrganization from "@/hooks/useSetOrganization";
+import EnrollCourseModal from "../enroll-course-modal/enroll-course-modal";
+import useEnrollCourseModal from "@/hooks/useEnrollCourseModal";
 
 // import { Button } from "./ui/button";
 
@@ -25,6 +27,12 @@ import useSetOrganization from "@/hooks/useSetOrganization";
 // import TooltipComp from "./tooltip-comp";
 
 const Navbar = () => {
+  const {
+    isEnrollCourseModalOpen,
+    onEnrollCourseModalOpen,
+    onEnrollCourseModalClose,
+    setEnrollCourseModalOpen,
+  } = useEnrollCourseModal();
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);
   const [invite, setIsInvite] = useState(false);
@@ -126,6 +134,14 @@ const Navbar = () => {
             <div className="hidden md:flex items-center gap-[32px]">
               {currentUserRole === admin && (
                 <p
+                  onClick={onEnrollCourseModalOpen}
+                  className="text-sm text-effect cursor-pointer"
+                >
+                  Enroll User
+                </p>
+              )}
+              {currentUserRole === admin && (
+                <p
                   onClick={() => setIsInvite(true)}
                   className="text-sm text-effect cursor-pointer"
                 >
@@ -153,6 +169,7 @@ const Navbar = () => {
           <OrganizationProfile routing="virtual" />
         </div>
       </Modal>
+      {isEnrollCourseModalOpen && <EnrollCourseModal />}
     </div>
   ) : null;
 };

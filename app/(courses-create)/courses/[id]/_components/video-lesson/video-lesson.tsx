@@ -41,6 +41,16 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
       });
     };
   }, [activeLesson]);
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      currenTimeRef.current = Date.now();
+    });
+    return () => {
+      document.removeEventListener("visibilitychange", () => {
+        currenTimeRef.current = Date.now();
+      });
+    };
+  }, []);
   const markComplete = () => {
     if (lesson.submission === "automatic") {
       updateLessonForUser({
@@ -50,7 +60,7 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
         data: {
           status: "approved",
           duration: Date.now() - currenTimeRef.current,
-          complete_at: Date.now(),
+          completed_at: Date.now(),
         },
       })
         .then(() => {

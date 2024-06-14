@@ -25,4 +25,7 @@ export const FormatDate = {
 
     return formattedTime;
   },
+  getDateAndTimeFromMilliseconds: (ms: any) => {
+    return moment(ms).format("DD MMM, YYYY, hh:mm A");
+  },
 };

@@ -7,7 +7,14 @@ const CustomPopover = ({
   open,
   onOpenChange,
   align,
-}: any) => (
+}: {
+  className?: any;
+  trigger: any;
+  children: any;
+  open: boolean;
+  onOpenChange: any;
+  align?: "center" | "end" | "start";
+}) => (
   <Popover open={open} onOpenChange={onOpenChange}>
     <PopoverTrigger>{trigger}</PopoverTrigger>
     <PopoverContent align={align} className={className}>

@@ -10,7 +10,7 @@ import Modal from "@/components/shared/modal";
 import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
 import useFetchLessons from "@/hooks/useFetchLesson";
 import UserLessonAnalytics from "./_components/user-lesson-analytics/user-lesson-analytics";
-
+import { Icon } from "@iconify/react";
 const Page = () => {
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
 
@@ -83,7 +83,18 @@ const Page = () => {
         isOpen={isCurrentUserAnalyticsModalOpen}
         onClose={onCurrentUserAnalyticsModalClose}
       >
-        <UserLessonAnalytics />
+        <div className="relative w-full">
+          <UserLessonAnalytics />
+          <div
+            onClick={onCurrentUserAnalyticsModalClose}
+            className="absolute cursor-pointer transition-all duration-300 ease-in top-[15px] hover:bg-slate-200 right-[15px] p-[3px] rounded-full "
+          >
+            <Icon
+              icon="system-uicons:cross"
+              style={{ color: "rgb(25,25,25)" }}
+            />
+          </div>
+        </div>
       </Modal>
     </div>
   );

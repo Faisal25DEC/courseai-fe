@@ -351,7 +351,7 @@ export default function AvatarLesson({
               />
             </div>
           )}
-          <div className="flex flex-col justify-center gap-3 items-center relative">
+          <div className="max-h-[60vh] flex flex-col justify-center gap-3 items-center relative">
             {peerConnection && sessionInfo && sessionState === "connected" && (
               <div className="w-[98%] mx-auto flex justify-end">
                 <Button
@@ -365,22 +365,23 @@ export default function AvatarLesson({
             )}
             <video
               align="center"
-              className="video_player shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
+              className="max-h-[60vh] shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
               ref={mediaElementRef}
               autoPlay
               style={{
                 display: sessionState === "connected" ? "block" : "none",
               }}
             />
-            <Webcam
-              className="rounded-full flex items-center justify-center"
-              height={100}
-              screenshotFormat="image/jpeg"
-              width={100}
-              videoConstraints={videoConstraints}
-            >
-              
-            </Webcam>
+            {peerConnection && sessionInfo && sessionState === "connected" && (
+              <Webcam
+                className="absolute bottom-2 right-2 rounded-full flex items-center justify-center"
+                height={100}
+                screenshotFormat="image/jpeg"
+                width={100}
+                videoConstraints={videoConstraints}
+              >
+              </Webcam>
+            )}
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
             {peerConnection && sessionInfo && sessionState === "connected" && (
               <div className="flex gap-2 items-end absolute bottom-2">

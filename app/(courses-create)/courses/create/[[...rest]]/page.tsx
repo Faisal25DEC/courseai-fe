@@ -80,7 +80,6 @@ const CreateCourse = () => {
     return null;
   };
   const onDragEnd = (result: DropResult) => {
-    console.log(result, "Dragged");
     const { destination, source, draggableId } = result;
     if (!destination) {
       return;
@@ -99,7 +98,7 @@ const CreateCourse = () => {
       const newLessonsArray = Array.from(lessonsArray);
       const [removed] = newLessonsArray.splice(source.index, 1);
       newLessonsArray.splice(destination.index, 0, removed);
-      console.log(newLessonsArray, "Dragged");
+
       toast.loading("Saving changes...", { duration: 2000 });
       setLessonsArray(newLessonsArray);
       updateCourse(currentCourseId, {

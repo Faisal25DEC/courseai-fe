@@ -1,11 +1,20 @@
 import { Progress } from "@/components/ui/progress";
 import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
+import useFetchLessons from "@/hooks/useFetchLesson";
 import { currentCourseId } from "@/lib/constants";
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
 import { getUserAnalytics } from "@/services/lesson.service";
+import {
+  currentUserLessonAnalyticsAtom,
+  lessonsArrayAtom,
+} from "@/store/atoms";
 import React, { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 
 const UserCard = ({ user }: { user: any }) => {
+  const [lessonsArray, setLessonsArray] = useRecoilState(lessonsArrayAtom);
+  const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
+    useRecoilState(currentUserLessonAnalyticsAtom);
   const {
     isCurrentUserAnalyticsModalOpen,
     onCurrentUserAnalyticsModalOpen,
@@ -25,12 +34,29 @@ const UserCard = ({ user }: { user: any }) => {
     };
     fetchUserAnalytics();
   }, []);
-  const onUserCardClick = () => {
+  const onUserCardClick = (user: any) => {
+    setCurrentUserLessonAnalytics({ ...user, ...userAnalytics });
     onCurrentUserAnalyticsModalOpen();
   };
+  let value = 0;
+  const getCourseProgress = (userAnalytics: any, lessonsArray: any) => {
+    let completedLessons = 0;
+    lessonsArray.forEach((lesson: any) => {
+      if (userAnalytics.analytics[lesson.id]?.status === "approved") {
+        completedLessons += 1;
+      }
+    });
+
+    return Math.round((completedLessons / lessonsArray.length) * 100);
+  };
+
+  if (userAnalytics) {
+    value = getCourseProgress(userAnalytics, lessonsArray);
+  }
+
   return (
     <div
-      onClick={onUserCardClick}
+      onClick={() => onUserCardClick(user)}
       key={user.id}
       className="p-4 shadow-1 cursor-pointer flex justify-between items-center rounded-md"
     >
@@ -52,8 +78,12 @@ const UserCard = ({ user }: { user: any }) => {
           {FormatDate.getDateInDDMMYYYY(user.enrolled_at)}
         </p>
       </div>
-      <div className="w-[25%]">
-        <Progress className="w-[200px] h-2 border border-gray-100" value={10} />
+      <div className="w-[25%] flex gap-2 items-center">
+        <Progress
+          className="w-[200px] h-2 border border-gray-100"
+          value={value}
+        />
+        <p className="text-[10.5px]">{value}%</p>
       </div>
     </div>
   );

@@ -8,8 +8,12 @@ import UserCard from "./_components/user-card/user-card";
 import { getCourse, getCourseAnalytics } from "@/services/lesson.service";
 import Modal from "@/components/shared/modal";
 import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
+import useFetchLessons from "@/hooks/useFetchLesson";
+import UserLessonAnalytics from "./_components/user-lesson-analytics/user-lesson-analytics";
 
 const Page = () => {
+  const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
+
   const {
     isCurrentUserAnalyticsModalOpen,
     onCurrentUserAnalyticsModalOpen,
@@ -27,7 +31,7 @@ const Page = () => {
         const courseAnalyticsRes = await getCourseAnalytics(currentCourseId);
         const users = usersRes.data.data;
         const enrolledUsersIds = res.data;
-        console.log(enrolledUsersIds, users, "enroll");
+
         const enrolledUsersArray = users.filter((user: any) =>
           enrolledUsersIds.some((item: any) => item.user_id === user.id)
         );
@@ -54,7 +58,7 @@ const Page = () => {
     <div className="flex flex-col gap-4 w-[100%] mx-auto">
       <div className="flex w-[90%] m-auto justify-between items-center py-8">
         <div>
-          <h1 className=" font-normal text-gray-600 text-2xl">Enrollments</h1>
+          <h1 className=" font-normal text-gray-600 text-2xl">Analytics</h1>
         </div>
       </div>
       <hr />
@@ -79,7 +83,7 @@ const Page = () => {
         isOpen={isCurrentUserAnalyticsModalOpen}
         onClose={onCurrentUserAnalyticsModalClose}
       >
-        currentUserAnalytics
+        <UserLessonAnalytics />
       </Modal>
     </div>
   );

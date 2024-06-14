@@ -4,9 +4,14 @@ import { currentCourseId } from "@/lib/constants";
 import {
   approveLessonRequest,
   getCourse,
+  getUserAnalytics,
   updateLessonForUser,
 } from "@/services/lesson.service";
-import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
+import {
+  activeLessonAtom,
+  lessonsArrayAtom,
+  userAnalyticsAtom,
+} from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import MuxPlayer from "@mux/mux-player-react";
 import React, { useEffect, useRef } from "react";
@@ -16,14 +21,24 @@ import { toast } from "sonner";
 const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
   const { user } = useUser();
   const currenTimeRef = useRef<number>(0);
+  const [userAnalytics, setUserAnalytics] =
+    useRecoilState<any>(userAnalyticsAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   useEffect(() => {
     currenTimeRef.current = Date.now();
-
+    const duration = Date.now() - currenTimeRef.current;
     return () => {
-      const duration = Date.now() - currenTimeRef.current;
-      console.log("Duration", duration);
+      if (lesson.status === "approved") return;
+      updateLessonForUser({
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+
+        user_id: user?.id as string,
+        data: {
+          duration: duration,
+        },
+      });
     };
   }, [activeLesson]);
   const markComplete = () => {
@@ -34,11 +49,12 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
         lesson_id: lesson.id,
         data: {
           status: "approved",
+          duration: Date.now() - currenTimeRef.current,
         },
       })
         .then(() => {
-          getCourse(currentCourseId).then((res) => {
-            setLessonsArray(res.lessons);
+          getUserAnalytics(user?.id as string, currentCourseId).then((res) => {
+            setUserAnalytics(res?.analytics);
           });
         })
         .catch((err) => {
@@ -61,9 +77,11 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
             status: "pending",
           }).then(() => {
             toast.success("Request sent for approval");
-            getCourse(currentCourseId).then((res) => {
-              setLessonsArray(res.lessons);
-            });
+            getUserAnalytics(user?.id as string, currentCourseId).then(
+              (res) => {
+                setUserAnalytics(res?.analytics);
+              }
+            );
           });
         })
         .catch((err) => {

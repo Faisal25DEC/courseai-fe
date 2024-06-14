@@ -88,3 +88,12 @@ export const currentUserAnalyticsModalAtom = atom({
   key: "currentUserAnalyticsModalAtom",
   default: false,
 });
+export const userAnalyticsAtom = atom<any>({
+  key: "userAnalyticsAtom",
+  default: null,
+});
+
+export const currentUserLessonAnalyticsAtom = atom<any>({
+  key: "currentUserLessonAnalyticsAtom",
+  default: null,
+});

@@ -26,7 +26,6 @@ const useSetOrganization = () => {
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);
   useEffect(() => {
-    console.log(userMemberships.data, organization, "userMemberships");
     if (
       setActive &&
       userMemberships.data &&

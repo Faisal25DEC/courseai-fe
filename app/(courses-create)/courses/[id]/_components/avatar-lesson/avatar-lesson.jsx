@@ -55,7 +55,6 @@ export default function AvatarLesson({
 
     return () => {
       const duration = Date.now() - currenTimeRef.current;
-      console.log("Duration", duration);
     };
   }, [activeLesson]);
   async function talkToOpenAI(prompt, newPrompt) {

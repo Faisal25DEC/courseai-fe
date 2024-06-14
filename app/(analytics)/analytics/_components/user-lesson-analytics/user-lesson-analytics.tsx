@@ -34,7 +34,7 @@ const UserLessonAnalytics = () => {
     lessonsArray
   );
 
-  const headings = ["Lesson", "Status", "Time Spent"];
+  const headings = ["Lesson", "Status", "Time Spent", "Progress"];
 
   return (
     <div className="">
@@ -88,6 +88,13 @@ const UserLessonAnalytics = () => {
                   ? "Yet To Start"
                   : FormatDate.formatMilliseconds(lesson.duration) ||
                     "Yet To Start"}
+              </p>
+            </div>
+            <div className="w-[25%]">
+              <p className="text-[13px]">
+                {lesson.completed_at
+                  ? FormatDate.getDateInDDMMYYYY(lesson.completed_at)
+                  : "Yet To Start"}
               </p>
             </div>
           </div>

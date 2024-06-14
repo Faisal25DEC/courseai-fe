@@ -50,6 +50,7 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
         data: {
           status: "approved",
           duration: Date.now() - currenTimeRef.current,
+          complete_at: Date.now(),
         },
       })
         .then(() => {

@@ -22,17 +22,22 @@ const UserCard = ({ user }: { user: any }) => {
     setCurrentUserAnalyticsModalOpen,
   } = useCurrentUserAnalyticsModal();
   const [userAnalytics, setUserAnalytics] = useState<any>(null);
+  const fetchUserAnalytics = async () => {
+    try {
+      const res = await getUserAnalytics(user.id, currentCourseId);
+      setUserAnalytics(res);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
-    if (userAnalytics !== null) return;
-    const fetchUserAnalytics = async () => {
-      try {
-        const res = await getUserAnalytics(user.id, currentCourseId);
-        setUserAnalytics(res);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchUserAnalytics();
+  }, []);
+  useEffect(() => {
+    document.addEventListener("visibilitychange", fetchUserAnalytics);
+    return () => {
+      document.removeEventListener("visibilitychange", fetchUserAnalytics);
+    };
   }, []);
   const onUserCardClick = (user: any) => {
     setCurrentUserLessonAnalytics({ ...user, ...userAnalytics });

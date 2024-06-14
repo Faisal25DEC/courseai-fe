@@ -65,6 +65,7 @@ const TextLesson = ({
         data: {
           status: "approved",
           duration: Date.now() - currenTimeRef.current,
+          completed_at: Date.now(),
         },
       })
         .then(() => {

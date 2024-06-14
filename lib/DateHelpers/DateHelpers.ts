@@ -3,6 +3,7 @@ import moment from "moment-timezone";
 export const FormatDate = {
   getDateInDDMMYYYY: (value: any) => moment(value).format("DD MMM, YYYY"),
   formatMilliseconds: (ms: any) => {
+    if (ms === 0) return "0 seconds";
     if (!ms) return null;
     const duration = moment.duration(ms);
     const hours = Math.floor(duration.asHours());

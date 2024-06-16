@@ -55,9 +55,15 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
           await getApiKey(),
           {},
           {
-            model: "nova-1",
+            model: "nova-2",
+            interim_results: true,
+            smart_format: true,
+            endpointing: 550,
+            utterance_end_ms: 1500,
+            filler_words: true,
           }
         );
+
         console.log(connection);
         setConnection(connection);
         toast.success("Microphone connected");
@@ -72,40 +78,38 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
   }, [connecting, connection]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && connection === undefined) {
-      console.log("connecting");
-      toast.loading("Connecting to microphone");
+    if (connection === undefined) {
       connect();
     }
-  }, [connection, connect]);
-
+  }, [connect, connection]);
   useEffect(() => {
-    if (connection) {
+    if (connection && connection?.getReadyState() !== undefined) {
       connection.addListener(LiveTranscriptionEvents.Open, () => {
         setConnectionReady(true);
       });
 
       connection.addListener(LiveTranscriptionEvents.Close, () => {
-        console.error("WebSocket closed. Attempting to reconnect...");
-        setTimeout(() => {
-          setConnection(undefined); // Trigger a reconnection attempt
-        }, 2000);
+        toast("The connection to Deepgram closed, we'll attempt to reconnect.");
         setConnectionReady(false);
-      });
-
-      connection.addListener(LiveTranscriptionEvents.Error, (error) => {
-        console.error("WebSocket error:", error);
-        setTimeout(() => {
-          setConnection(undefined); // Trigger a reconnection attempt
-        }, 2000);
-        setConnectionReady(false);
-      });
-
-      return () => {
         connection.removeAllListeners();
-      };
+        setConnection(undefined);
+      });
+
+      connection.addListener(LiveTranscriptionEvents.Error, () => {
+        toast(
+          "An unknown error occured. We'll attempt to reconnect to Deepgram."
+        );
+        setConnectionReady(false);
+        connection.removeAllListeners();
+        setConnection(undefined);
+      });
     }
-  }, [connection]);
+
+    return () => {
+      setConnectionReady(false);
+      connection?.removeAllListeners();
+    };
+  }, [connection, toast]);
 
   return (
     <DeepgramContext.Provider

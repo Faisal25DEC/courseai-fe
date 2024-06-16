@@ -29,6 +29,7 @@ export default function AvatarLesson({
   avatar_name,
 }) {
   const [conversations, setConversations] = useState([]);
+  const conversationsRef = useRef([]);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [knowledgeBase, setKnowledgeBase] = useState(""); // [knowledgeBase, setKnowledgeBase
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -70,7 +71,8 @@ export default function AvatarLesson({
       throw new Error("Server error");
     } else {
       taskInputRef.current.value = "";
-      setConversations(data.data.conversations);
+      conversationsRef.current = data.data.conversation;
+
       return data.data.text;
     }
   }
@@ -310,7 +312,7 @@ export default function AvatarLesson({
       startAndDisplaySession();
     }
   }, [peerConnection, sessionInfo]);
-  console.log("render", conversations);
+  console.log("conversations", conversationsRef.current);
   return (
     <div className="w-full">
       {/* <Navbar /> */}
@@ -404,10 +406,9 @@ export default function AvatarLesson({
             )}
           </div>
         </div>
-        {conversations?.length > 0 &&
-          conversations.map((item) => {
-            return <div key={item.content}>{item.content}</div>;
-          })}
+        {conversationsRef.current.map((item) => {
+          return <div key={item.content}>{item.content}</div>;
+        })}
       </div>
       <Modal isOpen={isOpen} onClose={onClose} className={"w-[100%]"}>
         <div className="flex flex-col gap-2 p-3 ">

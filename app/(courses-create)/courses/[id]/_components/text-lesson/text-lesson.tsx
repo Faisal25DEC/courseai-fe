@@ -37,10 +37,8 @@ const TextLesson = ({
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
 
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
-  const currenTimeRef = React.useRef<number>(0);
+  const currenTimeRef = React.useRef<number>(Date.now());
   useEffect(() => {
-    currenTimeRef.current = Date.now();
-
     return () => {
       const duration = Date.now() - currenTimeRef.current;
       if (lesson.status === "approved") return;
@@ -52,10 +50,38 @@ const TextLesson = ({
         data: {
           duration: duration,
         },
+      }).then(() => {
+        currenTimeRef.current = Date.now();
       });
       console.log("Duration", duration);
     };
   }, [activeLesson]);
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        const duration = Date.now() - currenTimeRef.current;
+        if (lesson.status === "approved") return;
+        updateLessonForUser({
+          course_id: currentCourseId,
+          lesson_id: lesson_id,
+
+          user_id: user?.id as string,
+          data: {
+            duration: duration,
+          },
+        }).then(() => {
+          currenTimeRef.current = Date.now();
+        });
+        return;
+      }
+      currenTimeRef.current = Date.now();
+    });
+    return () => {
+      document.removeEventListener("visibilitychange", () => {
+        currenTimeRef.current = Date.now();
+      });
+    };
+  }, []);
   const markComplete = () => {
     if (lesson.submission === "automatic") {
       updateLessonForUser({
@@ -83,6 +109,7 @@ const TextLesson = ({
         lesson_id: lesson.id,
         data: {
           status: "approval-pending",
+          duration: Date.now() - currenTimeRef.current,
         },
       })
         .then(() => {

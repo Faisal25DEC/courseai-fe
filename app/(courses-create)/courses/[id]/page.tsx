@@ -2,7 +2,11 @@
 import { currentCourseId } from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
 import { getCourse, getUserAnalytics } from "@/services/lesson.service";
-import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
+import {
+  activeLessonAtom,
+  lessonsArrayAtom,
+  userAnalyticsAtom,
+} from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import VideoLesson from "./_components/video-lesson/video-lesson";
@@ -13,8 +17,10 @@ import useLessonLockedModal from "@/hooks/useLessonLockedModal";
 import LessonLockedModal from "./_components/lesson-locked-modal/lesson-locked-modal";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
+import useFetchLessons from "@/hooks/useFetchLesson";
 
 const PreivewCourse = () => {
+  const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
   const { user } = useUser();
   const { id } = useParams();
   const {
@@ -23,8 +29,8 @@ const PreivewCourse = () => {
     onLessonLockedModalClose,
   } = useLessonLockedModal();
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
-  const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
-  const [userAnalytics, setUserAnalytics] = useState<any>(null);
+  const [userAnalytics, setUserAnalytics] =
+    useRecoilState<any>(userAnalyticsAtom);
   useEffect(() => {
     if (!user && userAnalytics === null) return;
     getCourse(id as string)
@@ -45,7 +51,7 @@ const PreivewCourse = () => {
     if (idx === 0) return false;
     for (let j = idx - 1; j >= 0; j--) {
       const lessonId = lessonsArray[j].id;
-      console.log(userAnalytics?.[lessonId], "analytics");
+
       if (userAnalytics?.[lessonId] === null) return true;
       if (userAnalytics?.[lessonId]?.status !== "approved") return true;
     }

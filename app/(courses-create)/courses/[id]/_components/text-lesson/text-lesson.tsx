@@ -4,10 +4,15 @@ import { currentCourseId } from "@/lib/constants";
 import {
   approveLessonRequest,
   getCourse,
+  getUserAnalytics,
   updateLesson,
   updateLessonForUser,
 } from "@/services/lesson.service";
-import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
+import {
+  activeLessonAtom,
+  lessonsArrayAtom,
+  userAnalyticsAtom,
+} from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
 import React, { useEffect } from "react";
@@ -26,16 +31,17 @@ const TextLesson = ({
   lesson_id: any;
   content: any;
 }) => {
+  const [userAnalytics, setUserAnalytics] =
+    useRecoilState<any>(userAnalyticsAtom);
   const { user } = useUser();
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
 
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
-  const currenTimeRef = React.useRef<number>(0);
+  const currenTimeRef = React.useRef<number>(Date.now());
   useEffect(() => {
-    currenTimeRef.current = Date.now();
-
     return () => {
       const duration = Date.now() - currenTimeRef.current;
+      if (lesson.status === "approved") return;
       updateLessonForUser({
         course_id: currentCourseId,
         lesson_id: lesson_id,
@@ -44,10 +50,38 @@ const TextLesson = ({
         data: {
           duration: duration,
         },
+      }).then(() => {
+        currenTimeRef.current = Date.now();
       });
       console.log("Duration", duration);
     };
   }, [activeLesson]);
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        const duration = Date.now() - currenTimeRef.current;
+        if (lesson.status === "approved") return;
+        updateLessonForUser({
+          course_id: currentCourseId,
+          lesson_id: lesson_id,
+
+          user_id: user?.id as string,
+          data: {
+            duration: duration,
+          },
+        }).then(() => {
+          currenTimeRef.current = Date.now();
+        });
+        return;
+      }
+      currenTimeRef.current = Date.now();
+    });
+    return () => {
+      document.removeEventListener("visibilitychange", () => {
+        currenTimeRef.current = Date.now();
+      });
+    };
+  }, []);
   const markComplete = () => {
     if (lesson.submission === "automatic") {
       updateLessonForUser({
@@ -56,11 +90,13 @@ const TextLesson = ({
         lesson_id: lesson.id,
         data: {
           status: "approved",
+          duration: Date.now() - currenTimeRef.current,
+          completed_at: Date.now(),
         },
       })
         .then(() => {
-          getCourse(currentCourseId).then((res) => {
-            setLessonsArray(res.lessons);
+          getUserAnalytics(user?.id as string, currentCourseId).then((res) => {
+            setUserAnalytics(res?.analytics);
           });
         })
         .catch((err) => {
@@ -73,6 +109,7 @@ const TextLesson = ({
         lesson_id: lesson.id,
         data: {
           status: "approval-pending",
+          duration: Date.now() - currenTimeRef.current,
         },
       })
         .then(() => {
@@ -83,9 +120,11 @@ const TextLesson = ({
             status: "pending",
           }).then(() => {
             toast.success("Request sent for approval");
-            getCourse(currentCourseId).then((res) => {
-              setLessonsArray(res.lessons);
-            });
+            getUserAnalytics(user?.id as string, currentCourseId).then(
+              (res) => {
+                setUserAnalytics(res?.analytics);
+              }
+            );
           });
         })
         .catch((err) => {

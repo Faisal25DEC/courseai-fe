@@ -54,7 +54,10 @@ export async function POST(req: NextRequest) {
       ];
 
       console.log(conversationMemory);
-      return NextResponse.json({ text: aiResponse });
+      return NextResponse.json({
+        text: aiResponse,
+        conversation: conversationMemory[sessionId],
+      });
     } catch (error) {
       console.error("Error calling OpenAI:", error);
       return NextResponse.error();

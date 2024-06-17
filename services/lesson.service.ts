@@ -108,3 +108,32 @@ export const getCourseAnalytics = async (courseId: string) => {
     console.error("Error:", error);
   }
 };
+
+export const getEnrolledUsers = async (
+  courseId: string,
+  setEnrolledUsers: any
+) => {
+  try {
+    const response = await axios.get(`${baseUrl}/courses/${courseId}/users`);
+
+    setEnrolledUsers(response.data);
+  } catch (error) {
+    console.error("Error:", error);
+    setEnrolledUsers([]);
+  }
+};
+
+export const enrollUser = async (courseId: string, userId: string) => {
+  try {
+    const response = await axios.post(
+      `${baseUrl}/courses/${courseId}/enrollment`,
+      {
+        user_id: userId,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};

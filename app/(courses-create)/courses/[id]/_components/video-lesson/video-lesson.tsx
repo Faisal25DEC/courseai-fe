@@ -4,28 +4,79 @@ import { currentCourseId } from "@/lib/constants";
 import {
   approveLessonRequest,
   getCourse,
+  getUserAnalytics,
   updateLessonForUser,
 } from "@/services/lesson.service";
-import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
+import {
+  activeLessonAtom,
+  lessonsArrayAtom,
+  userAnalyticsAtom,
+} from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import MuxPlayer from "@mux/mux-player-react";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";
 
 const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
   const { user } = useUser();
-  const currenTimeRef = useRef<number>(0);
+  const currenTimeRef = useRef<number>(Date.now());
+  const [userAnalytics, setUserAnalytics] =
+    useRecoilState<any>(userAnalyticsAtom);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   useEffect(() => {
-    currenTimeRef.current = Date.now();
+    return () => {
+      if (!user) return;
+      const duration = Date.now() - currenTimeRef.current;
+      if (lesson.status === "approved") return;
+      updateLessonForUser({
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+
+        user_id: user?.id as string,
+        data: {
+          duration: duration,
+        },
+      }).then(() => {
+        currenTimeRef.current = Date.now();
+      });
+    };
+  }, [activeLesson, user, lesson]);
+
+  useEffect(() => {
+    setIsDocumentVisible(!document.hidden);
+  }, []);
+
+  useEffect(() => {
+    if (!isDocumentVisible && user && lesson.status !== "approved") {
+      const duration = Date.now() - currenTimeRef.current;
+      updateLessonForUser({
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        user_id: user?.id as string,
+        data: {
+          duration: duration,
+        },
+      }).then(() => {
+        currenTimeRef.current = Date.now();
+      });
+    }
+  }, [isDocumentVisible, user, lesson.id]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsDocumentVisible(!document.hidden);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      const duration = Date.now() - currenTimeRef.current;
-      console.log("Duration", duration);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [activeLesson]);
+  }, []);
+
   const markComplete = () => {
     if (lesson.submission === "automatic") {
       updateLessonForUser({
@@ -34,11 +85,13 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
         lesson_id: lesson.id,
         data: {
           status: "approved",
+          duration: Date.now() - currenTimeRef.current,
+          completed_at: Date.now(),
         },
       })
         .then(() => {
-          getCourse(currentCourseId).then((res) => {
-            setLessonsArray(res.lessons);
+          getUserAnalytics(user?.id as string, currentCourseId).then((res) => {
+            setUserAnalytics(res?.analytics);
           });
         })
         .catch((err) => {
@@ -61,9 +114,11 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
             status: "pending",
           }).then(() => {
             toast.success("Request sent for approval");
-            getCourse(currentCourseId).then((res) => {
-              setLessonsArray(res.lessons);
-            });
+            getUserAnalytics(user?.id as string, currentCourseId).then(
+              (res) => {
+                setUserAnalytics(res?.analytics);
+              }
+            );
           });
         })
         .catch((err) => {

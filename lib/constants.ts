@@ -31,3 +31,9 @@ export const heygenBaseUrl = heygen_API.serverUrl;
 export const currentCourseId = "6667760f255b05556e58b41a";
 export const admin = "org:admin";
 export const member = "org:member";
+
+export const lessonStatuses = {
+  approved: "approved",
+  pending: "pending",
+  approvalPending: "approval-pending",
+};

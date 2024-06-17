@@ -217,3 +217,135 @@ input:checked + .slider:before {
   aspect-ratio: 16/9;
   max-height: 80vh;
 }
+.mic-mute {
+  background: linear-gradient(
+    160deg,
+    rgba(64, 95, 255, 0.5) 0%,
+    rgba(60, 255, 173, 0.5) 86%
+  ) !important;
+  backdrop-filter: blur(15px) !important;
+}
+
+.mic-mute:hover {
+  background: linear-gradient(
+    160deg,
+    rgba(64, 95, 255, 0.8) 0%,
+    rgba(60, 255, 173, 0.8) 86%
+  ) !important;
+}
+
+.mic-speak {
+  background: linear-gradient(
+    0deg,
+    rgba(239, 60, 255, 0.5) 0%,
+    rgba(228, 61, 255, 0.5) 0%,
+    rgba(117, 68, 255, 0.5) 86%
+  ) !important;
+  backdrop-filter: blur(15px) !important;
+}
+
+.mic-speak:hover {
+  background: linear-gradient(
+    0deg,
+    rgba(239, 60, 255, 0.8) 0%,
+    rgba(228, 61, 255, 0.8) 0%,
+    rgba(117, 68, 255, 0.8) 86%
+  ) !important;
+}
+.ndfHFb-c4YZDc-i5oIFb.ndfHFb-c4YZDc-e1YmVc .ndfHFb-c4YZDc-Wrql6b {
+  display: none !important;
+}
+.ndfHFb-c4YZDc.ndfHFb-c4YZDc-i5oIFb
+  .ndfHFb-c4YZDc-Bz112c:not([onclick]):not(:link):not(:visited) {
+  display: none !important;
+}
+.toolbar {
+  visibility: hidden !important;
+  display: none !important;
+}
+#viewerContainer {
+  top: 0;
+}
+.pdfViewer .page {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.btn-gradient {
+  @apply text-white h-[45px] md:h-10 text-[13px] py-[2px] rounded-[10px] flex justify-center items-center;
+  background-image: linear-gradient(
+    to right,
+
+    rgb(113, 1, 218),
+    rgb(206, 70, 190)
+  );
+  border: 0;
+  transition: all 0.2s ease-in;
+}
+.btn-glow:hover {
+  box-shadow: rgba(111, 76, 255, 0.7) 1px 0px 20px 1px;
+}
+.loader {
+  width: 32px;
+  aspect-ratio: 1;
+  display: grid;
+  border-radius: 50%;
+  background: linear-gradient(
+        0deg,
+        rgba(248, 247, 247, 0.5) 30%,
+        #0000 0 70%,
+        rgb(255, 255, 255) 0
+      )
+      50%/8% 100%,
+    linear-gradient(
+        90deg,
+        rgba(233, 233, 233, 0.25) 30%,
+        #efefef00 0 70%,
+        rgba(233, 232, 232, 0.75) 0
+      )
+      50%/100% 8%;
+  background-repeat: no-repeat;
+  animation: l23 1s infinite steps(12);
+}
+.loader::before,
+.loader::after {
+  content: "";
+  grid-area: 1/1;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.915;
+  transform: rotate(30deg);
+}
+.loader::after {
+  opacity: 0.83;
+  transform: rotate(60deg);
+}
+@keyframes l23 {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+/* HTML: <div class="loader"></div> */
+.wavy-loader {
+  width: 32px;
+  aspect-ratio: 2;
+  --_g: no-repeat radial-gradient(circle closest-side, #dad4d4 90%, #b7b3b300);
+  background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
+  background-size: calc(100% / 3) 50%;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+  20% {
+    background-position: 0% 0%, 50% 50%, 100% 50%;
+  }
+  40% {
+    background-position: 0% 100%, 50% 0%, 100% 50%;
+  }
+  60% {
+    background-position: 0% 50%, 50% 100%, 100% 0%;
+  }
+  80% {
+    background-position: 0% 50%, 50% 50%, 100% 100%;
+  }
+}

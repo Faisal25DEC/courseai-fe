@@ -358,15 +358,9 @@ export default function AvatarLesson({
   };
 
   useEffect(() => {
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") {
-        handleStopAndUpload();
-      }
-    });
-
     return () => {
-      document.removeEventListener("visibilitychange", () => {});
-    };
+      handleStopAndUpload();
+    }
   }, []);
 
   const startRecording = (webCamStream) => {

@@ -134,15 +134,24 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
     }
   };
   return (
-    <div className="h-full flex flex-col gap-6 justify-center relative px-8">
-      <h1 className="text-[24px] text-gray-700 font-medium px-4 py-2 relative">
-        {StringFormats.capitalizeFirstLetterOfEachWord(lesson.title)}
-      </h1>
+    <div className="h-full flex flex-col w-[900px] gap-6 justify-center mx-auto relative px-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-[24px] text-gray-700 font-medium px-4 py-2 relative">
+          {StringFormats.capitalizeFirstLetterOfEachWord(lesson.title)}
+        </h1>
+        <div className=" top-2 right-2">
+          {lesson.status === "approved" ? (
+            <Button variant={"outline"}>Completed</Button>
+          ) : (
+            <Button onClick={markComplete}>Mark Complete</Button>
+          )}
+        </div>
+      </div>
       {video?.playback_id && (
         <MuxPlayer
           streamType="on-demand"
           playbackId={video?.playback_id}
-          className="!rounded-[20px] mux-player self-center"
+          className="!rounded-[20px] w-full self-center"
           autoPlay
         />
       )}
@@ -150,13 +159,6 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
       <div className="flex flex-col gap-2">
         <h1 className="h2-medium">Description</h1>
         <p className="p-light">{lesson?.description}</p>
-      </div>
-      <div className="absolute top-2 right-2">
-        {lesson.status === "approved" ? (
-          <Button variant={"outline"}>Completed</Button>
-        ) : (
-          <Button onClick={markComplete}>Mark Complete</Button>
-        )}
       </div>
     </div>
   );

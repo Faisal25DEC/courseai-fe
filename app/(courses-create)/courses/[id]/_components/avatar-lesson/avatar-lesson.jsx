@@ -45,6 +45,7 @@ export default function AvatarLesson({
   thumbnail,
   avatar_name,
   lesson_id,
+  lesson,
 }) {
   const [conversations, setConversations] = useState([]);
   const conversationsRef = useRef([]);

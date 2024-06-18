@@ -162,7 +162,6 @@ const PreivewCourse = () => {
               }
               avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
               lesson_id={lessonsArray[activeLesson].id}
-              lesson={filteredLessons[activeLesson]}
             />
           )}
         </div>

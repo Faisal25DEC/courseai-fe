@@ -15,6 +15,10 @@ import { useRecoilState } from "recoil";
 import { activeLessonAtom } from "@/store/atoms";
 import Modal from "@/components/shared/modal/index";
 import Webcam from "react-webcam";
+import RecordRTC, { invokeSaveAsDialog } from 'recordrtc';
+import { v4 as uuidv4} from "uuid";
+import { currentCourseId } from "@/lib/constants";
+import { useUser } from "@clerk/nextjs";
 
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
@@ -30,11 +34,17 @@ const videoConstraints = {
   facingMode: "user",
 };
 
+const audioConstraints = {
+  sampleSize: 16,
+  channelCount: 2,
+}
+
 export default function AvatarLesson({
   avatar_id,
   voice_id,
   thumbnail,
   avatar_name,
+  lesson_id,
 }) {
   const [conversations, setConversations] = useState([]);
   const conversationsRef = useRef([]);
@@ -55,6 +65,11 @@ export default function AvatarLesson({
   const [sessionInfo, setSessionInfo] = useState(null);
   const [peerConnection, setPeerConnection] = useState(null);
   const currenTimeRef = useRef(null);
+  // const [webCamState, setWebCamState] = useState(null);
+  // const [blob, setBlob] = useState(null);
+  const recorderRef = useRef(null);
+  const { user } = useUser();
+
   useEffect(() => {
     if (apiKey === "YourApiKey" || SERVER_URL === "") {
       alert("Please enter your API key and server URL in the api.json file");
@@ -320,7 +335,53 @@ export default function AvatarLesson({
       startAndDisplaySession();
     }
   }, [peerConnection, sessionInfo]);
-  console.log("conversations", conversationsRef.current);
+
+  // console.log("conversations", conversationsRef.current);
+
+  const handleStopAndUpload = () => {
+    recorderRef.current.stopRecording(() => {
+      blob = recorderRef.current.getBlob();
+      var formData = new FormData();
+      const fileName = uuidv4() + ".webm";
+      formData.append(fileName, blob);
+
+      fetch(`https://dashboard-api-dev.permian.ai/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`, {
+        method: "POST",
+        body: formData,
+      });
+    });
+  };
+
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        handleStopAndUpload();
+      }
+    });
+
+    return () => {
+      document.removeEventListener("visibilitychange", () => {});
+    };
+  }, []);
+
+  const startRecording = (webCamStream) => {
+    mediaElementRef.current.srcObject.width = window.screen.width;
+    mediaElementRef.current.srcObject.height = window.screen.height;
+    mediaElementRef.current.srcObject.fullcanvas = true;
+
+    webCamStream.width = 320;
+    webCamStream.height = 240;
+    webCamStream.top = mediaElementRef.current.srcObject.height - webCamStream.height;
+    webCamStream.left = mediaElementRef.current.srcObject.width - webCamStream.width;
+
+    recorderRef.current = new RecordRTC([mediaElementRef.current.srcObject, webCamStream], {
+      type: 'video',
+      mimeType: 'video/webm',
+    });
+
+    recorderRef.current.startRecording();
+  }
+
   return (
     <div className="w-full">
       {/* <Navbar /> */}
@@ -377,9 +438,12 @@ export default function AvatarLesson({
             />
             {peerConnection && sessionInfo && sessionState === "connected" && (
               <Webcam
+                audio={true}
+                audioConstraints={audioConstraints}
                 className="absolute bottom-[2.5rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
                 screenshotFormat="image/jpeg"
                 videoConstraints={videoConstraints}
+                onUserMedia={startRecording}
               ></Webcam>
             )}
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}

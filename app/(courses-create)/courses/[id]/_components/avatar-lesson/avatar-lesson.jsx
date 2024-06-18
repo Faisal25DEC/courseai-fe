@@ -19,6 +19,7 @@ import RecordRTC, { invokeSaveAsDialog } from "recordrtc";
 import { v4 as uuidv4 } from "uuid";
 import { currentCourseId } from "@/lib/constants";
 import { useUser } from "@clerk/nextjs";
+import { baseUrl } from "@/lib/config";
 
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
@@ -343,18 +344,20 @@ export default function AvatarLesson({
 
   // console.log("conversations", conversationsRef.current);
 
-  const handleStopAndUpload = () => {
-    recorderRef.current.stopRecording(() => {
-      blob = recorderRef.current.getBlob();
-      var formData = new FormData();
+  const handleStopAndUpload = async () => {
+    if (!recorderRef.current) return;
+    recorderRef.current.stopRecording(async () => {
+      const blob = recorderRef.current.getBlob();
+      const formData = new FormData();
       const fileName = uuidv4() + ".webm";
-      formData.append(fileName, blob);
+      formData.append("file", blob, fileName);
 
-      fetch(
-        `https://dashboard-api-dev.permian.ai/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
+      await fetch(
+        `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
         {
           method: "POST",
           body: formData,
+          "Content-Type": "multipart/form-data",
         }
       );
     });
@@ -362,6 +365,7 @@ export default function AvatarLesson({
 
   useEffect(() => {
     return () => {
+      console.log("trigger cleanup function");
       handleStopAndUpload();
     };
   }, []);

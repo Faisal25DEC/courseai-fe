@@ -66,7 +66,7 @@ const UserLessonAnalytics = () => {
           );
         })}
       </div>
-      <ScrollArea className="max-h-[70vh] rounded-[20px]">
+      <ScrollArea className="h-[70vh] rounded-[20px]">
         {lessonAnalyticsArray.map((lesson: any) => {
           return (
             <div

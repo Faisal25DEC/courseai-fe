@@ -105,6 +105,7 @@ const UserCard = ({
       label: "View Analytics",
       icon: <Icon icon="fluent-mdl2:view" />,
       onClick: () => {
+        setCurrentUserLessonAnalytics({ ...user, ...userAnalytics });
         onCurrentUserAnalyticsModalOpen();
       },
     },

@@ -2,11 +2,17 @@ import useEnrollCourseModal from "@/hooks/useEnrollCourseModal";
 import React, { useEffect, useState } from "react";
 import Modal from "../modal";
 import { useOrganization, useOrganizationList } from "@clerk/nextjs";
-import { organizationMembersAtom } from "@/store/atoms";
+import {
+  globalEnrolledUsersAtom,
+  organizationMembersAtom,
+} from "@/store/atoms";
 import { useRecoilState } from "recoil";
 import OrganizationMemberCard from "./_legos/organization-member-card/organization-member-card";
 import { currentCourseId, member } from "@/lib/constants";
-import { getEnrolledUsers } from "@/services/lesson.service";
+import {
+  getEnrolledUsers,
+  getEnrolledUsersInACourse,
+} from "@/services/lesson.service";
 import { Icon } from "@iconify/react";
 const EnrollCourseModal = () => {
   const [organizationMemberships, setOrganizationMemberships] = useRecoilState(
@@ -19,7 +25,9 @@ const EnrollCourseModal = () => {
       infinite: true,
     },
   });
-  const [enrolledUsers, setEnrolledUsers] = useState(null);
+  const [enrolledUsers, setEnrolledUsers] = useRecoilState(
+    globalEnrolledUsersAtom
+  );
 
   const {
     isEnrollCourseModalOpen,
@@ -31,7 +39,8 @@ const EnrollCourseModal = () => {
   useEffect(() => {
     if (!organization) return;
     organization?.getMemberships().then(async (res) => {
-      await getEnrolledUsers(currentCourseId, setEnrolledUsers);
+      const enrolledUsersRes = await getEnrolledUsersInACourse(currentCourseId);
+      setEnrolledUsers(enrolledUsersRes);
       const membersArray = res.data;
       const usersArray = membersArray
         .filter((item) => item.role === member)

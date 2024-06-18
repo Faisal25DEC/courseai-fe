@@ -154,7 +154,6 @@ export const getEnrolledUsersInACourse = async (courseId: string) => {
   try {
     const usersRes = await axios.get("/api/get-users-from-clerk");
     const res = await axios.get(`${baseUrl}/courses/${courseId}/users`);
-    const courseAnalyticsRes = await getCourseAnalytics(courseId);
     const users = usersRes.data.data;
     const enrolledUsersIds = res.data;
 

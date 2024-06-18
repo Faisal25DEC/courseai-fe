@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { currentCourseId } from "@/lib/constants";
-import { enrollUser, getEnrolledUsers } from "@/services/lesson.service";
+import {
+  enrollUser,
+  getEnrolledUsers,
+  getEnrolledUsersInACourse,
+} from "@/services/lesson.service";
 import React from "react";
 
 const OrganizationMemberCard = ({
@@ -16,13 +20,14 @@ const OrganizationMemberCard = ({
     return null;
   };
   const enrollUserToCourse = (member: any) => {
-    enrollUser(currentCourseId, member.userId).then(() => {
-      getEnrolledUsers(currentCourseId, setEnrolledUsers);
+    enrollUser(currentCourseId, member.userId).then(async () => {
+      const enrolledUsersRes = await getEnrolledUsersInACourse(currentCourseId);
+      setEnrolledUsers(enrolledUsersRes);
     });
   };
   const checkIfUserIsEnrolled = (member: any) => {
     if (!enrolledUsers) return false;
-    return enrolledUsers?.some((user: any) => user.user_id === member.userId);
+    return enrolledUsers?.some((user: any) => user?.id === member.userId);
   };
   const isEnrolled = checkIfUserIsEnrolled(member);
   return (

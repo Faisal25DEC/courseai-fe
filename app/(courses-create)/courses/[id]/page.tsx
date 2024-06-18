@@ -160,6 +160,7 @@ const PreivewCourse = () => {
                   ?.normal_thumbnail_medium
               }
               avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
+              lesson_id={lessonsArray[activeLesson].id}
             />
           )}
         </div>

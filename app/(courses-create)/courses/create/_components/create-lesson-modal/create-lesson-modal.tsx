@@ -93,6 +93,7 @@ const CreateLessonModal = () => {
     }
   };
   useEffect(() => {
+    console.log(currentLesson.type);
     setCurrentLesson({ ...currentLesson, content: null });
 
     // return () => {
@@ -171,7 +172,15 @@ const CreateLessonModal = () => {
         {lessonCreateSteps === 1 && (
           <div className="bg-gray-100 absolute bottom-0 h-[80px] flex items-center justify-center left-0 w-full">
             <Button
-              onClick={() => incrementStep(1)}
+              onClick={() => {
+                if (lessonModalType?.type === "edit") {
+                  setCurrentLesson({
+                    ...currentLesson,
+                    content: lessonModalType.lesson?.content,
+                  });
+                }
+                incrementStep(1);
+              }}
               disabled={!currentLesson.title || !currentLesson.type}
               className="w-[60%]"
             >

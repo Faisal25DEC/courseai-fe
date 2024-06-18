@@ -153,6 +153,7 @@ const PreivewCourse = () => {
           )}
           {lessonsArray[activeLesson]?.type === "avatar" && (
             <AvatarLesson
+              lesson={filteredLessons[activeLesson]}
               voice_id={lessonsArray[activeLesson].content?.voice_id}
               avatar_id={lessonsArray[activeLesson].content?.avatar_id}
               thumbnail={

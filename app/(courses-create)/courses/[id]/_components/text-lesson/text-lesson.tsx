@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { currentCourseId } from "@/lib/constants";
+import { StringFormats } from "@/lib/StringFormats";
 import {
   approveLessonRequest,
   getCourse,
@@ -144,20 +145,25 @@ const TextLesson = ({
     }
   };
   return (
-    <div className="py-4 h-full overflow-auto relative">
-      <Editor
-        editable={false}
-        onChange={() => null}
-        initialContent={content.text}
-      />
-      <div className="absolute top-2 right-2">
-        {lesson.status === "approved" ? (
-          <Button variant={"outline"}>Completed</Button>
-        ) : lesson.status === "approval-pending" ? (
-          <Button>Approval Pending</Button>
-        ) : (
-          <Button onClick={markComplete}>Mark Complete</Button>
-        )}
+    <div className="py-4 h-full flex flex-col items-center overflow-auto relative">
+      <div className="w-[900px] flex flex-col gap-6 relative">
+        <h1 className="h1-medium self-start pl-12">
+          {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
+        </h1>
+        <Editor
+          editable={false}
+          onChange={() => null}
+          initialContent={content.text}
+        />
+        <div className="absolute top-2 right-2">
+          {lesson.status === "approved" ? (
+            <Button variant={"outline"}>Completed</Button>
+          ) : lesson.status === "approval-pending" ? (
+            <Button>Approval Pending</Button>
+          ) : (
+            <Button onClick={markComplete}>Mark Complete</Button>
+          )}
+        </div>
       </div>
     </div>
   );

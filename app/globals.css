@@ -349,3 +349,95 @@ input:checked + .slider:before {
     background-position: 0% 50%, 50% 50%, 100% 100%;
   }
 }
+
+/* Headings */
+.h1-bold {
+  @apply text-3xl font-bold text-gray-800;
+}
+.h1-medium {
+  @apply text-3xl font-normal text-gray-800;
+}
+.h1-light {
+  @apply text-3xl font-light text-gray-800;
+}
+
+.h2-bold {
+  @apply text-2xl font-bold text-gray-800;
+}
+.h2-medium {
+  @apply text-2xl font-normal text-gray-800;
+}
+.h2-light {
+  @apply text-2xl font-light text-gray-800;
+}
+
+.h3-bold {
+  @apply text-xl font-bold text-gray-800;
+}
+.h3-medium {
+  @apply text-xl font-normal text-gray-800;
+}
+.h3-light {
+  @apply text-xl font-light text-gray-800;
+}
+
+.h4-bold {
+  @apply text-lg font-bold text-gray-800;
+}
+.h4-medium {
+  @apply text-lg font-normal text-gray-800;
+}
+.h4-light {
+  @apply text-lg font-light text-gray-800;
+}
+
+.h5-bold {
+  @apply text-base font-bold text-gray-800;
+}
+.h5-medium {
+  @apply text-base font-normal text-gray-800;
+}
+.h5-light {
+  @apply text-base font-light text-gray-800;
+}
+
+.h6-bold {
+  @apply text-sm font-bold text-gray-800;
+}
+.h6-medium {
+  @apply text-sm font-normal text-gray-800;
+}
+.h6-light {
+  @apply text-sm font-light text-gray-800;
+}
+
+/* Paragraphs */
+.p-bold {
+  @apply text-base font-bold text-gray-800;
+}
+.p-medium {
+  @apply text-base font-normal text-gray-800;
+}
+.p-light {
+  @apply text-base font-light text-gray-800;
+}
+.p-small-bold {
+  @apply text-sm font-bold text-gray-800;
+}
+.p-small-medium {
+  @apply text-sm font-normal text-gray-800;
+}
+.p-small-light {
+  @apply text-sm font-light text-gray-800;
+}
+
+/* Large Paragraphs */
+.p-large-bold {
+  @apply text-lg font-bold text-gray-800;
+}
+.p-large-medium {
+  @apply text-lg font-normal text-gray-800;
+}
+.p-large-light {
+  @apply text-lg font-light text-gray-800;
+}

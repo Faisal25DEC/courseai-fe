@@ -1,7 +1,7 @@
 "use client";
 
 import "@blocknote/core/fonts/inter.css";
-import { useCreateBlockNote } from "@blocknote/react";
+import { EmbedTab, useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { FileService } from "@/services/file.service";
@@ -30,6 +30,7 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
   const editor = useCreateBlockNote({
     uploadFile: handleUpload,
   });
+
   useEffect(() => {
     if (!initialContent) return;
     async function loadInitialHTML() {

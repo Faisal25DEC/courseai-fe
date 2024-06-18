@@ -73,6 +73,8 @@ const VideoContent = () => {
     });
   };
 
+  console.log(currentLesson);
+
   return (
     <div className="px-8 h-[calc(80vh-160px)]">
       {" "}

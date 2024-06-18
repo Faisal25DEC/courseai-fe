@@ -111,7 +111,10 @@ const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
                       isPopoverOpen ? onPopoverClose() : onPopoverOpen();
                     }}
                   >
-                    <Icon className="w-6 h-6" icon="pepicons-pencil:dots-y" />
+                    <Icon
+                      className="w-6 h-6 text-gray-700"
+                      icon="pepicons-pencil:dots-y"
+                    />
                   </div>
                 }
               >

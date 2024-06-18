@@ -89,25 +89,44 @@ const PreivewCourse = () => {
               className="flex cursor-pointer flex-col items-center gap-2"
             >
               {lesson.type === "video" && (
-                <img
-                  src={getVideoThumbnail(lesson.content.playback_id)}
-                  alt="thumbnail"
-                  className="w-[120px] h-[120px] rounded-[12px] object-cover"
-                />
+                <div className="relative">
+                  <img
+                    src={getVideoThumbnail(lesson.content.playback_id)}
+                    alt="thumbnail"
+                    className="w-[120px] h-[120px] rounded-[12px] object-cover"
+                  />
+                  {lesson.status === "rejected" && (
+                    <div className="absolute top-2 right-2 p-2 rounded-[12px] text-[12px] text-white bg-red-500">
+                      Rejected
+                    </div>
+                  )}
+                </div>
               )}
               {lesson.type === "avatar" && (
-                <img
-                  src={lesson.content.avatar.normal_thumbnail_medium}
-                  alt="thumbnail"
-                  className="w-[120px] h-[120px] rounded-[12px] object-cover"
-                />
+                <div className="relative">
+                  <img
+                    src={lesson.content.avatar.normal_thumbnail_medium}
+                    alt="thumbnail"
+                    className="w-[120px] h-[120px] rounded-[12px] object-cover"
+                  />
+                  {lesson.status === "rejected" && (
+                    <div className="absolute top-2 right-2 px-2 py-[1px] rounded-[12px] text-[12px] text-white bg-red-500">
+                      Rejected
+                    </div>
+                  )}
+                </div>
               )}
               {lesson.type === "text" && (
-                <div className="w-[120px] h-[120px] rounded-[12px] flex justify-center items-center">
+                <div className=" relative rounded-[12px] flex justify-center items-center">
                   <img
                     className="w-[120px] h-[120px] rounded-[12px] object-cover border-[1px] border-gray-100"
                     src="/images/doc-icon.png"
                   />
+                  {lesson.status === "rejected" && (
+                    <div className="absolute top-2 right-2 px-2 py-[1px] rounded-[12px] text-[12px] text-white bg-red-500">
+                      Rejected
+                    </div>
+                  )}
                 </div>
               )}
               <div className="flex items-center gap-2">

@@ -27,7 +27,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ClerkProvider>
           <RecoilProvider>
-            <Toaster />
+            <Toaster closeButton />
             <Navbar />
             {children}
           </RecoilProvider>

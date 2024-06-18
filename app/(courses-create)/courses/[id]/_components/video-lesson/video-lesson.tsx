@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { currentCourseId } from "@/lib/constants";
+import { StringFormats } from "@/lib/StringFormats";
 import {
   approveLessonRequest,
   getCourse,
@@ -27,6 +28,10 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
   useEffect(() => {
+    if (lesson.status === "rejected") {
+      toast.error("Admin has rejected the approval request.");
+      toast.dismiss();
+    }
     return () => {
       if (!user) return;
       const duration = Date.now() - currenTimeRef.current;
@@ -129,7 +134,10 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
     }
   };
   return (
-    <div className="h-full flex justify-center items-center relative">
+    <div className="h-full flex flex-col gap-6 justify-center items-center relative">
+      <h1 className="text-[24px] text-gray-700 font-medium px-4 py-2 relative">
+        {StringFormats.capitalizeFirstLetterOfEachWord(lesson.title)}
+      </h1>
       {video?.playback_id && (
         <MuxPlayer
           streamType="on-demand"

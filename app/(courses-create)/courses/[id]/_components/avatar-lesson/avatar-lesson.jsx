@@ -56,6 +56,10 @@ export default function AvatarLesson({
   const [peerConnection, setPeerConnection] = useState(null);
   const currenTimeRef = useRef(null);
   useEffect(() => {
+    if (lesson.status === "rejected") {
+      toast.error("Admin has rejected the approval request.");
+      toast.dismiss();
+    }
     if (apiKey === "YourApiKey" || SERVER_URL === "") {
       alert("Please enter your API key and server URL in the api.json file");
     }

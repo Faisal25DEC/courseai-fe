@@ -36,4 +36,5 @@ export const lessonStatuses = {
   approved: "approved",
   pending: "pending",
   approvalPending: "approval-pending",
+  rejected: "rejected",
 };

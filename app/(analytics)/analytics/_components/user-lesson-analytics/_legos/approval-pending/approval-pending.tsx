@@ -89,7 +89,7 @@ const ApprovalPending = ({ lesson }: { lesson: any }) => {
             <p className={`${textColorBasedOnStatus["approved"]}`}>Approve</p>
           </div>
           <div
-            onClick={() => markComplete(lessonStatuses.pending)}
+            onClick={() => markComplete(lessonStatuses.rejected)}
             className="flex items-center gap-2 p-[6px] rounded-[6px] cursor-pointer text-red-500 transition-all duration-200 ease-linear hover:bg-red-500 hover:text-gray-100"
           >
             <p className={``}>Reject</p>

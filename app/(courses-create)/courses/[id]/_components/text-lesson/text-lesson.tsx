@@ -40,6 +40,10 @@ const TextLesson = ({
   const currenTimeRef = React.useRef<number>(Date.now());
   const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
   useEffect(() => {
+    if (lesson.status === "rejected") {
+      toast.error("Admin has rejected the approval request.");
+      toast.dismiss();
+    }
     return () => {
       if (!user) return;
       const duration = Date.now() - currenTimeRef.current;

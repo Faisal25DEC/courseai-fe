@@ -1,5 +1,6 @@
 import { baseUrl } from "@/lib/config";
 import axios from "axios";
+import { toast } from "sonner";
 
 export const updateLesson = async (
   courseId: string,
@@ -135,5 +136,42 @@ export const enrollUser = async (courseId: string, userId: string) => {
     return response.data;
   } catch (error) {
     console.error("Error:", error);
+  }
+};
+export const expelUser = async (courseId: string, userId: string) => {
+  try {
+    const response = await axios.patch(`${baseUrl}/courses/${courseId}/expel`, {
+      user_id: userId,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
+
+export const getEnrolledUsersInACourse = async (courseId: string) => {
+  try {
+    const usersRes = await axios.get("/api/get-users-from-clerk");
+    const res = await axios.get(`${baseUrl}/courses/${courseId}/users`);
+    const courseAnalyticsRes = await getCourseAnalytics(courseId);
+    const users = usersRes.data.data;
+    const enrolledUsersIds = res.data;
+
+    const enrolledUsersArray = users.filter((user: any) =>
+      enrolledUsersIds.some((item: any) => item.user_id === user.id)
+    );
+    const enrolledUsersWithDate = enrolledUsersArray.map((user: any) => {
+      return {
+        ...user,
+        enrolled_at: enrolledUsersIds.find(
+          (item: any) => item.user_id === user.id
+        ).enrolled_at,
+      };
+    });
+    return enrolledUsersWithDate;
+  } catch (error) {
+    toast.error("Failed to fetch enrolled users");
+    console.error(error);
   }
 };

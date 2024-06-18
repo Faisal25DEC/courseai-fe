@@ -23,13 +23,14 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
   const currenTimeRef = useRef<number>(Date.now());
   const [userAnalytics, setUserAnalytics] =
     useRecoilState<any>(userAnalyticsAtom);
-  const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
   useEffect(() => {
     return () => {
       if (!user) return;
       const duration = Date.now() - currenTimeRef.current;
+      console.log("duration", duration);
       if (lesson.status === "approved") return;
       updateLessonForUser({
         course_id: currentCourseId,
@@ -43,7 +44,7 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
         currenTimeRef.current = Date.now();
       });
     };
-  }, [activeLesson, user, lesson]);
+  }, []);
 
   useEffect(() => {
     setIsDocumentVisible(!document.hidden);
@@ -52,6 +53,7 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
   useEffect(() => {
     if (!isDocumentVisible && user && lesson.status !== "approved") {
       const duration = Date.now() - currenTimeRef.current;
+      console.log("duration2", duration);
       updateLessonForUser({
         course_id: currentCourseId,
         lesson_id: lesson.id,

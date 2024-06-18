@@ -15,7 +15,7 @@ import {
 } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { toast } from "sonner";
 
@@ -38,13 +38,15 @@ const TextLesson = ({
 
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const currenTimeRef = React.useRef<number>(Date.now());
+  const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
   useEffect(() => {
     return () => {
+      if (!user) return;
       const duration = Date.now() - currenTimeRef.current;
       if (lesson.status === "approved") return;
       updateLessonForUser({
         course_id: currentCourseId,
-        lesson_id: lesson_id,
+        lesson_id: lesson.id,
 
         user_id: user?.id as string,
         data: {
@@ -53,33 +55,38 @@ const TextLesson = ({
       }).then(() => {
         currenTimeRef.current = Date.now();
       });
-      console.log("Duration", duration);
     };
-  }, [activeLesson]);
-  useEffect(() => {
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") {
-        const duration = Date.now() - currenTimeRef.current;
-        if (lesson.status === "approved") return;
-        updateLessonForUser({
-          course_id: currentCourseId,
-          lesson_id: lesson_id,
+  }, []);
 
-          user_id: user?.id as string,
-          data: {
-            duration: duration,
-          },
-        }).then(() => {
-          currenTimeRef.current = Date.now();
-        });
-        return;
-      }
-      currenTimeRef.current = Date.now();
-    });
-    return () => {
-      document.removeEventListener("visibilitychange", () => {
+  useEffect(() => {
+    setIsDocumentVisible(!document.hidden);
+  }, []);
+
+  useEffect(() => {
+    if (!isDocumentVisible && user && lesson.status !== "approved") {
+      const duration = Date.now() - currenTimeRef.current;
+      updateLessonForUser({
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        user_id: user?.id as string,
+        data: {
+          duration: duration,
+        },
+      }).then(() => {
         currenTimeRef.current = Date.now();
       });
+    }
+  }, [isDocumentVisible, user, lesson.id]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsDocumentVisible(!document.hidden);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
   const markComplete = () => {

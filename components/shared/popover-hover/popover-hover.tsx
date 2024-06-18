@@ -16,6 +16,7 @@ const PopoverHover = ({
   value,
   className,
   align,
+  triggerClassName,
 }: {
   isOpen?: boolean;
   setIsOpen?: any;
@@ -23,6 +24,7 @@ const PopoverHover = ({
   value: any;
   className?: any;
   align?: "center" | "end" | "start";
+  triggerClassName?: any;
 }) => {
   const {
     isOpen: isPopoverOver,
@@ -35,7 +37,7 @@ const PopoverHover = ({
       <Popover open={isPopoverOver || isOpen}>
         <PopoverTrigger
           onMouseEnter={() => onPopoverOpen()}
-          className="border-none outline-none"
+          className={`border-none outline-none ${triggerClassName}`}
         >
           <div>{trigger}</div>
         </PopoverTrigger>

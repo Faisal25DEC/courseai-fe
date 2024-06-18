@@ -107,3 +107,8 @@ export const organizationMembersAtom = atom<any>({
   key: "organizationMembersAtom",
   default: null,
 });
+
+export const globalEnrolledUsersAtom = atom<any>({
+  key: "globalEnrolledUsersAtom",
+  default: [],
+});

@@ -11,6 +11,8 @@ import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
 import useFetchLessons from "@/hooks/useFetchLesson";
 import UserLessonAnalytics from "./_components/user-lesson-analytics/user-lesson-analytics";
 import { Icon } from "@iconify/react";
+import { useRecoilState } from "recoil";
+import { globalEnrolledUsersAtom } from "@/store/atoms";
 const Page = () => {
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
 
@@ -20,36 +22,37 @@ const Page = () => {
     onCurrentUserAnalyticsModalClose,
     setCurrentUserAnalyticsModalOpen,
   } = useCurrentUserAnalyticsModal();
-  const [enrolledUsers, setEnrolledUsers] = useState([]);
+  const [enrolledUsers, setEnrolledUsers] = useRecoilState(
+    globalEnrolledUsersAtom
+  );
+  const fetchEnrolledUsers = async () => {
+    try {
+      const usersRes = await axios.get("/api/get-users-from-clerk");
+      const res = await axios.get(
+        `${baseUrl}/courses/${currentCourseId}/users`
+      );
+      const courseAnalyticsRes = await getCourseAnalytics(currentCourseId);
+      const users = usersRes.data.data;
+      const enrolledUsersIds = res.data;
+
+      const enrolledUsersArray = users.filter((user: any) =>
+        enrolledUsersIds.some((item: any) => item.user_id === user.id)
+      );
+      const enrolledUsersWithDate = enrolledUsersArray.map((user: any) => {
+        return {
+          ...user,
+          enrolled_at: enrolledUsersIds.find(
+            (item: any) => item.user_id === user.id
+          ).enrolled_at,
+        };
+      });
+      setEnrolledUsers(enrolledUsersWithDate);
+    } catch (error) {
+      toast.error("Failed to fetch enrolled users");
+      console.error(error);
+    }
+  };
   useEffect(() => {
-    const fetchEnrolledUsers = async () => {
-      try {
-        const usersRes = await axios.get("/api/get-users-from-clerk");
-        const res = await axios.get(
-          `${baseUrl}/courses/${currentCourseId}/users`
-        );
-        const courseAnalyticsRes = await getCourseAnalytics(currentCourseId);
-        const users = usersRes.data.data;
-        const enrolledUsersIds = res.data;
-
-        const enrolledUsersArray = users.filter((user: any) =>
-          enrolledUsersIds.some((item: any) => item.user_id === user.id)
-        );
-        const enrolledUsersWithDate = enrolledUsersArray.map((user: any) => {
-          return {
-            ...user,
-            enrolled_at: enrolledUsersIds.find(
-              (item: any) => item.user_id === user.id
-            ).enrolled_at,
-          };
-        });
-        setEnrolledUsers(enrolledUsersWithDate);
-      } catch (error) {
-        toast.error("Failed to fetch enrolled users");
-        console.error(error);
-      }
-    };
-
     fetchEnrolledUsers();
   }, []);
 
@@ -75,7 +78,13 @@ const Page = () => {
         </div>
         <div className="flex flex-col gap-4">
           {enrolledUsers.map((user: any) => {
-            return <UserCard user={user} key={user?.id} />;
+            return (
+              <UserCard
+                user={user}
+                key={user?.id}
+                fetchEnrolledUsers={fetchEnrolledUsers}
+              />
+            );
           })}
         </div>
       </div>

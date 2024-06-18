@@ -1,18 +1,37 @@
+import CustomPopover from "@/components/shared/custom-popover/custom-popover";
 import PopoverHover from "@/components/shared/popover-hover/popover-hover";
 import { Progress } from "@/components/ui/progress";
 import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
+import useDisclosure from "@/hooks/useDisclosure";
 import useFetchLessons from "@/hooks/useFetchLesson";
 import { currentCourseId, lessonStatuses } from "@/lib/constants";
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
-import { getUserAnalytics } from "@/services/lesson.service";
+import { expelUser, getUserAnalytics } from "@/services/lesson.service";
 import {
   currentUserLessonAnalyticsAtom,
+  globalEnrolledUsersAtom,
   lessonsArrayAtom,
 } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
+import { Icon } from "@iconify/react";
 
-const UserCard = ({ user }: { user: any }) => {
+const UserCard = ({
+  user,
+  fetchEnrolledUsers,
+}: {
+  user: any;
+  fetchEnrolledUsers: any;
+}) => {
+  const [enrolledUsers, setEnrolledUsers] = useRecoilState(
+    globalEnrolledUsersAtom
+  );
+  const {
+    isOpen: isPopoverOpen,
+    onOpen: onPopoverOpen,
+    onClose: onPopoverClose,
+    setIsOpen: setIsPopoverOpen,
+  } = useDisclosure();
   const [lessonsArray, setLessonsArray] = useRecoilState(lessonsArrayAtom);
   const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
     useRecoilState(currentUserLessonAnalyticsAtom);
@@ -73,6 +92,30 @@ const UserCard = ({ user }: { user: any }) => {
   }
 
   const pendingApprovals = checkForPendingApproval(userAnalytics, lessonsArray);
+  const handleExpelUser = async () => {
+    try {
+      await expelUser(currentCourseId, user?.id);
+      await fetchEnrolledUsers();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const popoverContent = [
+    {
+      label: "View Analytics",
+      icon: <Icon icon="fluent-mdl2:view" />,
+      onClick: () => {
+        onCurrentUserAnalyticsModalOpen();
+      },
+    },
+    {
+      label: "Expel User",
+      icon: <Icon icon="iwwa:delete" />,
+      onClick: () => {
+        handleExpelUser();
+      },
+    },
+  ];
 
   return (
     <div
@@ -89,10 +132,10 @@ const UserCard = ({ user }: { user: any }) => {
           />
           {pendingApprovals > 0 && (
             <PopoverHover
-              trigger={
-                <div className="absolute top-[-4px] text-white text-[10px] right-[-5px] w-4 h-4 rounded-full bg-red-500 flex justify-center items-center">
-                  {pendingApprovals}
-                </div>
+              className={""}
+              trigger={<div className="">{pendingApprovals}</div>}
+              triggerClassName={
+                "absolute top-[-4px] right-[-4px] w-4 h-4 rounded-full bg-red-500 text-white text-[10px] "
               }
               value={"Approval Request Pending"}
             />
@@ -116,6 +159,44 @@ const UserCard = ({ user }: { user: any }) => {
           value={value}
         />
         <p className="text-[10.5px]">{value}%</p>
+        <div className="mt-1 ml-4">
+          <CustomPopover
+            className={"w-fit p-0 ml-3 mt-1"}
+            align="end"
+            open={isPopoverOpen}
+            onOpenChange={setIsPopoverOpen}
+            trigger={
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  isPopoverOpen ? onPopoverClose() : onPopoverOpen();
+                }}
+              >
+                <Icon
+                  className="w-5 text-gray-700 h-5"
+                  icon="pepicons-pencil:dots-y"
+                />
+              </div>
+            }
+          >
+            {popoverContent.map((item, idx) => {
+              return (
+                <div
+                  key={idx}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    item.onClick();
+                    onPopoverClose();
+                  }}
+                  className="text-gray-500 hover:text-gray-700  cursor-pointer flex py-[8px] px-[12px] gap-[6px] w-[100%] items-center hover:bg-gray-100 rounded-md transition-all font-medium duration-200 ease-in"
+                >
+                  <div>{item.icon}</div>
+                  <p className="text-[14px] cursor-pointer">{item.label}</p>
+                </div>
+              );
+            })}
+          </CustomPopover>
+        </div>
       </div>
     </div>
   );

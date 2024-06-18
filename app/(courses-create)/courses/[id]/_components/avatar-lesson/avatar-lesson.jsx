@@ -14,6 +14,8 @@ import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
 import { activeLessonAtom } from "@/store/atoms";
 import Modal from "@/components/shared/modal/index";
+import Webcam from "react-webcam";
+
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
   serverUrl: "https://api.heygen.com",
@@ -21,6 +23,12 @@ const heygen_API = {
 
 const apiKey = heygen_API.apiKey;
 const SERVER_URL = heygen_API.serverUrl;
+
+const videoConstraints = {
+  width: 1280,
+  height: 720,
+  facingMode: "user",
+};
 
 export default function AvatarLesson({
   avatar_id,
@@ -346,7 +354,7 @@ export default function AvatarLesson({
               />
             </div>
           )}
-          <div className="flex flex-col justify-center gap-3 items-center relative">
+          <div className="h-fit flex flex-col justify-center gap-3 items-center relative py-8">
             {peerConnection && sessionInfo && sessionState === "connected" && (
               <div className="w-[98%] mx-auto flex justify-end">
                 <Button
@@ -360,16 +368,23 @@ export default function AvatarLesson({
             )}
             <video
               align="center"
-              className="video_player shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
+              className="h-[60vh] shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
               ref={mediaElementRef}
               autoPlay
               style={{
                 display: sessionState === "connected" ? "block" : "none",
               }}
             />
+            {peerConnection && sessionInfo && sessionState === "connected" && (
+              <Webcam
+                className="absolute bottom-[2.5rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
+                screenshotFormat="image/jpeg"
+                videoConstraints={videoConstraints}
+              ></Webcam>
+            )}
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex gap-2 items-end absolute bottom-2">
+              <div className="flex gap-2 items-end absolute bottom-[3rem]">
                 <div className="flex flex-col gap-2">
                   <div className="relative">
                     <input

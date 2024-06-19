@@ -1,5 +1,5 @@
 "use client";
-import { currentCourseId } from "@/lib/constants";
+import { colors, currentCourseId, textFromBg } from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
 import { getCourse } from "@/services/lesson.service";
 import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
@@ -8,6 +8,9 @@ import { useRecoilState } from "recoil";
 import VideoLesson from "../_components/video-lesson/video-lesson";
 import TextLesson from "../_components/text-lesson/text-lesson";
 import AvatarLesson from "../_components/avatar-lesson/avatar-lesson";
+import Tag from "@/components/shared/tag/tag";
+import { typeColorObj } from "../../[id]/constants";
+import { StringFormats } from "@/lib/StringFormats";
 const PreivewCourse = () => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
@@ -22,53 +25,60 @@ const PreivewCourse = () => {
   return (
     <div className="w-full h-[calc(100vh-120px)] overflow-y-scroll">
       <div className="flex h-full w-[90%] mx-auto">
-        <div className="w-[200px] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8">
+        <div className="w-[300px] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8">
           {lessonsArray.map((lesson: any, idx: any) => (
             <div
               onClick={() => handleChangeLesson(idx)}
               key={lesson.id}
-              className="flex cursor-pointer flex-col items-center gap-2"
+              style={{ opacity: lesson.locked ? 0.5 : 1 }}
+              className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
+                activeLesson === idx ? "bg-gray-100" : ""
+              }`}
             >
-              {lesson.type === "video" && (
-                <img
-                  src={getVideoThumbnail(lesson.content.playback_id)}
-                  alt="thumbnail"
-                  className="w-[120px] h-[120px] rounded-[12px] object-cover"
-                />
-              )}
-              {lesson.type === "avatar" && (
-                <img
-                  src={lesson.content.avatar.normal_thumbnail_medium}
-                  alt="thumbnail"
-                  className="w-[120px] h-[120px] rounded-[12px] object-cover"
-                />
-              )}
-              {lesson.type === "text" && (
-                <div className="w-[120px] h-[120px] rounded-[12px] flex justify-center items-center">
-                  <img
-                    className="w-[120px] h-[120px] rounded-[12px] object-cover border-[1px] border-gray-100"
-                    src="/images/doc-icon.png"
-                  />
+              <div className="flex h6-medium items-start gap-2 font-medium">
+                <span>{idx + 1} </span>
+                <div className="flex flex-col gap-2">
+                  <div className="">
+                    {StringFormats.capitalizeFirstLetterOfEachWord(
+                      lesson.title
+                    )}
+                  </div>
                 </div>
-              )}
-              <div className="text-sm font-normal text-gray-700">
-                {lesson.title}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Tag
+                  color={textFromBg[typeColorObj[lesson.type]]}
+                  bg={typeColorObj[lesson.type]}
+                >
+                  {lesson.type}
+                </Tag>
+                {lesson.status === "rejected" && (
+                  <Tag bg={colors.lightred}>Rejected</Tag>
+                )}
+                {/* <Tag>
+                {StringFormats.capitalizeFirstLetterOfEachWord(lesson.status)}
+              </Tag> */}
               </div>
             </div>
           ))}
         </div>
-        <div className="w-[calc(100%-200px)]">
+        <div className="w-[calc(100%-300px)]">
           {lessonsArray[activeLesson]?.type === "video" && (
-            <VideoLesson video={lessonsArray[activeLesson].content} />
+            <VideoLesson
+              video={lessonsArray[activeLesson].content}
+              lesson={lessonsArray[activeLesson]}
+            />
           )}
           {lessonsArray[activeLesson]?.type === "text" && (
             <TextLesson
               lesson_id={lessonsArray[activeLesson].id}
-              lesson={lessonsArray[activeLesson].content}
+              lesson={lessonsArray[activeLesson]}
             />
           )}
           {lessonsArray[activeLesson]?.type === "avatar" && (
             <AvatarLesson
+              lesson_id={lessonsArray[activeLesson].id}
               voice_id={lessonsArray[activeLesson].content?.voice_id}
               avatar_id={lessonsArray[activeLesson].content?.avatar_id}
               thumbnail={
@@ -76,6 +86,7 @@ const PreivewCourse = () => {
                   ?.normal_thumbnail_medium
               }
               avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
+              lesson={lessonsArray[activeLesson]}
             />
           )}
         </div>

@@ -1,5 +1,6 @@
 "use client";
 import { currentCourseId } from "@/lib/constants";
+import { StringFormats } from "@/lib/StringFormats";
 import { updateLessonForUser } from "@/services/lesson.service";
 import { activeLessonAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
@@ -32,12 +33,23 @@ const TextLesson = ({ lesson, lesson_id }: { lesson: any; lesson_id: any }) => {
     };
   }, [activeLesson]);
   return (
-    <div className="py-4 h-full overflow-auto">
-      <Editor
-        editable={false}
-        onChange={() => null}
-        initialContent={lesson.text}
-      />
+    <div className="py-4 h-full flex flex-col items-center overflow-auto relative">
+      <div className="w-[900px] flex flex-col gap-6 relative">
+        <div className="flex gap-2 items-center justify-between">
+          <h1 className="h1-medium self-start pl-12">
+            {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
+          </h1>
+        </div>
+        <Editor
+          editable={false}
+          onChange={() => null}
+          initialContent={lesson?.content?.text}
+        />
+        <div className="flex flex-col gap-2 pl-12">
+          <h1 className="h2-medium">Description</h1>
+          <p className="p-light">{lesson?.description}</p>
+        </div>
+      </div>
     </div>
   );
 };

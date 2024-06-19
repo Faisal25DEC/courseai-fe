@@ -7,13 +7,23 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-// import { avatars } from "@/lib/constants";
-// import Loader from "@/components/shared/loader/loader";
-// import Navbar from "@/components/shared/navbar/navbar";
 import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
 import { activeLessonAtom } from "@/store/atoms";
-import Modal from "@/components/shared/modal/index";
+import Webcam from "react-webcam";
+import RecordRTC from "recordrtc";
+import { v4 as uuidv4 } from "uuid";
+import { currentCourseId } from "@/lib/constants";
+import { useUser } from "@clerk/nextjs";
+import { baseUrl } from "@/lib/config";
+import { StringFormats } from "@/lib/StringFormats";
+import {
+  approveLessonRequest,
+  getUserAnalytics,
+  updateLessonForUser,
+} from "@/services/lesson.service";
+import useTrackLessonDuration from "@/hooks/useTrackLessonDuration";
+
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
   serverUrl: "https://api.heygen.com",
@@ -22,12 +32,27 @@ const heygen_API = {
 const apiKey = heygen_API.apiKey;
 const SERVER_URL = heygen_API.serverUrl;
 
+const videoConstraints = {
+  width: 1280,
+  height: 720,
+  facingMode: "user",
+};
+
+const audioConstraints = {
+  sampleSize: 16,
+  channelCount: 2,
+};
+
 export default function AvatarLesson({
   avatar_id,
   voice_id,
   thumbnail,
   avatar_name,
+  lesson_id,
+  lesson,
 }) {
+  const [conversations, setConversations] = useState([]);
+  const conversationsRef = useRef([]);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [knowledgeBase, setKnowledgeBase] = useState(""); // [knowledgeBase, setKnowledgeBase
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -44,32 +69,35 @@ export default function AvatarLesson({
   const bgCheckboxRef = useRef(null);
   const [sessionInfo, setSessionInfo] = useState(null);
   const [peerConnection, setPeerConnection] = useState(null);
-  const currenTimeRef = useRef(null);
+  // const [webCamState, setWebCamState] = useState(null);
+  // const [blob, setBlob] = useState(null);
+  const recorderRef = useRef(null);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(false);
+  const { user } = useUser();
+
   useEffect(() => {
+    if (lesson.status === "rejected") {
+      toast.error("Admin has rejected the approval request.");
+      toast.dismiss();
+    }
     if (apiKey === "YourApiKey" || SERVER_URL === "") {
       alert("Please enter your API key and server URL in the api.json file");
     }
   }, []);
-  useEffect(() => {
-    currenTimeRef.current = Date.now();
-
-    return () => {
-      const duration = Date.now() - currenTimeRef.current;
-      console.log("Duration", duration);
-    };
-  }, [activeLesson]);
   async function talkToOpenAI(prompt, newPrompt) {
     const data = await axios.post(`/api/complete`, {
       prompt,
       newPrompt: newPrompt || false,
       sessionId: sessionInfo.session_id,
     });
-    console.log("talking to openai");
+
     if (data.status === 500) {
       console.error("Server error");
       throw new Error("Server error");
     } else {
       taskInputRef.current.value = "";
+      conversationsRef.current = data.data.conversation;
+
       return data.data.text;
     }
   }
@@ -116,7 +144,6 @@ export default function AvatarLesson({
       if (text) {
         // Send the AI's response to Heygen's streaming.task API
         const resp = await repeat(sessionInfo.session_id, text);
-        console.log(resp);
         setTimeout(() => {
           setAITalking(false);
         }, resp.duration_ms);
@@ -151,7 +178,7 @@ export default function AvatarLesson({
           },
         }),
       });
-      console.log("response", response);
+
       if (response.status === 500) throw new Error("Server error");
       const data = await response.json();
       const { sdp, ice_servers2: iceServers } = data.data;
@@ -173,22 +200,6 @@ export default function AvatarLesson({
       setSessionInfo(data.data);
     } catch (error) {
       console.error("Failed to create session:", error);
-    }
-  };
-
-  const handleCheckboxChange = () => {
-    const isChecked = bgCheckboxRef.current.checked;
-    if (!sessionInfo) {
-      alert("Please create a connection first");
-      bgCheckboxRef.current.checked = false;
-      return;
-    }
-    if (isChecked) {
-      canvasElementRef.current.style.display = "block";
-      mediaElementRef.current.style.display = "none";
-    } else {
-      canvasElementRef.current.style.display = "none";
-      mediaElementRef.current.style.display = "block";
     }
   };
   // start the session
@@ -241,7 +252,6 @@ export default function AvatarLesson({
 
     // When ICE candidate is available, send to the server
     peerConnection.onicecandidate = ({ candidate }) => {
-      console.log("Received ICE candidate:", candidate);
       if (candidate) {
         handleICE(sessionInfo.session_id, candidate.toJSON());
       }
@@ -278,21 +288,6 @@ export default function AvatarLesson({
       console.error("Failed to close the connection:", error);
     }
   };
-  // useEffect(() => {
-  //   if (peerConnection && sessionInfo) {
-  //     startAndDisplaySession();
-  //   }
-  // }, [peerConnection, sessionInfo]);
-  // useEffect(() => {
-  //   const triggerSession = async () => {
-  //     try {
-  //       await createNewSession();
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   triggerSession();
-  // }, [mediaElementRef.current]);
   useEffect(() => {
     const mediaElement = mediaElementRef.current;
     if (mediaElement) {
@@ -309,19 +304,113 @@ export default function AvatarLesson({
       startAndDisplaySession();
     }
   }, [peerConnection, sessionInfo]);
-  console.log("render");
+
+  const handleStopAndUpload = async () => {
+    if (!recorderRef.current) return;
+    recorderRef.current.stopRecording(async () => {
+      const blob = recorderRef.current.getBlob();
+      const formData = new FormData();
+      const fileName = uuidv4() + ".webm";
+      formData.append("file", blob, fileName);
+      const conversation = conversationsRef.current || [];
+      formData.append("conversation", new Blob([JSON.stringify(conversation)]));
+
+      await fetch(
+        `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
+        {
+          method: "POST",
+          body: formData,
+          "Content-Type": "multipart/form-data",
+        }
+      );
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (lesson.status === "approved") return;
+      handleStopAndUpload();
+    };
+  }, []);
+
+  const startRecording = (webCamStream) => {
+    mediaElementRef.current.srcObject.width = window.screen.width;
+    mediaElementRef.current.srcObject.height = window.screen.height;
+    mediaElementRef.current.srcObject.fullcanvas = true;
+
+    webCamStream.width = 320;
+    webCamStream.height = 240;
+    webCamStream.top =
+      mediaElementRef.current.srcObject.height - webCamStream.height;
+    webCamStream.left =
+      mediaElementRef.current.srcObject.width - webCamStream.width;
+
+    recorderRef.current = new RecordRTC(
+      [mediaElementRef.current.srcObject, webCamStream],
+      {
+        type: "video",
+        mimeType: "video/webm",
+      }
+    );
+
+    recorderRef.current.startRecording();
+  };
+  const markComplete = () => {
+    if (lesson.submission === "automatic") {
+      updateLessonForUser({
+        user_id: user?.id,
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        data: {
+          status: "approved",
+          duration: Date.now() - currenTimeRef.current,
+          completed_at: Date.now(),
+        },
+      })
+        .then(() => {
+          getUserAnalytics(user?.id, currentCourseId).then((res) => {
+            setUserAnalytics(res?.analytics);
+          });
+        })
+        .catch((err) => {
+          toast.error("Failed to mark lesson as complete");
+        });
+    } else {
+      updateLessonForUser({
+        user_id: user?.id,
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        data: {
+          status: "approval-pending",
+          duration: Date.now() - currenTimeRef.current,
+        },
+      })
+        .then(() => {
+          approveLessonRequest({
+            lesson_id: lesson.id,
+            course_id: currentCourseId,
+            user_id: user?.id,
+            status: "pending",
+          }).then(() => {
+            toast.success("Request sent for approval");
+            getUserAnalytics(user?.id, currentCourseId).then((res) => {
+              setUserAnalytics(res?.analytics);
+            });
+          });
+        })
+        .catch((err) => {
+          toast.error("Failed to send request for approval");
+        });
+    }
+  };
   return (
-    <div className="w-full">
-      {/* <Navbar /> */}
-      {/* <p className="text-center text-gray-600 flex justify-center font-medium items-center text-xl pb-4">
-        Consolidated Assurance Demo
-      </p> */}
-      <div className="h-[90h] w-full flex  flex-col">
+    <div className="w-full relative">
+      <div className="h-[90vh] w-full flex  flex-col">
         <div className="w-full flex flex-col gap-3 mt-3 relative justify-center items-center">
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex justify-center items-center  w-full">
+            <div className="flex justify-center items-center h-full  w-full">
               <div className="absolute flex flex-col justify-center items-center h-full gap-[15%]">
                 <div className="flex justify-center cursor-pointer items-center gradient-1 p-4 h-24 w-24 rounded-full">
                   <img
@@ -339,48 +428,59 @@ export default function AvatarLesson({
               <img
                 src={thumbnail}
                 alt="ai-avatar"
-                className="object-cover md:rounded-[20px] shadow-lg"
+                className="object-cover md:rounded-[20px] h-[60vh] shadow-lg"
               />
             </div>
           )}
-          <div className="flex flex-col justify-center gap-3 items-center relative">
+          <div className="h-fit flex flex-col justify-center gap-3 items-center relative py-8">
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="w-[98%] mx-auto flex justify-end">
-                <Button
-                  onClick={onOpen}
-                  variant={"outline"}
-                  className="self-end"
-                >
-                  Knowledge Base
-                </Button>{" "}
+              <div className="flex self-start gap-2 py-4 items-center justify-between">
+                <h1 className="h1-medium self-start">
+                  {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
+                </h1>
               </div>
             )}
-            <video
-              align="center"
-              className="video_player shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
-              ref={mediaElementRef}
-              autoPlay
-              style={{
-                display: sessionState === "connected" ? "block" : "none",
-              }}
-            />
-            <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
-            {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex gap-2 items-end absolute bottom-2">
-                <div className="flex flex-col gap-2">
-                  <div className="relative">
-                    <input
-                      placeholder="Write your query and press enter to talk"
-                      className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          talkHandler();
-                        }
-                      }}
-                      ref={taskInputRef}
-                      type="text"
-                    />
-                    {/* {aiLoading && (
+            <div className="relative">
+              <video
+                align="center"
+                className="h-[60vh] shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
+                ref={mediaElementRef}
+                autoPlay
+                style={{
+                  display: sessionState === "connected" ? "block" : "none",
+                }}
+              />
+              {peerConnection &&
+                sessionInfo &&
+                sessionState === "connected" && (
+                  <Webcam
+                    audio
+                    muted
+                    audioConstraints={audioConstraints}
+                    className="absolute bottom-[1rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
+                    screenshotFormat="image/jpeg"
+                    videoConstraints={videoConstraints}
+                    onUserMedia={startRecording}
+                  ></Webcam>
+                )}
+              {peerConnection &&
+                sessionInfo &&
+                sessionState === "connected" && (
+                  <div className="flex gap-2 items-end left-[50%] translate-x-[-50%] absolute bottom-[1rem]">
+                    <div className="flex flex-col gap-2">
+                      <div className="relative">
+                        <input
+                          placeholder="Write your query and press enter to talk"
+                          className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              talkHandler();
+                            }
+                          }}
+                          ref={taskInputRef}
+                          type="text"
+                        />
+                        {/* {aiLoading && (
                       <div className="absolute right-2 text-white absolute-center-top">
                         <Loader
                           width={"20px"}
@@ -388,58 +488,33 @@ export default function AvatarLesson({
                         />
                       </div>
                     )} */}
+                      </div>
+                    </div>
+                    {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
+                    <MicrophoneContextProvider>
+                      <DeepgramContextProvider>
+                        <Microphone
+                          talkHandler={talkHandler}
+                          taskInputRef={taskInputRef}
+                        />
+                      </DeepgramContextProvider>
+                    </MicrophoneContextProvider>
                   </div>
-                </div>
-                {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-                <MicrophoneContextProvider>
-                  <DeepgramContextProvider>
-                    <Microphone
-                      talkHandler={talkHandler}
-                      taskInputRef={taskInputRef}
-                    />
-                  </DeepgramContextProvider>
-                </MicrophoneContextProvider>
+                )}
+            </div>
+            <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
+            {peerConnection && sessionInfo && sessionState === "connected" && (
+              <div className="flex self-start flex-col gap-2 mt-4">
+                <h1 className="h2-medium">Description</h1>
+                <p className="p-light">{lesson?.description}</p>
               </div>
             )}
           </div>
         </div>
+        {conversationsRef.current.map((item) => {
+          return <div key={item.content}>{item.content}</div>;
+        })}
       </div>
-      <Modal isOpen={isOpen} onClose={onClose} className={"w-[100%]"}>
-        <div className="flex flex-col gap-2 p-3 ">
-          <div>
-            <h2 className="text-[18px] font-medium text-gray-600">
-              Knowledge Base
-            </h2>
-          </div>
-          <div>
-            <textarea
-              onChange={(e) => setKnowledgeBase(e.target.value)}
-              value={knowledgeBase}
-              rows={15}
-              className="w-[100%] border border-gray-300 rounded-md p-2"
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant={"outline"} onClick={onClose}>
-              Close
-            </Button>
-            <Button
-              onClick={async () => {
-                if (knowledgeBase.trim() === "") {
-                  toast.error("Knowledge base cannot be empty");
-                  onClose();
-                  return;
-                } else {
-                  await talkToOpenAI(knowledgeBase, true);
-                  onClose();
-                }
-              }}
-            >
-              Save
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

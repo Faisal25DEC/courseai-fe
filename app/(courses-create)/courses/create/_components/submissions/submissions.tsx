@@ -18,7 +18,7 @@ const Submissions = () => {
     setCurrentLesson({ ...currentLesson, submission: value });
   };
   return (
-    <div className="px-8">
+    <div className="">
       <div className="label-container">
         <label className="label">Select Submission Type</label>
         <div className="flex items-center gap-2 flex-wrap">

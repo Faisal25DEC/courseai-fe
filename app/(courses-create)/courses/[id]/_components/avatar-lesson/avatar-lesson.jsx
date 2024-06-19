@@ -100,6 +100,7 @@ export default function AvatarLesson({
       throw new Error("Server error");
     } else {
       taskInputRef.current.value = "";
+      console.log("conversations: ", data.data.conversation)
       conversationsRef.current = data.data.conversation;
 
       return data.data.text;
@@ -351,6 +352,8 @@ export default function AvatarLesson({
       const formData = new FormData();
       const fileName = uuidv4() + ".webm";
       formData.append("file", blob, fileName);
+      const conversation = conversationsRef.current || [];
+      formData.append("conversation", new Blob([JSON.stringify(conversation)]));
 
       await fetch(
         `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
@@ -449,7 +452,7 @@ export default function AvatarLesson({
             />
             {peerConnection && sessionInfo && sessionState === "connected" && (
               <Webcam
-                audio={true}
+                audio muted
                 audioConstraints={audioConstraints}
                 className="absolute bottom-[2.5rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
                 screenshotFormat="image/jpeg"

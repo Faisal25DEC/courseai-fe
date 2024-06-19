@@ -94,13 +94,12 @@ export default function AvatarLesson({
       newPrompt: newPrompt || false,
       sessionId: sessionInfo.session_id,
     });
-    console.log("talking to openai");
+
     if (data.status === 500) {
       console.error("Server error");
       throw new Error("Server error");
     } else {
       taskInputRef.current.value = "";
-      console.log("conversations: ", data.data.conversation)
       conversationsRef.current = data.data.conversation;
 
       return data.data.text;
@@ -149,7 +148,6 @@ export default function AvatarLesson({
       if (text) {
         // Send the AI's response to Heygen's streaming.task API
         const resp = await repeat(sessionInfo.session_id, text);
-        console.log(resp);
         setTimeout(() => {
           setAITalking(false);
         }, resp.duration_ms);
@@ -184,7 +182,7 @@ export default function AvatarLesson({
           },
         }),
       });
-      console.log("response", response);
+
       if (response.status === 500) throw new Error("Server error");
       const data = await response.json();
       const { sdp, ice_servers2: iceServers } = data.data;
@@ -274,7 +272,6 @@ export default function AvatarLesson({
 
     // When ICE candidate is available, send to the server
     peerConnection.onicecandidate = ({ candidate }) => {
-      console.log("Received ICE candidate:", candidate);
       if (candidate) {
         handleICE(sessionInfo.session_id, candidate.toJSON());
       }
@@ -343,8 +340,6 @@ export default function AvatarLesson({
     }
   }, [peerConnection, sessionInfo]);
 
-  // console.log("conversations", conversationsRef.current);
-
   const handleStopAndUpload = async () => {
     if (!recorderRef.current) return;
     recorderRef.current.stopRecording(async () => {
@@ -368,7 +363,6 @@ export default function AvatarLesson({
 
   useEffect(() => {
     return () => {
-      console.log("trigger cleanup function");
       handleStopAndUpload();
     };
   }, []);

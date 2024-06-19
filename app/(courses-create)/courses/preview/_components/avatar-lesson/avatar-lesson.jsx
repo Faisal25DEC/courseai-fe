@@ -457,7 +457,7 @@ export default function AvatarLesson({
                     audio
                     muted
                     audioConstraints={audioConstraints}
-                    className="absolute bottom-[2.5rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
+                    className="absolute bottom-[1rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
                     screenshotFormat="image/jpeg"
                     videoConstraints={videoConstraints}
                     onUserMedia={startRecording}
@@ -466,7 +466,7 @@ export default function AvatarLesson({
               {peerConnection &&
                 sessionInfo &&
                 sessionState === "connected" && (
-                  <div className="flex gap-2 items-end left-[50%] translate-x-[-50%] absolute bottom-[3rem]">
+                  <div className="flex gap-2 items-end left-[50%] translate-x-[-50%] absolute bottom-[1rem]">
                     <div className="flex flex-col gap-2">
                       <div className="relative">
                         <input
@@ -504,7 +504,7 @@ export default function AvatarLesson({
             </div>
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex flex-col gap-2">
+              <div className="flex self-start flex-col gap-2 mt-4">
                 <h1 className="h2-medium">Description</h1>
                 <p className="p-light">{lesson?.description}</p>
               </div>

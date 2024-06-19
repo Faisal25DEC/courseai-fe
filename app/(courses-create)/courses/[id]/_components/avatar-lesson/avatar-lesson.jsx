@@ -410,27 +410,13 @@ export default function AvatarLesson({
     }
   };
   return (
-    <div className="w-full">
-      <div className="h-[90h] w-full flex  flex-col">
-        <div className="flex gap-2 items-center justify-between">
-          <h1 className="h1-medium self-start pl-12">
-            {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
-          </h1>
-          <div className="absolute top-2 right-2">
-            {lesson.status === "approved" ? (
-              <Button variant={"outline"}>Completed</Button>
-            ) : lesson.status === "approval-pending" ? (
-              <Button>Approval Pending</Button>
-            ) : (
-              <Button onClick={markComplete}>Mark Complete</Button>
-            )}
-          </div>
-        </div>
+    <div className="w-full relative">
+      <div className="h-[90vh] w-full flex  flex-col">
         <div className="w-full flex flex-col gap-3 mt-3 relative justify-center items-center">
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex justify-center items-center  w-full">
+            <div className="flex justify-center items-center h-full  w-full">
               <div className="absolute flex flex-col justify-center items-center h-full gap-[15%]">
                 <div className="flex justify-center cursor-pointer items-center gradient-1 p-4 h-24 w-24 rounded-full">
                   <img
@@ -448,66 +434,85 @@ export default function AvatarLesson({
               <img
                 src={thumbnail}
                 alt="ai-avatar"
-                className="object-cover md:rounded-[20px] shadow-lg"
+                className="object-cover md:rounded-[20px] h-[60vh] shadow-lg"
               />
             </div>
           )}
           <div className="h-fit flex flex-col justify-center gap-3 items-center relative py-8">
-            <video
-              align="center"
-              className="h-[60vh] shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
-              ref={mediaElementRef}
-              autoPlay
-              style={{
-                display: sessionState === "connected" ? "block" : "none",
-              }}
-            />
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <Webcam
-                audio
-                muted
-                audioConstraints={audioConstraints}
-                className="absolute bottom-[2.5rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
-                screenshotFormat="image/jpeg"
-                videoConstraints={videoConstraints}
-                onUserMedia={startRecording}
-              ></Webcam>
+              <div className="flex self-start gap-2 py-4 items-center justify-between">
+                <h1 className="h1-medium self-start">
+                  {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
+                </h1>
+              </div>
             )}
+            <div className="relative">
+              <video
+                align="center"
+                className="h-[60vh] shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
+                ref={mediaElementRef}
+                autoPlay
+                style={{
+                  display: sessionState === "connected" ? "block" : "none",
+                }}
+              />
+              {peerConnection &&
+                sessionInfo &&
+                sessionState === "connected" && (
+                  <Webcam
+                    audio
+                    muted
+                    audioConstraints={audioConstraints}
+                    className="absolute bottom-[1rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
+                    screenshotFormat="image/jpeg"
+                    videoConstraints={videoConstraints}
+                    onUserMedia={startRecording}
+                  ></Webcam>
+                )}
+              {peerConnection &&
+                sessionInfo &&
+                sessionState === "connected" && (
+                  <div className="flex gap-2 items-end left-[50%] translate-x-[-50%] absolute bottom-[1rem]">
+                    <div className="flex flex-col gap-2">
+                      <div className="relative">
+                        <input
+                          placeholder="Write your query and press enter to talk"
+                          className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              talkHandler();
+                            }
+                          }}
+                          ref={taskInputRef}
+                          type="text"
+                        />
+                        {/* {aiLoading && (
+                    <div className="absolute right-2 text-white absolute-center-top">
+                      <Loader
+                        width={"20px"}
+                        className="mt-[8px] border-neutral-200"
+                      />
+                    </div>
+                  )} */}
+                      </div>
+                    </div>
+                    {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
+                    <MicrophoneContextProvider>
+                      <DeepgramContextProvider>
+                        <Microphone
+                          talkHandler={talkHandler}
+                          taskInputRef={taskInputRef}
+                        />
+                      </DeepgramContextProvider>
+                    </MicrophoneContextProvider>
+                  </div>
+                )}
+            </div>
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex gap-2 items-end absolute bottom-[3rem]">
-                <div className="flex flex-col gap-2">
-                  <div className="relative">
-                    <input
-                      placeholder="Write your query and press enter to talk"
-                      className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          talkHandler();
-                        }
-                      }}
-                      ref={taskInputRef}
-                      type="text"
-                    />
-                    {/* {aiLoading && (
-                      <div className="absolute right-2 text-white absolute-center-top">
-                        <Loader
-                          width={"20px"}
-                          className="mt-[8px] border-neutral-200"
-                        />
-                      </div>
-                    )} */}
-                  </div>
-                </div>
-                {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-                <MicrophoneContextProvider>
-                  <DeepgramContextProvider>
-                    <Microphone
-                      talkHandler={talkHandler}
-                      taskInputRef={taskInputRef}
-                    />
-                  </DeepgramContextProvider>
-                </MicrophoneContextProvider>
+              <div className="flex self-start flex-col gap-2 mt-4">
+                <h1 className="h2-medium">Description</h1>
+                <p className="p-light">{lesson?.description}</p>
               </div>
             )}
           </div>

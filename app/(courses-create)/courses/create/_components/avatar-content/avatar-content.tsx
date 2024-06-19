@@ -1,3 +1,4 @@
+import AudioButtons from "@/components/shared/audio-buttons/audio-buttons";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelpers";
@@ -6,7 +7,7 @@ import { avatarsAtom, lessonAtom, voicesAtom } from "@/store/atoms";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-
+import { avatars as avatarsArray } from "@/lib/constants";
 const AvatarContent = () => {
   const [currentLesson, setCurrentLesson] = useRecoilState(lessonAtom);
   const [avatars, setAvatars] = useRecoilState<any>(avatarsAtom);
@@ -32,9 +33,16 @@ const AvatarContent = () => {
         },
       }
     );
-    const filteredAvatars = avatarsData.data.avatars.map((item: any) => {
-      return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
-    });
+    const filteredAvatars = avatarsData.data.avatars
+      .map((item: any) => {
+        return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
+      })
+      .filter((avatar: any) => {
+        return avatarsArray.some(
+          (avatarItem: any) => avatarItem.id === avatar.id
+        );
+      });
+    console.log(filteredAvatars);
     const filteredVoices = voicesData.data.list.filter(
       (item: any) => item.language === "English"
     );
@@ -49,7 +57,7 @@ const AvatarContent = () => {
       "female",
       5
     );
-    const selectedAvatars = [...maleAvatars, ...femaleAvatars];
+    const selectedAvatars = [...maleAvatars];
 
     const maleVoices = getFilteredVoiceAndAvatarObjects(
       filteredVoices,
@@ -61,7 +69,7 @@ const AvatarContent = () => {
       "female",
       5
     );
-    const selectedVoices = [...maleVoices, ...femaleVoices];
+    const selectedVoices = [...maleVoices];
 
     setAvatars(selectedAvatars || []);
     setVoices(selectedVoices || []);
@@ -90,16 +98,6 @@ const AvatarContent = () => {
         ...prev.content,
         avatar: avatar || {},
         avatar_id: avatar?.avatar_id || "",
-      },
-    }));
-  };
-  const handleChangeVoice = (voide: any) => {
-    setCurrentLesson((prev) => ({
-      ...prev,
-      content: {
-        ...prev.content,
-        voice: voide || {},
-        voice_id: voide?.voice_id || "",
       },
     }));
   };
@@ -143,29 +141,14 @@ const AvatarContent = () => {
         <p className="label">Voices</p>
 
         <div className="flex flex-wrap items-center gap-4">
-          {voices.map((voice: any, idx: number) => (
-            <div
-              onClick={() => handleChangeVoice(voice)}
-              key={idx}
-              className="flex flex-col items-center gap-2"
-            >
-              {/* <img
-                className="w-24 h-24 rounded-[20px] object-cover"
-                src={voice.normal_thumbnail_medium}
-                alt=""
-              /> */}
-              <Button
-                variant={
-                  currentLesson.content?.voice_id === voice.voice_id
-                    ? "default"
-                    : "outline"
-                }
-                className=""
-              >
-                {voice.display_name}
-              </Button>
-            </div>
-          ))}
+          <AudioButtons />
+          <audio
+            className="hidden"
+            // src={voice}
+            id="audio"
+            controls
+            autoPlay={false}
+          />
         </div>
       </div>
       <div className="label-container">

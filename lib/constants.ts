@@ -4,21 +4,6 @@ export const avatars = [
     voice_id: "1ae3be1e24894ccabdb4d8139399f721",
     name: "Josh",
   },
-  {
-    id: "Eric_public_pro2_20230608",
-    name: "Eric",
-    voice_id: "1ae3be1e24894ccabdb4d8139399f721",
-  },
-  {
-    id: "Justin_public_3_20240308",
-    name: "Justin",
-    voice_id: "1ae3be1e24894ccabdb4d8139399f721",
-  },
-  {
-    id: "Angela-inblackskirt-20220820",
-    name: "Angela",
-    voice_id: "1ae3be1e24894ccabdb4d8139399f721",
-  },
 ];
 
 export const heygen_API = {

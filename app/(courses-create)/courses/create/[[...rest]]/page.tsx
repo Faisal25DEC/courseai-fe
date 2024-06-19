@@ -29,6 +29,7 @@ import { StrictModeDroppable } from "@/components/shared/strict-mode-droppable/s
 import Link from "next/link";
 import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelpers";
 import { updateCourse } from "@/services/lesson.service";
+import { avatars as avatarsArray } from "@/lib/constants";
 
 const CreateCourse = () => {
   const [currentUserRole, setCurrentUserRole] =
@@ -135,9 +136,15 @@ const CreateCourse = () => {
         },
       }
     );
-    const filteredAvatars = avatarsData.data.avatars.map((item: any) => {
-      return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
-    });
+    const filteredAvatars = avatarsData.data.avatars
+      .map((item: any) => {
+        return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
+      })
+      .filter((avatar: any) => {
+        return avatarsArray.some(
+          (avatarItem: any) => avatarItem.id === avatar.avatar_id
+        );
+      });
     const filteredVoices = voicesData.data.list.filter(
       (item: any) => item.language === "English"
     );
@@ -152,7 +159,7 @@ const CreateCourse = () => {
       "female",
       5
     );
-    const selectedAvatars = [...maleAvatars, ...femaleAvatars];
+    const selectedAvatars = [...maleAvatars];
 
     const maleVoices = getFilteredVoiceAndAvatarObjects(
       filteredVoices,
@@ -164,7 +171,7 @@ const CreateCourse = () => {
       "female",
       5
     );
-    const selectedVoices = [...maleVoices, ...femaleVoices];
+    const selectedVoices = [...maleVoices];
 
     setAvatars(selectedAvatars || []);
     setVoices(selectedVoices || []);

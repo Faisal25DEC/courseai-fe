@@ -41,10 +41,6 @@ const TextLesson = ({
   const currenTimeRef = React.useRef<number>(Date.now());
   const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
   useEffect(() => {
-    if (lesson.status === "rejected") {
-      toast.error("Admin has rejected the approval request.");
-      toast.dismiss();
-    }
     return () => {
       if (!user) return;
       const duration = Date.now() - currenTimeRef.current;
@@ -62,6 +58,12 @@ const TextLesson = ({
       });
     };
   }, []);
+  useEffect(() => {
+    if (lesson.status === "rejected") {
+      toast.error("Admin has rejected the approval request.");
+      toast.dismiss();
+    }
+  }, [lesson]);
 
   useEffect(() => {
     setIsDocumentVisible(!document.hidden);
@@ -147,22 +149,28 @@ const TextLesson = ({
   return (
     <div className="py-4 h-full flex flex-col items-center overflow-auto relative">
       <div className="w-[900px] flex flex-col gap-6 relative">
-        <h1 className="h1-medium self-start pl-12">
-          {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
-        </h1>
+        <div className="flex gap-2 items-center justify-between">
+          <h1 className="h1-medium self-start pl-12">
+            {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
+          </h1>
+          <div className="absolute top-2 right-2">
+            {lesson.status === "approved" ? (
+              <Button variant={"outline"}>Completed</Button>
+            ) : lesson.status === "approval-pending" ? (
+              <Button>Approval Pending</Button>
+            ) : (
+              <Button onClick={markComplete}>Mark Complete</Button>
+            )}
+          </div>
+        </div>
         <Editor
           editable={false}
           onChange={() => null}
           initialContent={content.text}
         />
-        <div className="absolute top-2 right-2">
-          {lesson.status === "approved" ? (
-            <Button variant={"outline"}>Completed</Button>
-          ) : lesson.status === "approval-pending" ? (
-            <Button>Approval Pending</Button>
-          ) : (
-            <Button onClick={markComplete}>Mark Complete</Button>
-          )}
+        <div className="flex flex-col gap-2 pl-12">
+          <h1 className="h2-medium">Description</h1>
+          <p className="p-light">{lesson?.description}</p>
         </div>
       </div>
     </div>

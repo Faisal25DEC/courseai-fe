@@ -111,18 +111,18 @@ const CreateLessonModal = () => {
 
   return (
     <Modal
-      className="min-h-[80vh] "
+      className="h-[80vh] "
       showIcon
       isOpen={isCreateLessonModalOpen}
       onClose={onCreateLessonModalClose}
     >
-      <div className="relative flex flex-col gap-6 overflow-hidden rounded-[20px] relative">
+      <div className="relative flex flex-col gap-6 overflow-hidden rounded-[20px]">
         <div className=" text-xl bg-gray-100 ">
           <h1 className=" px-8 h-[80px] flex items-center">Create Lesson</h1>
           <hr className="bg-white" />
         </div>
         {lessonCreateSteps === 1 && (
-          <div className="flex flex-col gap-8 px-8 pb-2 bg-white">
+          <div className="flex flex-col gap-8 px-8 pb-2 bg-white overflow-y-scroll mb-[90px]">
             <div className="label-container">
               <label className="label">Title</label>
               <Input
@@ -167,6 +167,7 @@ const CreateLessonModal = () => {
                 ))}
               </div>
             </div>
+            <Submissions />
           </div>
         )}
         {lessonCreateSteps === 1 && (
@@ -181,7 +182,12 @@ const CreateLessonModal = () => {
                 }
                 incrementStep(1);
               }}
-              disabled={!currentLesson.title || !currentLesson.type}
+              disabled={
+                !currentLesson.title ||
+                !currentLesson.type ||
+                !currentLesson.description ||
+                !currentLesson.submission
+              }
               className="w-[60%]"
             >
               Next
@@ -199,7 +205,7 @@ const CreateLessonModal = () => {
               Back
             </Button>
             <Button
-              onClick={() => incrementStep(1)}
+              onClick={() => handleSubmit()}
               disabled={
                 !currentLesson.title ||
                 !currentLesson.description ||
@@ -207,11 +213,11 @@ const CreateLessonModal = () => {
               }
               className="w-[50%]"
             >
-              Next
+              {lessonModalType?.type === "edit" ? "Update" : "Create"} Lesson
             </Button>
           </div>
         )}
-        {lessonCreateSteps === 3 && (
+        {/* {lessonCreateSteps === 3 && (
           <div className="bg-gray-100 px-4 absolute bottom-0 h-[80px] flex items-center gap-2 justify-center left-0 w-full">
             <Button
               variant={"outline"}
@@ -225,10 +231,10 @@ const CreateLessonModal = () => {
               {lessonModalType?.type === "edit" ? "Update" : "Create"} Lesson
             </Button>
           </div>
-        )}
+        )} */}
 
         {lessonCreateSteps === 2 && <CreateContent />}
-        {lessonCreateSteps === 3 && <Submissions />}
+
         <div
           onClick={onCreateLessonModalClose}
           className="absolute cursor-pointer transition-all duration-300 ease-in top-[15px] hover:bg-slate-200 right-[15px] p-[3px] rounded-full "

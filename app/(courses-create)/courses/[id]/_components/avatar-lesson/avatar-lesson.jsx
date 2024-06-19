@@ -7,19 +7,22 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-// import { avatars } from "@/lib/constants";
-// import Loader from "@/components/shared/loader/loader";
-// import Navbar from "@/components/shared/navbar/navbar";
 import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
 import { activeLessonAtom } from "@/store/atoms";
-import Modal from "@/components/shared/modal/index";
 import Webcam from "react-webcam";
-import RecordRTC, { invokeSaveAsDialog } from "recordrtc";
+import RecordRTC from "recordrtc";
 import { v4 as uuidv4 } from "uuid";
 import { currentCourseId } from "@/lib/constants";
 import { useUser } from "@clerk/nextjs";
 import { baseUrl } from "@/lib/config";
+import { StringFormats } from "@/lib/StringFormats";
+import {
+  approveLessonRequest,
+  getUserAnalytics,
+  updateLessonForUser,
+} from "@/services/lesson.service";
+import useTrackLessonDuration from "@/hooks/useTrackLessonDuration";
 
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
@@ -70,8 +73,14 @@ export default function AvatarLesson({
   // const [webCamState, setWebCamState] = useState(null);
   // const [blob, setBlob] = useState(null);
   const recorderRef = useRef(null);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(false);
   const { user } = useUser();
-
+  useTrackLessonDuration({
+    currenTimeRef,
+    lesson,
+    setIsDocumentVisible,
+    isDocumentVisible,
+  });
   useEffect(() => {
     if (lesson.status === "rejected") {
       toast.error("Admin has rejected the approval request.");
@@ -81,13 +90,6 @@ export default function AvatarLesson({
       alert("Please enter your API key and server URL in the api.json file");
     }
   }, []);
-  useEffect(() => {
-    currenTimeRef.current = Date.now();
-
-    return () => {
-      const duration = Date.now() - currenTimeRef.current;
-    };
-  }, [activeLesson]);
   async function talkToOpenAI(prompt, newPrompt) {
     const data = await axios.post(`/api/complete`, {
       prompt,
@@ -206,22 +208,6 @@ export default function AvatarLesson({
       console.error("Failed to create session:", error);
     }
   };
-
-  const handleCheckboxChange = () => {
-    const isChecked = bgCheckboxRef.current.checked;
-    if (!sessionInfo) {
-      alert("Please create a connection first");
-      bgCheckboxRef.current.checked = false;
-      return;
-    }
-    if (isChecked) {
-      canvasElementRef.current.style.display = "block";
-      mediaElementRef.current.style.display = "none";
-    } else {
-      canvasElementRef.current.style.display = "none";
-      mediaElementRef.current.style.display = "block";
-    }
-  };
   // start the session
   async function startSession(session_id, sdp) {
     toast.loading("Starting session");
@@ -308,21 +294,6 @@ export default function AvatarLesson({
       console.error("Failed to close the connection:", error);
     }
   };
-  // useEffect(() => {
-  //   if (peerConnection && sessionInfo) {
-  //     startAndDisplaySession();
-  //   }
-  // }, [peerConnection, sessionInfo]);
-  // useEffect(() => {
-  //   const triggerSession = async () => {
-  //     try {
-  //       await createNewSession();
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   triggerSession();
-  // }, [mediaElementRef.current]);
   useEffect(() => {
     const mediaElement = mediaElementRef.current;
     if (mediaElement) {
@@ -363,6 +334,7 @@ export default function AvatarLesson({
 
   useEffect(() => {
     return () => {
+      if (lesson.status === "approved") return;
       handleStopAndUpload();
     };
   }, []);
@@ -389,14 +361,71 @@ export default function AvatarLesson({
 
     recorderRef.current.startRecording();
   };
-
+  const markComplete = () => {
+    if (lesson.submission === "automatic") {
+      updateLessonForUser({
+        user_id: user?.id,
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        data: {
+          status: "approved",
+          duration: Date.now() - currenTimeRef.current,
+          completed_at: Date.now(),
+        },
+      })
+        .then(() => {
+          getUserAnalytics(user?.id, currentCourseId).then((res) => {
+            setUserAnalytics(res?.analytics);
+          });
+        })
+        .catch((err) => {
+          toast.error("Failed to mark lesson as complete");
+        });
+    } else {
+      updateLessonForUser({
+        user_id: user?.id,
+        course_id: currentCourseId,
+        lesson_id: lesson.id,
+        data: {
+          status: "approval-pending",
+          duration: Date.now() - currenTimeRef.current,
+        },
+      })
+        .then(() => {
+          approveLessonRequest({
+            lesson_id: lesson.id,
+            course_id: currentCourseId,
+            user_id: user?.id,
+            status: "pending",
+          }).then(() => {
+            toast.success("Request sent for approval");
+            getUserAnalytics(user?.id, currentCourseId).then((res) => {
+              setUserAnalytics(res?.analytics);
+            });
+          });
+        })
+        .catch((err) => {
+          toast.error("Failed to send request for approval");
+        });
+    }
+  };
   return (
     <div className="w-full">
-      {/* <Navbar /> */}
-      {/* <p className="text-center text-gray-600 flex justify-center font-medium items-center text-xl pb-4">
-        Consolidated Assurance Demo
-      </p> */}
       <div className="h-[90h] w-full flex  flex-col">
+        <div className="flex gap-2 items-center justify-between">
+          <h1 className="h1-medium self-start pl-12">
+            {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
+          </h1>
+          <div className="absolute top-2 right-2">
+            {lesson.status === "approved" ? (
+              <Button variant={"outline"}>Completed</Button>
+            ) : lesson.status === "approval-pending" ? (
+              <Button>Approval Pending</Button>
+            ) : (
+              <Button onClick={markComplete}>Mark Complete</Button>
+            )}
+          </div>
+        </div>
         <div className="w-full flex flex-col gap-3 mt-3 relative justify-center items-center">
           {(!peerConnection ||
             !sessionInfo ||
@@ -424,17 +453,6 @@ export default function AvatarLesson({
             </div>
           )}
           <div className="h-fit flex flex-col justify-center gap-3 items-center relative py-8">
-            {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="w-[98%] mx-auto flex justify-end">
-                <Button
-                  onClick={onOpen}
-                  variant={"outline"}
-                  className="self-end"
-                >
-                  Knowledge Base
-                </Button>{" "}
-              </div>
-            )}
             <video
               align="center"
               className="h-[60vh] shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
@@ -446,7 +464,8 @@ export default function AvatarLesson({
             />
             {peerConnection && sessionInfo && sessionState === "connected" && (
               <Webcam
-                audio muted
+                audio
+                muted
                 audioConstraints={audioConstraints}
                 className="absolute bottom-[2.5rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
                 screenshotFormat="image/jpeg"
@@ -497,42 +516,6 @@ export default function AvatarLesson({
           return <div key={item.content}>{item.content}</div>;
         })}
       </div>
-      <Modal isOpen={isOpen} onClose={onClose} className={"w-[100%]"}>
-        <div className="flex flex-col gap-2 p-3 ">
-          <div>
-            <h2 className="text-[18px] font-medium text-gray-600">
-              Knowledge Base
-            </h2>
-          </div>
-          <div>
-            <textarea
-              onChange={(e) => setKnowledgeBase(e.target.value)}
-              value={knowledgeBase}
-              rows={15}
-              className="w-[100%] border border-gray-300 rounded-md p-2"
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button variant={"outline"} onClick={onClose}>
-              Close
-            </Button>
-            <Button
-              onClick={async () => {
-                if (knowledgeBase.trim() === "") {
-                  toast.error("Knowledge base cannot be empty");
-                  onClose();
-                  return;
-                } else {
-                  await talkToOpenAI(knowledgeBase, true);
-                  onClose();
-                }
-              }}
-            >
-              Save
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

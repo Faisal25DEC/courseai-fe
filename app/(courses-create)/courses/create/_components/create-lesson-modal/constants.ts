@@ -1,12 +1,12 @@
 export const buttons = [
   {
-    label: "Text",
+    label: "Regular",
     value: "text",
   },
-  {
-    label: "Video",
-    value: "video",
-  },
+  // {
+  //   label: "Video",
+  //   value: "video",
+  // },
   {
     label: "Avatar",
     value: "avatar",

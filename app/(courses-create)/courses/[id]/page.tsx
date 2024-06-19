@@ -1,5 +1,5 @@
 "use client";
-import { currentCourseId } from "@/lib/constants";
+import { colors, currentCourseId, textFromBg } from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
 import { getCourse, getUserAnalytics } from "@/services/lesson.service";
 import {
@@ -18,6 +18,10 @@ import LessonLockedModal from "./_components/lesson-locked-modal/lesson-locked-m
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import useFetchLessons from "@/hooks/useFetchLesson";
+import { StringFormats } from "@/lib/StringFormats";
+
+import { typeColorObj } from "./constants";
+import Tag from "@/components/shared/tag/tag";
 
 const PreivewCourse = () => {
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
@@ -80,26 +84,24 @@ const PreivewCourse = () => {
   return (
     <div className="w-full h-[calc(100vh-120px)] overflow-y-scroll">
       <div className="flex h-full w-[90%] mx-auto">
-        <div className="w-[200px] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8">
+        <div className="min-w-[300px] border-r-[1px] mr-4 h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 px-4">
           {filteredLessons.map((lesson: any, idx: any) => (
             <div
               onClick={() => handleChangeLesson(idx)}
               key={lesson.id}
               style={{ opacity: lesson.locked ? 0.5 : 1 }}
-              className="flex cursor-pointer flex-col items-center gap-2"
+              className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
+                activeLesson === idx ? "bg-gray-100" : ""
+              }`}
             >
-              {lesson.type === "video" && (
+              {/* {lesson.type === "video" && (
                 <div className="relative">
                   <img
                     src={getVideoThumbnail(lesson.content.playback_id)}
                     alt="thumbnail"
                     className="w-[120px] h-[120px] rounded-[12px] object-cover"
                   />
-                  {lesson.status === "rejected" && (
-                    <div className="absolute top-2 right-2 p-2 rounded-[12px] text-[12px] text-white bg-red-500">
-                      Rejected
-                    </div>
-                  )}
+               
                 </div>
               )}
               {lesson.type === "avatar" && (
@@ -128,16 +130,36 @@ const PreivewCourse = () => {
                     </div>
                   )}
                 </div>
-              )}
-              <div className="flex items-center gap-2">
-                <div className="text-sm font-normal text-gray-700">
-                  {lesson.title}
+              )} */}
+              <div className="flex h6-medium items-start gap-2 font-medium">
+                <span>{idx + 1} </span>
+                <div className="flex flex-col gap-2">
+                  <div className="">
+                    {StringFormats.capitalizeFirstLetterOfEachWord(
+                      lesson.title
+                    )}
+                  </div>
                 </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Tag
+                  color={textFromBg[typeColorObj[lesson.type]]}
+                  bg={typeColorObj[lesson.type]}
+                >
+                  {lesson.type}
+                </Tag>
+                {lesson.status === "rejected" && (
+                  <Tag bg={colors.lightred}>Rejected</Tag>
+                )}
+                {/* <Tag>
+                  {StringFormats.capitalizeFirstLetterOfEachWord(lesson.status)}
+                </Tag> */}
               </div>
             </div>
           ))}
         </div>
-        <div className="w-[calc(100%-200px)]">
+        <div className="w-[calc(100%-300px)]">
           {lessonsArray[activeLesson]?.type === "video" && (
             <VideoLesson
               video={lessonsArray[activeLesson].content}

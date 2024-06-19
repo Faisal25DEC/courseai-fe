@@ -69,7 +69,7 @@ export default function AvatarLesson({
   const bgCheckboxRef = useRef(null);
   const [sessionInfo, setSessionInfo] = useState(null);
   const [peerConnection, setPeerConnection] = useState(null);
-  const currenTimeRef = useRef(null);
+  const currenTimeRef = useRef(Date.now());
   // const [webCamState, setWebCamState] = useState(null);
   // const [blob, setBlob] = useState(null);
   const recorderRef = useRef(null);

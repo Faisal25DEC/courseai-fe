@@ -441,3 +441,7 @@ input:checked + .slider:before {
 .p-large-light {
   @apply text-lg font-light text-gray-800;
 }
+
+.icon-medium{
+  @apply w-5 h-5 text-gray-700
+}

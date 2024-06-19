@@ -20,12 +20,6 @@ import useSetOrganization from "@/hooks/useSetOrganization";
 import EnrollCourseModal from "../enroll-course-modal/enroll-course-modal";
 import useEnrollCourseModal from "@/hooks/useEnrollCourseModal";
 
-// import { Button } from "./ui/button";
-
-// import PopoverHover from "./custom/popover-hover";
-// import UpgradeMessage from "./upgrade-message";
-// import TooltipComp from "./tooltip-comp";
-
 const Navbar = () => {
   const {
     isEnrollCourseModalOpen,
@@ -37,9 +31,6 @@ const Navbar = () => {
     useRecoilState(currentUserRoleAtom);
   const [invite, setIsInvite] = useState(false);
   useSetOrganization();
-  // if (isLoaded && !isSignedIn) {
-  //   return redirect('/sign-in');
-  // }
 
   const forbiddenRoutes = ["sign-in", "sign-up"];
 
@@ -75,60 +66,9 @@ const Navbar = () => {
                 </p>
               </Link>
             </div>
-            {/* <Popover>
-              <PopoverTrigger>
-                <div className="hover:bg-gray-100 md:px-[6px] py-[5px] transition-all duration-300 cursor-pointer ease-in-out rounded-md flex items-center gap-[12px]">
-                  <img
-                    className="w-[32px] h-[32px] rounded-full"
-                    src={user?.imageUrl}
-                    alt=""
-                  />
-                  <p className="font-medium text-sm">{user?.fullName}</p>
-                  <ChevronsUpDown className="text-neutral-700 w-4 h-4" />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="p-0" align="center">
-                <p className="border-b-[1px] border-gray-100 px-8 cursor-pointer container-effect py-[9px] text-effect text-[12.5px]">
-                  My Workspaces
-                </p>
-                {[1, 2, 3].map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="container-effect text-[14px] px-8 py-[9px] cursor-pointer text-neutral-700 font-medium flex items-center gap-[8px]"
-                  >
-                    <Initials
-                      name="Whatever"
-                      width="28px"
-                      height="28px"
-                      fontSize="10px"
-                    />
-                    <p className="">Workspace {idx + 1}</p>
-                  </div>
-                ))}
-                <div className="container-effect px-8 py-[9px] cursor-pointer text-neutral-700 font-medium flex items-center gap-[12px]">
-                  <Icon
-                    className="w-[24px] h-[24px]"
-                    icon="icons8:plus"
-                    style={{ color: 'rgb(52,52,52)' }}
-                  />
-                  <p className="text-[15px]">Add A Worksapce</p>
-                </div>
-              </PopoverContent>
-            </Popover> */}
           </nav>
         </div>
-        {/* <SignedOut>
-          <div className="flex items-center gap-4">
-            <SignInButton mode="modal">
-              <Button variant="ghost" size="sm">
-                Log In
-              </Button>
-            </SignInButton>
-            <Link href="/sign-in">
-              <Button>Register</Button>
-            </Link>
-          </div>
-        </SignedOut> */}
+
         <SignedIn>
           <div className="flex items-center gap-[28px]">
             <div className="hidden md:flex items-center gap-[32px]">

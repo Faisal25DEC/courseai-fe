@@ -42,7 +42,7 @@ export const voicesAtom = atom({
   default: [],
 });
 
-export const currentCourseAtom = atom({
+export const currentCourseAtom = atom<any>({
   key: "currentCourseAtom",
   default: {},
 });

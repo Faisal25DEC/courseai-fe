@@ -5,17 +5,32 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import UserCard from "./_components/user-card/user-card";
-import { getCourse, getCourseAnalytics } from "@/services/lesson.service";
+import {
+  getCourse,
+  getCourseAnalytics,
+  getEnrolledUsersInACourse,
+} from "@/services/lesson.service";
 import Modal from "@/components/shared/modal";
 import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
 import useFetchLessons from "@/hooks/useFetchLesson";
 import UserLessonAnalytics from "./_components/user-lesson-analytics/user-lesson-analytics";
 import { Icon } from "@iconify/react";
 import { useRecoilState } from "recoil";
-import { globalEnrolledUsersAtom } from "@/store/atoms";
+import {
+  globalEnrolledUsersAtom,
+  organizationMembersAtom,
+} from "@/store/atoms";
+import AnalyticsCard from "./_components/analytics-card/analytics-card";
+import useFetchOrganizationMemberships from "@/hooks/useFetchOrganizationMemberships";
+import useCurrentCourse from "@/hooks/useCurrentCourse";
+import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
 const Page = () => {
+  const [currentCourse, setCurrentCourse] = useCurrentCourse({
+    id: currentCourseId,
+  });
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
-
+  const [organizationMemberships, setOrganizationMemberships] =
+    useFetchOrganizationMemberships();
   const {
     isCurrentUserAnalyticsModalOpen,
     onCurrentUserAnalyticsModalOpen,
@@ -27,25 +42,9 @@ const Page = () => {
   );
   const fetchEnrolledUsers = async () => {
     try {
-      const usersRes = await axios.get("/api/get-users-from-clerk");
-      const res = await axios.get(
-        `${baseUrl}/courses/${currentCourseId}/users`
+      const enrolledUsersWithDate = await getEnrolledUsersInACourse(
+        currentCourseId
       );
-      const courseAnalyticsRes = await getCourseAnalytics(currentCourseId);
-      const users = usersRes.data.data;
-      const enrolledUsersIds = res.data;
-
-      const enrolledUsersArray = users.filter((user: any) =>
-        enrolledUsersIds.some((item: any) => item.user_id === user.id)
-      );
-      const enrolledUsersWithDate = enrolledUsersArray.map((user: any) => {
-        return {
-          ...user,
-          enrolled_at: enrolledUsersIds.find(
-            (item: any) => item.user_id === user.id
-          ).enrolled_at,
-        };
-      });
       setEnrolledUsers(enrolledUsersWithDate);
     } catch (error) {
       toast.error("Failed to fetch enrolled users");
@@ -56,6 +55,35 @@ const Page = () => {
     fetchEnrolledUsers();
   }, []);
 
+  const analyticsCards = [
+    {
+      title: "Total Users",
+      value: organizationMemberships?.length,
+      icon: <Icon icon="clarity:users-line" className="icon-medium" />,
+    },
+    {
+      title: "Enrolled Users",
+      value: enrolledUsers?.length,
+      icon: (
+        <Icon
+          className="icon-medium"
+          icon="material-symbols-light:play-lesson-outline-rounded"
+        />
+      ),
+    },
+    {
+      title: "Total Lessons",
+      value: lessonsArray?.length,
+      icon: <Icon className="icon-medium" icon="f7:book" />,
+    },
+    {
+      title: "Last Updated At",
+      value: FormatDate.getDateInDDMMYYYY(currentCourse?.updated_at),
+      icon: <Icon className="icon-medium" icon="ic:baseline-update" />,
+    },
+  ];
+  console.log(organizationMemberships, enrolledUsers, lessonsArray);
+
   const headings = ["Name", "Email", "Enrolled At", "Progress"];
   return (
     <div className="flex flex-col gap-4 w-[100%] mx-auto">
@@ -65,6 +93,11 @@ const Page = () => {
         </div>
       </div>
       <hr />
+      <div className="w-[90%] mx-auto flex items-center gap-4">
+        {analyticsCards?.map((item, idx) => {
+          return <AnalyticsCard key={idx} card={item} />;
+        })}
+      </div>
       <div className="w-[90%] mx-auto">
         <div className="w-full flex items-center p-4">
           {headings.map((heading) => (

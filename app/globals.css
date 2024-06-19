@@ -445,3 +445,67 @@ input:checked + .slider:before {
 .icon-medium{
   @apply w-5 h-5 text-gray-700
 }
+
+.cl-formButtonPrimary {
+  background-color: #020105;
+  border: solid 1px #020105;
+  transition: all 0.2s ease-in;
+}
+.cl-formButtonPrimary:hover {
+  background-color: white;
+  color: #020105;
+}
+.cl-internal-b3fm6y {
+  display: none;
+  background-color: #020105;
+}
+.cl-rootBox .cl-signIn-root .🔒️ .cl-internal-phfxlr {
+  font-family: '__satoshi_7dbc08', '__satoshi_Fallback_7dbc08' !important;
+}
+.cl-formFieldLabel
+  .cl-formFieldLabel__identifier
+  .cl-required
+  .🔒️
+  .cl-internal-1xpzc82 {
+  color: rgb(55, 65, 81) !important;
+}
+.cl-internal-1xpzc82 {
+  color: rgb(55, 65, 81) !important;
+  font-weight: 500;
+}
+
+.gradient-1-purple-pink {
+  background: linear-gradient(180deg, rgb(133, 56, 226), rgb(206, 42, 136));
+}
+.btn-gradient {
+  @apply text-white text-[13px] px-4 rounded-[20px];
+  background-image: linear-gradient(
+    to right,
+    rgb(113, 1, 218),
+    rgb(206, 70, 190)
+  );
+  border: 0;
+  transition: all 0.2s ease-in;
+}
+.btn-glow:hover {
+  box-shadow: rgba(111, 76, 255, 0.5) 0px 0px 20px 0px;
+}
+.cl-internal-uyu30o {
+  display: none !important;
+}
+.shadow-2 {
+  box-shadow: rgba(199, 199, 199, 0.1) 0px 5px 5px -10px;
+}
+ul,
+li {
+  list-style: none;
+}
+.cl-internal-180wb59:has(div:only-child) {
+  display: none !important;
+}
+.cl-internal-11ttlho:has(div:only-child) {
+  display: none !important;
+}
+.cl-internal-16mc20d {
+  display: none !important;
+}

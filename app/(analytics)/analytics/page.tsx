@@ -72,16 +72,16 @@ const Page = () => {
         />
       ),
     },
-    {
-      title: "Total Lessons",
-      value: lessonsArray?.length,
-      icon: <Icon className="icon-medium" icon="f7:book" />,
-    },
-    {
-      title: "Last Updated At",
-      value: FormatDate.getDateInDDMMYYYY(currentCourse?.updated_at),
-      icon: <Icon className="icon-medium" icon="ic:baseline-update" />,
-    },
+    // {
+    //   title: "Total Lessons",
+    //   value: lessonsArray?.length,
+    //   icon: <Icon className="icon-medium" icon="f7:book" />,
+    // },
+    // {
+    //   title: "Last Updated At",
+    //   value: FormatDate.getDateInDDMMYYYY(currentCourse?.updated_at),
+    //   icon: <Icon className="icon-medium" icon="ic:baseline-update" />,
+    // },
   ];
   console.log(organizationMemberships, enrolledUsers, lessonsArray);
 

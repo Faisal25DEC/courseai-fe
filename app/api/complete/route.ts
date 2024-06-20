@@ -1,12 +1,13 @@
 import { OpenAI } from "openai";
 import { NextRequest, NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
+import { basePrompt } from "@/lib/constants";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // Make sure to use environment variables for sensitive data
 });
 
-const systemSetup = `You are an AI assistant which answers queries`;
+const systemSetup = basePrompt;
 let conversationMemory: any = {};
 
 export async function POST(req: NextRequest) {
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
       const previousMessages = conversationMemory[sessionId];
 
       const chatCompletion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o",
         messages: [...previousMessages, { role: "user", content: prompt }],
       });
 

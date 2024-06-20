@@ -88,6 +88,7 @@ export default function AvatarLesson({
       const duration = Date.now() - currenTimeRef.current;
     };
   }, [activeLesson]);
+          
   async function talkToOpenAI(prompt, newPrompt) {
     const data = await axios.post(`/api/complete`, {
       prompt,

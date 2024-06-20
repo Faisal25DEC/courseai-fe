@@ -491,7 +491,7 @@ export default function AvatarLesson({
                 sessionState === "connected" && (
                   <div className="flex gap-2 items-end left-[50%] translate-x-[-50%] absolute bottom-[1rem]">
                     <div className="flex flex-col gap-2">
-                      <div className="relative">
+                      {/* <div className="relative">
                         <input
                           placeholder="Write your query and press enter to talk"
                           className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
@@ -503,15 +503,15 @@ export default function AvatarLesson({
                           ref={taskInputRef}
                           type="text"
                         />
-                        {/* {aiLoading && (
+                        {aiLoading && (
                     <div className="absolute right-2 text-white absolute-center-top">
                       <Loader
                         width={"20px"}
                         className="mt-[8px] border-neutral-200"
                       />
                     </div>
-                  )} */}
-                      </div>
+                  )}
+                      </div> */}
                     </div>
                     {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
                     <MicrophoneContextProvider>
@@ -534,9 +534,9 @@ export default function AvatarLesson({
             )}
           </div>
         </div>
-        {conversationsRef.current.map((item) => {
+        {/* {conversationsRef.current.map((item) => {
           return <div key={item.content}>{item.content}</div>;
-        })}
+        })} */}
       </div>
     </div>
   );

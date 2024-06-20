@@ -88,7 +88,12 @@ const Navbar = () => {
                   Invite User
                 </p>
               )}
-              <p className="text-sm text-effect cursor-pointer">Help</p>
+              <a
+                href="mailto:admin@permian.ai"
+                className="text-sm text-effect cursor-pointer"
+              >
+                Help
+              </a>
             </div>
             <div className="flex items-center gap-2">
               <UserButton afterSignOutUrl="/sign-in" />

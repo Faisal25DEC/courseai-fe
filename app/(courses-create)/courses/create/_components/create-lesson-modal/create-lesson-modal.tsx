@@ -24,6 +24,7 @@ import Submissions from "../submissions/submissions";
 import axios from "axios";
 import { baseUrl } from "@/lib/config";
 import { getMaxId } from "@/lib/ArrayHelpers/ArrayHelpers";
+import { currentCourseId } from "@/lib/constants";
 const CreateLessonModal = () => {
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
@@ -60,31 +61,27 @@ const CreateLessonModal = () => {
       if (lessonModalType?.type === "edit") {
         const { id, ...currentLessonWithoutId } = currentLesson;
         const res1 = await axios.patch(
-          `${baseUrl}/courses/6667760f255b05556e58b41a/lessons/${currentLesson.id}`,
+          `${baseUrl}/courses/${currentCourseId}/lessons/${currentLesson.id}`,
           {
             ...currentLessonWithoutId,
             submission_status: currentLesson.submission_status || "pending",
           }
         );
-        const res = await axios.get(
-          `${baseUrl}/courses/6667760f255b05556e58b41a`
-        );
+        const res = await axios.get(`${baseUrl}/courses/${currentCourseId}`);
         setCurrentCourse(res.data);
         setLessonsArray(res.data.lessons);
         onCreateLessonModalClose();
         return;
       }
       const res1 = await axios.post(
-        `${baseUrl}/courses/6667760f255b05556e58b41a/lessons`,
+        `${baseUrl}/courses/${currentCourseId}/lessons`,
         {
           id: getMaxId(lessonsArray) + 1,
           ...currentLesson,
           submission_status: "pending",
         }
       );
-      const res = await axios.get(
-        `${baseUrl}/courses/6667760f255b05556e58b41a`
-      );
+      const res = await axios.get(`${baseUrl}/courses/${currentCourseId}`);
       setCurrentCourse(res.data);
       setLessonsArray(res.data.lessons);
       onCreateLessonModalClose();

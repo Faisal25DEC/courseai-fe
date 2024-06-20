@@ -48,9 +48,7 @@ const CreateCourse = () => {
   useEffect(() => {
     const fetchCurrentCourse = async () => {
       try {
-        const res = await axios.get(
-          `${baseUrl}/courses/6667760f255b05556e58b41a`
-        );
+        const res = await axios.get(`${baseUrl}/courses/${currentCourseId}`);
         setCurrentCourse(res.data);
         setLessonsArray(res.data.lessons);
       } catch (error) {

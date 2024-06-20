@@ -448,11 +448,11 @@ export default function AvatarLesson({
           )}
           <div className="h-fit flex flex-col justify-center gap-3 items-center relative py-8">
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex self-start gap-2 py-4 items-center justify-between">
+              <div className="flex w-full self-start gap-2 py-4 items-center justify-between">
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
                 </h1>
-                <div className=" top-2 right-2">
+                <div className="self-end top-2 right-2">
                   {lesson.status === "approved" ? (
                     <Button variant={"outline"}>Completed</Button>
                   ) : lesson.status === "approval-pending" ? (

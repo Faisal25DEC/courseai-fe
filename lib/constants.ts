@@ -116,3 +116,14 @@ export const analyticsTabsValues = {
   analytics: "analytics",
   avatarConversations: "avatarConversations",
 };
+
+export const lessonTypeText: {
+  text: "Training Material";
+  avatar: "Live Training";
+  video: "Video";
+  [key: string]: string;
+} = {
+  text: "Training Material",
+  avatar: "Live Training",
+  video: "Video",
+};

@@ -1,5 +1,10 @@
 "use client";
-import { colors, currentCourseId, textFromBg } from "@/lib/constants";
+import {
+  colors,
+  currentCourseId,
+  lessonTypeText,
+  textFromBg,
+} from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
 import { getCourse, getUserAnalytics } from "@/services/lesson.service";
 import {
@@ -110,7 +115,7 @@ const PreivewCourse = () => {
                   color={textFromBg[typeColorObj[lesson.type]]}
                   bg={typeColorObj[lesson.type]}
                 >
-                  {lesson.type}
+                  {lessonTypeText[lesson.type]}
                 </Tag>
                 {lesson.status === "rejected" && (
                   <Tag bg={colors.lightred}>Rejected</Tag>

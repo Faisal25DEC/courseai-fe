@@ -66,3 +66,8 @@ export const colors: {
   lightpurple: "#eed4fc",
 };
 export const getBg = (idx: number) => color[idx % color.length];
+
+export const analyticsTabsValues = {
+  analytics: "analytics",
+  avatarConversations: "avatarConversations",
+};

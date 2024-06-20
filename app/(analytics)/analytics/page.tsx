@@ -24,6 +24,7 @@ import AnalyticsCard from "./_components/analytics-card/analytics-card";
 import useFetchOrganizationMemberships from "@/hooks/useFetchOrganizationMemberships";
 import useCurrentCourse from "@/hooks/useCurrentCourse";
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
+import AnalyticsTabs from "./_components/analytics-tabs/analytics-tabs";
 const Page = () => {
   const [currentCourse, setCurrentCourse] = useCurrentCourse({
     id: currentCourseId,
@@ -124,12 +125,13 @@ const Page = () => {
       <Modal
         isOpen={isCurrentUserAnalyticsModalOpen}
         onClose={onCurrentUserAnalyticsModalClose}
+        className="w-fit"
       >
         <div className="relative w-full">
-          <UserLessonAnalytics />
+          <AnalyticsTabs />
           <div
             onClick={onCurrentUserAnalyticsModalClose}
-            className="absolute cursor-pointer transition-all duration-300 ease-in top-[15px] hover:bg-slate-200 right-[15px] p-[3px] rounded-full "
+            className="absolute cursor-pointer transition-all duration-300 ease-in top-[8px] hover:bg-slate-200 right-[5px] p-[3px] rounded-full "
           >
             <Icon
               icon="system-uicons:cross"

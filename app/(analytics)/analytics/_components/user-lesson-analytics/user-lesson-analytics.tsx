@@ -17,8 +17,6 @@ const UserLessonAnalytics = () => {
   const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
     useRecoilState(currentUserLessonAnalyticsAtom);
 
-  console.log(currentUserLessonAnalytics);
-
   const getUserLessonAnalyticsArray = (
     currentUserAnalytics: any,
     lessonsArray: any
@@ -41,7 +39,7 @@ const UserLessonAnalytics = () => {
   const headings = ["Lesson", "Status", "Time Spent", "Completed At"];
 
   return (
-    <div className="">
+    <div className="min-h-[80vh] min-w-[990px]">
       <div className="flex items-center gap-4 p-4">
         <div>
           <img
@@ -66,7 +64,7 @@ const UserLessonAnalytics = () => {
           );
         })}
       </div>
-      <ScrollArea className="h-[70vh] rounded-[20px]">
+      <div className="h-[70vh] overflow-y-scroll rounded-[20px]">
         {lessonAnalyticsArray.map((lesson: any) => {
           return (
             <div
@@ -113,7 +111,7 @@ const UserLessonAnalytics = () => {
             </div>
           );
         })}
-      </ScrollArea>
+      </div>
     </div>
   );
 };

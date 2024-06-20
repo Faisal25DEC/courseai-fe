@@ -40,11 +40,13 @@ const EnrollCourseModal = () => {
     if (!organization) return;
     organization?.getMemberships().then(async (res) => {
       const enrolledUsersRes = await getEnrolledUsersInACourse(currentCourseId);
+      console.log(enrolledUsersRes, "enrolledUsersRes");
       setEnrolledUsers(enrolledUsersRes);
       const membersArray = res.data;
       const usersArray = membersArray
         .filter((item) => item.role === member)
         .map((member) => member.publicUserData);
+      console.log(usersArray, "usersArray");
       setOrganizationMemberships(usersArray);
     });
   }, [organization]);

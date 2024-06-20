@@ -97,7 +97,7 @@ export default function AvatarLesson({
       const duration = Date.now() - currenTimeRef.current;
     };
   }, [activeLesson]);
-          
+
   async function talkToOpenAI(prompt, newPrompt) {
     const data = await axios.post(`/api/complete`, {
       prompt,
@@ -452,6 +452,13 @@ export default function AvatarLesson({
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
                 </h1>
+                <div className=" top-2 right-2">
+                  {lesson.status === "approved" ? (
+                    <Button variant={"outline"}>Completed</Button>
+                  ) : (
+                    <Button onClick={markComplete}>Mark Complete</Button>
+                  )}
+                </div>
               </div>
             )}
             <div className="relative">

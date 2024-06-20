@@ -30,6 +30,7 @@ interface MicrophoneProps {
   stopAIAudio: any;
 }
 export default function Microphone({ taskInputRef, talkHandler }: any) {
+  const transcriptRef = useRef<any>("");
   const [transcriptReady, setTranscriptReady] = useState(false);
   const { connection, connectionReady } = useDeepgram();
   const {
@@ -86,6 +87,7 @@ export default function Microphone({ taskInputRef, talkHandler }: any) {
         /**
          * use an outbound message queue to build up the unsent utterance
          */
+        transcriptRef.current += content;
         addTranscriptPart({
           is_final: data.is_final as boolean,
           speech_final: data.speech_final as boolean,
@@ -146,9 +148,14 @@ export default function Microphone({ taskInputRef, talkHandler }: any) {
      * for example, many many many empty transcription responses
      */
     if (!content || !last) return;
-    if (content !== currentUtterance && last.speech_final === true) {
+    if (content) {
+      console.log(content);
+    }
+    console.log(transcriptRef.current);
+    if (content !== currentUtterance && last.is_final === true) {
       console.log(parts, "------IN TRASNSCRIPT------", "----SPEECH_FINAL");
-      taskInputRef.current.value = content;
+      transcriptRef.current = "";
+      taskInputRef.current.value = transcriptRef.current;
       talkHandler(content);
 
       // setUserCaption && setUserCaption(content);

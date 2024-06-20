@@ -59,7 +59,7 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
             interim_results: true,
             smart_format: true,
             endpointing: 550,
-            utterance_end_ms: 1500,
+            utterance_end_ms: 2500,
             filler_words: true,
           }
         );

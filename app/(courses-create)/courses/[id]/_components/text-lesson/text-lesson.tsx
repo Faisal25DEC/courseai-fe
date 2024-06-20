@@ -163,15 +163,14 @@ const TextLesson = ({
             )}
           </div>
         </div>
+        <div className="flex flex-col gap-2 pl-13">
+          <p className="text-gray-600 text-[16px]">{lesson?.description}</p>
+        </div>
         <Editor
           editable={false}
           onChange={() => null}
           initialContent={content.text}
         />
-        <div className="flex flex-col gap-2 pl-12">
-          <h1 className="h2-medium">Description</h1>
-          <p className="p-light">{lesson?.description}</p>
-        </div>
       </div>
     </div>
   );

@@ -40,15 +40,14 @@ const TextLesson = ({ lesson, lesson_id }: { lesson: any; lesson_id: any }) => {
             {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
           </h1>
         </div>
+        <div className="flex flex-col gap-2 pl-14">
+          <p className="text-gray-600 text-[16px]">{lesson?.description}</p>
+        </div>
         <Editor
           editable={false}
           onChange={() => null}
           initialContent={lesson?.content?.text}
         />
-        <div className="flex flex-col gap-2 pl-12">
-          <h1 className="h2-medium">Description</h1>
-          <p className="p-light">{lesson?.description}</p>
-        </div>
       </div>
     </div>
   );

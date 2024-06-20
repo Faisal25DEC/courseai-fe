@@ -109,13 +109,13 @@ const UserCard = ({
         onCurrentUserAnalyticsModalOpen();
       },
     },
-    {
-      label: "Expel User",
-      icon: <Icon icon="iwwa:delete" />,
-      onClick: () => {
-        handleExpelUser();
-      },
-    },
+    // {
+    //   label: "Expel User",
+    //   icon: <Icon icon="iwwa:delete" />,
+    //   onClick: () => {
+    //     handleExpelUser();
+    //   },
+    // },
   ];
 
   return (

@@ -158,9 +158,6 @@ export default function AvatarLesson({
       if (text) {
         // Send the AI's response to Heygen's streaming.task API
         const resp = await repeat(sessionInfo.session_id, text);
-        setTimeout(() => {
-          setAITalking(false);
-        }, resp.duration_ms);
       } else {
         console.log("No response from AI");
       }
@@ -424,7 +421,17 @@ export default function AvatarLesson({
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex justify-center items-center h-full  w-full">
+            <div className="flex justify-center items-center h-full  w-[900px]">
+              <div className="flex self-start gap-2 py-2 items-center justify-between pl-2">
+                <h1 className="h1-medium self-start">
+                  {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
+                </h1>
+              </div>
+              <div className="flex self-start flex-col gap-2 pb-2 pl-2">
+                <p className="text-gray-600 text-[16px]">
+                  {lesson?.description}
+                </p>
+              </div>
               <div className="absolute flex flex-col justify-center items-center h-full gap-[15%]">
                 <div className="flex justify-center cursor-pointer items-center gradient-1 p-4 h-24 w-24 rounded-full">
                   <img
@@ -442,13 +449,13 @@ export default function AvatarLesson({
               <img
                 src={thumbnail}
                 alt="ai-avatar"
-                className="object-cover md:rounded-[20px] h-[60vh] shadow-lg"
+                className="object-cover w-[900px] md:rounded-[20px] h-[60vh] shadow-lg"
               />
             </div>
           )}
           <div className="h-fit flex flex-col justify-center gap-3 items-center relative py-8">
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex w-full self-start gap-2 py-4 items-center justify-between">
+              <div className="flex w-full self-start gap-2 items-center justify-between">
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
                 </h1>
@@ -461,6 +468,13 @@ export default function AvatarLesson({
                     <Button onClick={markComplete}>Mark Complete</Button>
                   )}
                 </div>
+              </div>
+            )}
+            {peerConnection && sessionInfo && sessionState === "connected" && (
+              <div className="flex self-start flex-col gap-2">
+                <p className="text-gray-600 text-[16px]">
+                  {lesson?.description}
+                </p>
               </div>
             )}
             <div className="relative">
@@ -526,12 +540,6 @@ export default function AvatarLesson({
                 )}
             </div>
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
-            {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex self-start flex-col gap-2 mt-4">
-                <h1 className="h2-medium">Description</h1>
-                <p className="p-light">{lesson?.description}</p>
-              </div>
-            )}
           </div>
         </div>
         {/* {conversationsRef.current.map((item) => {

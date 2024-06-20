@@ -142,6 +142,8 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
         <div className=" top-2 right-2">
           {lesson.status === "approved" ? (
             <Button variant={"outline"}>Completed</Button>
+          ) : lesson.status === "approval-pending" ? (
+            <Button>Approval Pending</Button>
           ) : (
             <Button onClick={markComplete}>Mark Complete</Button>
           )}

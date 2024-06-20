@@ -68,3 +68,46 @@ export const basePrompt =
   "Which part is giving you trouble? Let's figure it out together."
   "Let’s break it down step-by-step. What seems confusing?"
 `
+export const color: string[] = [
+  "#95daf5",
+  "#91ffb6",
+  "#FFBB5C",
+  "#faab82",
+
+  "#f98383",
+  "#eed4fc",
+];
+export const textFromBg: {
+  "#95daf5": "#0b4054";
+  "#91ffb6": "#1a6e36";
+  "#FFBB5C": "#422d10";
+  "#faab82": "#541e02";
+  "#f98383": "#470101";
+  "#eed4fc": "#28043b";
+  [key: string]: string;
+} = {
+  "#95daf5": "#0b4054",
+  "#91ffb6": "#1a6e36",
+  "#FFBB5C": "#422d10",
+  "#faab82": "#541e02",
+  "#f98383": "#470101",
+  "#eed4fc": "#28043b",
+};
+
+export const colors: {
+  lightblue: "#95daf5";
+  lightgreen: "#91ffb6";
+  lightgold: "#FFBB5C";
+  lightorange: "#faab82";
+  lightred: "#f98383";
+  lightpurple: "#eed4fc";
+  [key: string]: string;
+} = {
+  lightblue: "#95daf5",
+  lightgreen: "#91ffb6",
+  lightgold: "#FFBB5C",
+  lightorange: "#faab82",
+  lightred: "#f98383",
+  lightpurple: "#eed4fc",
+};
+export const getBg = (idx: number) => color[idx % color.length];

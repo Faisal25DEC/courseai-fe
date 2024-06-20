@@ -25,7 +25,7 @@ const TextContent = () => {
           initialContent={
             lessonModalType?.type === "edit"
               ? lessonModalType.lesson?.content?.text || ""
-              : ""
+              : currentLesson.content?.text || ""
           }
           editable={true}
         />

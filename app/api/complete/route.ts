@@ -9,7 +9,7 @@ const openai = new OpenAI({
 
 const systemSetup = basePrompt;
 let conversationMemory: any = {};
-
+const GPT4o = "gpt-4o";
 export async function POST(req: NextRequest) {
   if (req.method === "POST") {
     try {
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       const previousMessages = conversationMemory[sessionId];
 
       const chatCompletion = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: GPT4o,
         messages: [...previousMessages, { role: "user", content: prompt }],
       });
 

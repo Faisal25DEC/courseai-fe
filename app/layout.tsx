@@ -10,7 +10,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CourseAI",
+  title: "Permian",
   description: "Create impactful courses powered by AI",
   icons: {
     icon: [{ url: "/logo.png", href: "/logo.png" }],

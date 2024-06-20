@@ -14,7 +14,7 @@ export default function NavTabs() {
 
   const tabs = [
     {
-      name: "Courses",
+      name: "Course",
       href:
         currentUserRole === admin
           ? "/courses/create"
@@ -26,7 +26,6 @@ export default function NavTabs() {
       href: "/analytics",
       hidden: currentUserRole !== admin,
     },
-    { name: "Settings", href: "/settings", hidden: currentUserRole !== admin },
   ];
 
   return (

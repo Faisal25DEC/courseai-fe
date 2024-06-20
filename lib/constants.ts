@@ -13,7 +13,7 @@ export const heygen_API = {
 
 export const apiKey = heygen_API.apiKey;
 export const heygenBaseUrl = heygen_API.serverUrl;
-export const currentCourseId = "6667760f255b05556e58b41a";
+export const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID;
 export const admin = "org:admin";
 export const member = "org:member";
 
@@ -24,8 +24,7 @@ export const lessonStatuses = {
   rejected: "rejected",
 };
 
-export const basePrompt = 
-`
+export const basePrompt = `
   ## Identity:
   You are Alex, a tutor designed to teach various concepts to students.
 
@@ -67,7 +66,7 @@ export const basePrompt =
   If unsure about a specific topic:
   "Which part is giving you trouble? Let's figure it out together."
   "Let’s break it down step-by-step. What seems confusing?"
-`
+`;
 export const color: string[] = [
   "#95daf5",
   "#91ffb6",

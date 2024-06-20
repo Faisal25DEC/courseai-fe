@@ -90,6 +90,14 @@ export default function AvatarLesson({
       alert("Please enter your API key and server URL in the api.json file");
     }
   }, []);
+  useEffect(() => {
+    currenTimeRef.current = Date.now();
+
+    return () => {
+      const duration = Date.now() - currenTimeRef.current;
+    };
+  }, [activeLesson]);
+          
   async function talkToOpenAI(prompt, newPrompt) {
     const data = await axios.post(`/api/complete`, {
       prompt,

@@ -58,13 +58,13 @@ const Navbar = () => {
               <Divider className="hidden h-9 w-9 text-gray-200 sm:ml-3 sm:block" />
             </div>
             <div>
-              <Link href="/dashboard">
+              <div>
                 <p className="text-gray-600 hover:text-gray-900 text-sm">
                   {StringFormats.capitalizeFirstLetter(
                     pathname.split("/")[1]
                   ) || "Home"}
                 </p>
-              </Link>
+              </div>
             </div>
           </nav>
         </div>

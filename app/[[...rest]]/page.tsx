@@ -2,6 +2,7 @@
 import Modal from "@/components/shared/modal";
 import useNoOrganizationModal from "@/hooks/useNoOrganizationModal";
 import useSetOrganization from "@/hooks/useSetOrganization";
+import { admin, currentCourseId, member } from "@/lib/constants";
 import { currentUserRoleAtom } from "@/store/atoms";
 import {
   useAuth,
@@ -10,6 +11,7 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { useRecoilState } from "recoil";
 
@@ -23,6 +25,16 @@ export default function Home() {
   } = useNoOrganizationModal();
 
   useSetOrganization();
+  useEffect(() => {
+    if (currentUserRole) {
+      if (currentUserRole === admin) {
+        redirect("/courses/create");
+      }
+      if (currentUserRole === member) {
+        redirect(`courses/${currentCourseId}`);
+      }
+    }
+  }, [currentUserRole]);
   console.log(currentUserRole, "currentUserRole");
   return (
     <main className="flex min-h-screen flex-col gap-6 items-center p-24">

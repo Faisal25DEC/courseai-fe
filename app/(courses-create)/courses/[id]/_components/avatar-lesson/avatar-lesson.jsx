@@ -11,7 +11,6 @@ import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
 import { activeLessonAtom } from "@/store/atoms";
 import Webcam from "react-webcam";
-import RecordRTC from "recordrtc";
 import { v4 as uuidv4 } from "uuid";
 import { currentCourseId } from "@/lib/constants";
 import { useUser } from "@clerk/nextjs";
@@ -25,6 +24,8 @@ import {
 import useTrackLessonDuration from "@/hooks/useTrackLessonDuration";
 import { AudioRecorder } from "react-audio-voice-recorder";
 import AudioRecorderComp from "@/components/shared/audio-recorder/audio-recorder";
+import dynamic from "next/dynamic";
+const RecordRTC = dynamic(() => import("recordrtc"), { ssr: false });
 
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",

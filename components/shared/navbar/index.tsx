@@ -72,14 +72,14 @@ const Navbar = () => {
         <SignedIn>
           <div className="flex items-center gap-[28px]">
             <div className="hidden md:flex items-center gap-[32px]">
-              {currentUserRole === admin && (
+              {/* {currentUserRole === admin && (
                 <p
                   onClick={onEnrollCourseModalOpen}
                   className="text-sm text-effect cursor-pointer"
                 >
                   Enroll User
                 </p>
-              )}
+              )} */}
               {currentUserRole === admin && (
                 <p
                   onClick={() => setIsInvite(true)}

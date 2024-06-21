@@ -11,7 +11,6 @@ import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
 import { activeLessonAtom } from "@/store/atoms";
 import Webcam from "react-webcam";
-import RecordRTC from "recordrtc";
 import { v4 as uuidv4 } from "uuid";
 import { currentCourseId } from "@/lib/constants";
 import { useUser } from "@clerk/nextjs";
@@ -305,34 +304,6 @@ export default function AvatarLesson({
       startAndDisplaySession();
     }
   }, [peerConnection, sessionInfo]);
-
-  const handleStopAndUpload = async () => {
-    if (!recorderRef.current) return;
-    recorderRef.current.stopRecording(async () => {
-      const blob = recorderRef.current.getBlob();
-      const formData = new FormData();
-      const fileName = uuidv4() + ".webm";
-      formData.append("file", blob, fileName);
-      const conversation = conversationsRef.current || [];
-      formData.append("conversation", new Blob([JSON.stringify(conversation)]));
-
-      await fetch(
-        `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
-        {
-          method: "POST",
-          body: formData,
-          "Content-Type": "multipart/form-data",
-        }
-      );
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (lesson.status === "approved") return;
-      handleStopAndUpload();
-    };
-  }, []);
 
   const startRecording = (webCamStream) => {
     mediaElementRef.current.srcObject.width = window.screen.width;

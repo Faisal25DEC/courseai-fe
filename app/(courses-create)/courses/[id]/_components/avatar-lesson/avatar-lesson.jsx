@@ -24,6 +24,7 @@ import {
 } from "@/services/lesson.service";
 import useTrackLessonDuration from "@/hooks/useTrackLessonDuration";
 import { AudioRecorder } from "react-audio-voice-recorder";
+import AudioRecorderComp from "@/components/shared/audio-recorder/audio-recorder";
 
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
@@ -422,7 +423,7 @@ export default function AvatarLesson({
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex justify-center items-center h-full  w-[900px]">
+            <div className="flex justify-center flex-col items-center h-full  w-[900px]">
               <div className="flex self-start gap-2 py-2 items-center justify-between pl-2">
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
@@ -529,7 +530,7 @@ export default function AvatarLesson({
                       </div> */}
                     </div>
                     {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-                    <AudioRecorder talkHandler={talkHandler} />
+                    <AudioRecorderComp talkHandler={talkHandler} />
                     {/* <MicrophoneContextProvider>
                       <DeepgramContextProvider>
                         <Microphone

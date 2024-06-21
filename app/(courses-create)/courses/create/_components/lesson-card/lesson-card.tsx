@@ -15,6 +15,7 @@ import {
 } from "@/store/atoms";
 import { deleteLesson, getCourse } from "@/services/lesson.service";
 import { currentCourseId } from "@/lib/constants";
+import { toast } from "sonner";
 const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
   const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
   const [lessonModalType, setLessonModalType] =
@@ -52,7 +53,9 @@ const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
     {
       title: "Delete",
       onClick: async () => {
+        setIsPopoverOpen(false);
         deleteLesson(currentCourseId, lesson.id).then(() => {
+          toast.success("Lesson deleted successfully");
           getCourse(currentCourseId).then((res) => {
             setCurrentCourse(res);
             setLessonsArray(res.lessons);

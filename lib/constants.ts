@@ -119,3 +119,14 @@ export const lessonTypeText: {
   avatar: "Live Training",
   video: "Video",
 };
+
+export const lessonStatusText: {
+  approved: "Complete";
+  pending: "Incomplete";
+  "approval-pending": "Requested Approval";
+  [key: string]: string;
+} = {
+  approved: "Complete",
+  pending: "Incomplete",
+  "approval-pending": "Requested Approval",
+};

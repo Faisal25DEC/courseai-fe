@@ -34,13 +34,13 @@ const TextLesson = ({ lesson, lesson_id }: { lesson: any; lesson_id: any }) => {
   }, [activeLesson]);
   return (
     <div className="py-4 h-full flex flex-col items-center overflow-auto relative">
-      <div className="w-[900px] flex flex-col gap-6 relative">
+      <div className="w-[900px] flex flex-col gap-3 relative">
         <div className="flex gap-2 items-center justify-between">
           <h1 className="h1-medium self-start pl-12">
             {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
           </h1>
         </div>
-        <div className="flex flex-col gap-2 pl-14">
+        <div className="flex flex-col gap-2 pl-[50px]">
           <p className="text-gray-600 text-[16px]">{lesson?.description}</p>
         </div>
         <Editor

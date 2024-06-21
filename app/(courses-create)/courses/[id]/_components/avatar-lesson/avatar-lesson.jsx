@@ -56,6 +56,7 @@ export default function AvatarLesson({
   lesson_id,
   lesson,
 }) {
+  const submitButtonRef = useRef(null);
   const [conversations, setConversations] = useState([]);
   const conversationsRef = useRef([]);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
@@ -296,6 +297,7 @@ export default function AvatarLesson({
     try {
       peerConnection.close();
       setPeerConnection(null);
+      // mediaElementRef.current.srcObject = null;
       console.log("Connection closed successfully.");
       // Optionally notify the server to close the session
       // await closeServerSession(sessionInfo.session_id);
@@ -320,6 +322,30 @@ export default function AvatarLesson({
     }
   }, [peerConnection, sessionInfo]);
 
+  const handleStopAndUpload = async () => {
+    if (!recorderRef.current) return;
+    if (submitButtonRef.current) {
+      submitButtonRef.current.disabled = true;
+    }
+    recorderRef.current.stopRecording(async () => {
+      const blob = recorderRef.current.getBlob();
+      const formData = new FormData();
+      const fileName = uuidv4() + ".webm";
+      formData.append("file", blob, fileName);
+      const conversation = conversationsRef.current || [];
+      formData.append("conversation", new Blob([JSON.stringify(conversation)]));
+      try {
+        await axios.post(
+          `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
+          formData
+        );
+        toast.success("Recording submitted successfully");
+        closeConnectionHandler();
+      } catch (error) {
+        toast.error("Failed to submit recording");
+      }
+    });
+  };
   const markComplete = () => {
     if (lesson.submission === "automatic") {
       updateLessonForUser({
@@ -413,7 +439,18 @@ export default function AvatarLesson({
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
                 </h1>
-                <div className="self-end top-2 right-2">
+
+                <div className="self-end flex items-center gap-2">
+                  <Button
+                    ref={submitButtonRef}
+                    onClick={() => {
+                      handleStopAndUpload();
+                    }}
+                    className=""
+                    variant={"outline"}
+                  >
+                    Submit Recording
+                  </Button>
                   {lesson.status === "approved" ? (
                     <Button variant={"outline"}>Completed</Button>
                   ) : lesson.status === "approval-pending" ? (
@@ -438,17 +475,21 @@ export default function AvatarLesson({
                 ref={mediaElementRef}
                 autoPlay
                 style={{
-                  display: sessionState === "connected" ? "block" : "none",
+                  display:
+                    sessionState === "connected" && peerConnection
+                      ? "block"
+                      : "none",
                 }}
               />
+
               {peerConnection &&
                 sessionInfo &&
                 sessionState === "connected" && (
                   <WebCamRecording
-                    mediaElementRef={mediaElementRef}
-                    conversationsRef={conversationsRef}
                     lesson={lesson}
-                    lesson_id={lesson_id}
+                    recorderRef={recorderRef}
+                    mediaElementRef={mediaElementRef}
+                    handleStopAndUpload={handleStopAndUpload}
                   />
                 )}
               {peerConnection &&

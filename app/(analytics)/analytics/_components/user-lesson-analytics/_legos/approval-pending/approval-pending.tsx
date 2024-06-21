@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import { textColorBasedOnStatus } from "../../constants";
 import CustomPopover from "@/components/shared/custom-popover/custom-popover";
-import { currentCourseId, lessonStatuses } from "@/lib/constants";
+import {
+  currentCourseId,
+  lessonStatuses,
+  lessonStatusText,
+} from "@/lib/constants";
 import {
   currentUserLessonAnalyticsAtom,
   userAnalyticsAtom,
@@ -68,14 +72,15 @@ const ApprovalPending = ({ lesson }: { lesson: any }) => {
         open={isOpen}
         onOpenChange={setIsOpen}
         trigger={
-          <div className="flex items-center gap-1 outline-none">
+          <div className="flex flex-wrap items-center gap-1 outline-none">
             <p
               className={`${
                 textColorBasedOnStatus[lesson.status || "pending"]
               }`}
             >
-              {StringFormats.capitalizeFirstLetterOfEachWord(lesson.status) ||
-                "pending"}
+              {StringFormats.capitalizeFirstLetterOfEachWord(
+                lessonStatusText[lesson.status]
+              ) || "Incomplete"}
             </p>
             <Icon icon="ion:chevron-down" className="w-4 h-4" />
           </div>

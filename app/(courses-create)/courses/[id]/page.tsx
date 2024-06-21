@@ -89,7 +89,7 @@ const PreivewCourse = () => {
   return (
     <div className="w-full h-[calc(100vh-120px)] overflow-y-scroll">
       <div className="flex h-full w-[90%] mx-auto">
-        <div className="min-w-[300px] border-r-[1px] mr-4 h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 px-4">
+        <div className="min-w-max border-r-[1px] mr-4 h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 px-4">
           {filteredLessons.map((lesson: any, idx: any) => (
             <div
               onClick={() => handleChangeLesson(idx)}
@@ -127,7 +127,7 @@ const PreivewCourse = () => {
             </div>
           ))}
         </div>
-        <div className="w-[calc(100%-300px)]">
+        <div className="w-full">
           {lessonsArray[activeLesson]?.type === "video" && (
             <VideoLesson
               video={lessonsArray[activeLesson].content}

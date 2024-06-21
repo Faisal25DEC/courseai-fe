@@ -9,7 +9,7 @@ import { useRecoilState } from "recoil";
 import { textColorBasedOnStatus } from "./constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ApprovalPending from "./_legos/approval-pending/approval-pending";
-import { lessonStatuses } from "@/lib/constants";
+import { lessonStatuses, lessonStatusText } from "@/lib/constants";
 
 const UserLessonAnalytics = () => {
   const { approvalPending, approved, pending } = lessonStatuses;
@@ -85,9 +85,9 @@ const UserLessonAnalytics = () => {
                   )}
                   {lesson?.status !== approvalPending &&
                     (StringFormats.capitalizeFirstLetterOfEachWord(
-                      lesson?.status
+                      lessonStatusText[lesson?.status]
                     ) ||
-                      "Pending")}
+                      "Incomplete")}
                 </p>
               </div>
               <div className="w-[25%]">
@@ -95,8 +95,7 @@ const UserLessonAnalytics = () => {
                   {FormatDate.formatMilliseconds(lesson.duration) ===
                   "0 seconds"
                     ? "Less Than A Second"
-                    : FormatDate.formatMilliseconds(lesson.duration) ||
-                      "Yet To Start"}
+                    : FormatDate.formatMilliseconds(lesson.duration) || "-"}
                 </p>
               </div>
               <div className="w-[25%]">
@@ -105,7 +104,7 @@ const UserLessonAnalytics = () => {
                     ? FormatDate.getDateAndTimeFromMilliseconds(
                         lesson.completed_at
                       )
-                    : "In Progress"}
+                    : "Yet to Start"}
                 </p>
               </div>
             </div>

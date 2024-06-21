@@ -9,15 +9,15 @@ import RecordRTC from "recordrtc";
 import { v4 as uuidv4 } from "uuid";
 
 const WebcamRecording = ({
-  mediaElementRef,
-  conversationsRef,
   lesson,
-  lesson_id,
+  recorderRef,
+  mediaElementRef,
+  handleStopAndUpload,
 }: {
-  mediaElementRef: any;
-  conversationsRef: any;
   lesson: any;
-  lesson_id: any;
+  recorderRef: any;
+  mediaElementRef: any;
+  handleStopAndUpload: any;
 }) => {
   const { user } = useUser();
   const videoConstraints = {
@@ -30,7 +30,6 @@ const WebcamRecording = ({
     sampleSize: 16,
     channelCount: 2,
   };
-  const recorderRef = useRef<any>(null);
   const startRecording = (webCamStream: any) => {
     console.log(recorderRef);
     mediaElementRef.current.srcObject.width = window.screen.width;
@@ -59,23 +58,6 @@ const WebcamRecording = ({
 
     recorderRef.current.startRecording();
   };
-  const handleStopAndUpload = async () => {
-    if (!recorderRef.current) return;
-    recorderRef.current.stopRecording(async () => {
-      const blob = recorderRef.current.getBlob();
-      const formData = new FormData();
-      const fileName = uuidv4() + ".webm";
-      formData.append("file", blob, fileName);
-      const conversation = conversationsRef.current || [];
-      formData.append("conversation", new Blob([JSON.stringify(conversation)]));
-
-      await axios.post(
-        `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
-        formData
-      );
-    });
-  };
-
   useEffect(() => {
     return () => {
       if (lesson.status === "approved") return;

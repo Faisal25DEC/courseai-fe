@@ -110,12 +110,12 @@ export const analyticsTabsValues = {
 };
 
 export const lessonTypeText: {
-  text: "Training Material";
+  text: "Learning Material";
   avatar: "Live Training";
   video: "Video";
   [key: string]: string;
 } = {
-  text: "Training Material",
+  text: "Learning Material",
   avatar: "Live Training",
   video: "Video",
 };

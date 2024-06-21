@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
         conversationMemory[sessionId] = [
           {
             role: "system",
-            content: prompt,
+            content: basePrompt + ".\n" + "####\n" + prompt + "####",
           },
         ];
       } else {

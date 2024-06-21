@@ -23,6 +23,7 @@ import {
   updateLessonForUser,
 } from "@/services/lesson.service";
 import useTrackLessonDuration from "@/hooks/useTrackLessonDuration";
+import AudioRecorderComp from "@/components/shared/audio-recorder/audio-recorder";
 
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
@@ -500,14 +501,15 @@ export default function AvatarLesson({
                       </div>
                     </div>
                     {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-                    <MicrophoneContextProvider>
+                    <AudioRecorderComp talkHandler={talkHandler} />
+                    {/* <MicrophoneContextProvider>
                       <DeepgramContextProvider>
                         <Microphone
                           talkHandler={talkHandler}
                           taskInputRef={taskInputRef}
                         />
                       </DeepgramContextProvider>
-                    </MicrophoneContextProvider>
+                    </MicrophoneContextProvider> */}
                   </div>
                 )}
             </div>

@@ -163,7 +163,7 @@ const TextLesson = ({
             )}
           </div>
         </div>
-        <div className="flex flex-col gap-2 pl-13">
+        <div className="flex flex-col gap-2 pl-[51px]">
           <p className="text-gray-600 text-[16px]">{lesson?.description}</p>
         </div>
         <Editor

@@ -156,7 +156,7 @@ export const getEnrolledUsersInACourse = async (courseId: string) => {
     const res = await axios.get(`${baseUrl}/courses/${courseId}/users`);
     const users = usersRes.data.data;
     const enrolledUsersIds = res.data;
-    console.log(users, enrolledUsersIds, "users and enrolled users");
+    console.log(usersRes, users, enrolledUsersIds, "users and enrolled users");
     const enrolledUsersArray = users.filter((user: any) =>
       enrolledUsersIds.some((item: any) => item.user_id === user.id)
     );

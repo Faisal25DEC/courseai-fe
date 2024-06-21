@@ -6,7 +6,7 @@ const Submissions = () => {
   const [currentLesson, setCurrentLesson] = useRecoilState(lessonAtom);
   const submissionButtons = [
     {
-      label: "Mannual",
+      label: "Manual",
       value: "mannual",
     },
     {

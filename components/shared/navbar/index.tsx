@@ -109,10 +109,8 @@ const Navbar = () => {
         isOpen={invite}
         onClose={() => setIsInvite(false)}
       >
-        <div>
-          {" "}
-          <OrganizationProfile routing="virtual" />
-        </div>
+        {" "}
+        <OrganizationProfile routing="virtual" />
       </Modal>
       {isEnrollCourseModalOpen && <EnrollCourseModal />}
     </div>

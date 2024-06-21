@@ -25,8 +25,10 @@ import useTrackLessonDuration from "@/hooks/useTrackLessonDuration";
 import { AudioRecorder } from "react-audio-voice-recorder";
 import AudioRecorderComp from "@/components/shared/audio-recorder/audio-recorder";
 import dynamic from "next/dynamic";
-const RecordRTC = dynamic(() => import("recordrtc"), { ssr: false });
-
+const WebCamRecording = dynamic(
+  () => import("./webcam-recording/webcam-recording"),
+  { ssr: false }
+);
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
   serverUrl: "https://api.heygen.com",
@@ -318,56 +320,6 @@ export default function AvatarLesson({
     }
   }, [peerConnection, sessionInfo]);
 
-  const handleStopAndUpload = async () => {
-    if (!recorderRef.current) return;
-    recorderRef.current.stopRecording(async () => {
-      const blob = recorderRef.current.getBlob();
-      const formData = new FormData();
-      const fileName = uuidv4() + ".webm";
-      formData.append("file", blob, fileName);
-      const conversation = conversationsRef.current || [];
-      formData.append("conversation", new Blob([JSON.stringify(conversation)]));
-
-      await fetch(
-        `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
-        {
-          method: "POST",
-          body: formData,
-          "Content-Type": "multipart/form-data",
-        }
-      );
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (lesson.status === "approved") return;
-      handleStopAndUpload();
-    };
-  }, []);
-
-  const startRecording = (webCamStream) => {
-    mediaElementRef.current.srcObject.width = window.screen.width;
-    mediaElementRef.current.srcObject.height = window.screen.height;
-    mediaElementRef.current.srcObject.fullcanvas = true;
-
-    webCamStream.width = 320;
-    webCamStream.height = 240;
-    webCamStream.top =
-      mediaElementRef.current.srcObject.height - webCamStream.height;
-    webCamStream.left =
-      mediaElementRef.current.srcObject.width - webCamStream.width;
-
-    recorderRef.current = new RecordRTC(
-      [mediaElementRef.current.srcObject, webCamStream],
-      {
-        type: "video",
-        mimeType: "video/webm",
-      }
-    );
-
-    recorderRef.current.startRecording();
-  };
   const markComplete = () => {
     if (lesson.submission === "automatic") {
       updateLessonForUser({
@@ -492,15 +444,12 @@ export default function AvatarLesson({
               {peerConnection &&
                 sessionInfo &&
                 sessionState === "connected" && (
-                  <Webcam
-                    audio
-                    muted
-                    audioConstraints={audioConstraints}
-                    className="absolute bottom-[1rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
-                    screenshotFormat="image/jpeg"
-                    videoConstraints={videoConstraints}
-                    onUserMedia={startRecording}
-                  ></Webcam>
+                  <WebCamRecording
+                    mediaElementRef={mediaElementRef}
+                    conversationsRef={conversationsRef}
+                    lesson={lesson}
+                    lesson_id={lesson_id}
+                  />
                 )}
               {peerConnection &&
                 sessionInfo &&

@@ -139,17 +139,11 @@ export default function AvatarLesson({
     if (!sessionInfo) {
       return;
     }
+    console.log(text);
     const prompt = taskInputRef?.current?.value || text; // Using the same input for simplicity
-    if (prompt.trim() === "") {
-      alert("Please enter a prompt for the LLM");
-      return;
-    }
 
     try {
-      if (aiTalking) {
-        taskInputRef.current.value = "";
-        return;
-      }
+      console.log("Prompt:", prompt);
       setAILoading(true);
       setAITalking(true);
       const text = await talkToOpenAI(prompt);
@@ -507,10 +501,10 @@ export default function AvatarLesson({
                 sessionState === "connected" && (
                   <div className="flex gap-2 items-end left-[50%] translate-x-[-50%] absolute bottom-[1rem]">
                     <div className="flex flex-col gap-2">
-                      {/* <div className="relative">
+                      <div className="relative">
                         <input
-                          placeholder="Write your query and press enter to talk"
-                          className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
+                          placeholder="Write hidden your query and press enter to talk"
+                          className="text-gray-100 hidden px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               talkHandler();
@@ -519,15 +513,7 @@ export default function AvatarLesson({
                           ref={taskInputRef}
                           type="text"
                         />
-                        {aiLoading && (
-                    <div className="absolute right-2 text-white absolute-center-top">
-                      <Loader
-                        width={"20px"}
-                        className="mt-[8px] border-neutral-200"
-                      />
-                    </div>
-                  )}
-                      </div> */}
+                      </div>
                     </div>
                     {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
                     <AudioRecorderComp talkHandler={talkHandler} />

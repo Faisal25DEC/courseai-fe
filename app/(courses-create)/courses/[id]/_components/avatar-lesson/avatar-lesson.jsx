@@ -99,6 +99,11 @@ export default function AvatarLesson({
       const duration = Date.now() - currenTimeRef.current;
     };
   }, [activeLesson]);
+  useEffect(() => {
+    if (sessionInfo?.session_id) {
+      talkToOpenAI(lesson?.content?.prompt, true);
+    }
+  }, [sessionInfo, lesson?.content?.prompt]);
 
   async function talkToOpenAI(prompt, newPrompt) {
     const data = await axios.post(`/api/complete`, {

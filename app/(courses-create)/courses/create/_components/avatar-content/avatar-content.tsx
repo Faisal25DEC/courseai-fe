@@ -87,7 +87,7 @@ const AvatarContent = () => {
         voice: voices[0] || {},
         avatar_id: avatars[0]?.avatar_id || "",
         voice_id: voices[0]?.voice_id || "",
-        prompt: "",
+        prompt: currentLesson?.content?.prompt || "",
       },
     }));
   }, [avatars, voices]);
@@ -154,6 +154,7 @@ const AvatarContent = () => {
       <div className="label-container">
         <p className="label">Prompt</p>
         <Textarea
+          value={currentLesson.content?.prompt}
           onChange={handlePromptChange}
           rows={10}
           placeholder="Write Your Prompt Here..."

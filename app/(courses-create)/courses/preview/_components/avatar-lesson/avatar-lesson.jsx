@@ -169,12 +169,12 @@ export default function AvatarLesson({
           "X-Api-Key": apiKey,
         },
         body: JSON.stringify({
-          quality: "high",
+          quality: "medium",
           avatar_name: avatar_name,
           avatar_id: avatar_name + "",
           voice: {
             voice_id: voice,
-            rate: 1.15,
+            rate: 1,
           },
         }),
       });
@@ -472,7 +472,11 @@ export default function AvatarLesson({
                       </div>
                     </div>
                     {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-                    <AudioRecorderComp talkHandler={talkHandler} />
+                    <AudioRecorderComp
+                      repeat={repeat}
+                      sessionInfo={sessionInfo}
+                      talkHandler={talkHandler}
+                    />
                     {/* <MicrophoneContextProvider>
                       <DeepgramContextProvider>
                         <Microphone

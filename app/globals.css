@@ -289,7 +289,7 @@ input:checked + .slider:before {
   box-shadow: rgba(111, 76, 255, 0.7) 1px 0px 20px 1px;
 }
 .loader {
-  width: 32px;
+  width: 24px;
   aspect-ratio: 1;
   display: grid;
   border-radius: 50%;

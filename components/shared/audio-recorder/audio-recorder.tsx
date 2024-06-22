@@ -5,9 +5,17 @@ import { FileService } from "@/services/file.service";
 import { createClient } from "@deepgram/sdk";
 import axios from "axios";
 
-const AudioRecorderComp = ({ talkHandler }: { talkHandler: any }) => {
+const AudioRecorderComp = ({
+  talkHandler,
+  sessionInfo,
+  repeat,
+}: {
+  talkHandler: any;
+  sessionInfo: any;
+  repeat: any;
+}) => {
   const [microphoneState, setMicrophoneState] = useState("mute");
-
+  const [loading, setLoading] = useState(false);
   const microphoneToggle = () => {};
   const recorderControls = useAudioRecorder();
   const addAudioElement = async (blob: Blob) => {
@@ -21,15 +29,20 @@ const AudioRecorderComp = ({ talkHandler }: { talkHandler: any }) => {
 
     // Append the Blob to the FormData object
     formData.append("file", blob, "audio_recording.wav");
+    formData.append("sessionId", sessionInfo.session_id);
 
     // Send the FormData object using axios
+    setLoading(true);
     const result = await axios.post("/api/audio-record", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log(result.data.text);
-    talkHandler(result.data.text);
+    setLoading(false);
+    setMicrophoneState("mute");
+    console.log(result.data.transcript);
+    repeat(sessionInfo.session_id, result.data.text);
+    // talkHandler(result.data.text);
     // const audio = document.createElement("audio");
     // audio.src = url;
     // console.log(url);
@@ -39,7 +52,6 @@ const AudioRecorderComp = ({ talkHandler }: { talkHandler: any }) => {
   const handleSend = () => {
     if (microphoneState === "send") {
       recorderControls.stopRecording();
-      setMicrophoneState("mute");
     } else {
       recorderControls.startRecording();
       setMicrophoneState("send");
@@ -74,7 +86,7 @@ const AudioRecorderComp = ({ talkHandler }: { talkHandler: any }) => {
                 className="flex gap-2 items-center"
               >
                 <div className="wavy-loader" />
-                <div>send</div>
+                {loading ? <div className="loader"></div> : <div>send</div>}
               </div>
             )}
             <div

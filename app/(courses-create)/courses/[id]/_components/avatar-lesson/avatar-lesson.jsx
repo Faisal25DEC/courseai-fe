@@ -512,7 +512,11 @@ export default function AvatarLesson({
                       </div>
                     </div>
                     {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-                    <AudioRecorderComp talkHandler={talkHandler} />
+                    <AudioRecorderComp
+                      sessionInfo={sessionInfo}
+                      repeat={repeat}
+                      talkHandler={talkHandler}
+                    />
                     {/* <MicrophoneContextProvider>
                       <DeepgramContextProvider>
                         <Microphone

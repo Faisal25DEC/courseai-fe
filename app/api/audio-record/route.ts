@@ -11,7 +11,7 @@ const openai = new OpenAI({
 const systemSetup = basePrompt;
 let conversationMemory: any = {};
 const GPT4o = "gpt-4o";
-export async function getChatGPTResponse({
+async function getChatGPTResponse({
   sessionId,
   prompt,
   newPrompt,

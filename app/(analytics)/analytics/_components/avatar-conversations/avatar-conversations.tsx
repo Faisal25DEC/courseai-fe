@@ -1,4 +1,5 @@
 import {
+  currentAvatarConversationAtom,
   currentUserLessonAnalyticsAtom,
   lessonsArrayAtom,
 } from "@/store/atoms";
@@ -6,7 +7,7 @@ import React, { useState } from "react";
 import { useRecoilState } from "recoil";
 import ApprovalPending from "../user-lesson-analytics/_legos/approval-pending/approval-pending";
 import { StringFormats } from "@/lib/StringFormats";
-import { lessonStatuses } from "@/lib/constants";
+import { lessonStatuses, lessonStatusText } from "@/lib/constants";
 import { textColorBasedOnStatus } from "../user-lesson-analytics/constants";
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
 import CurrentAvatarConversations from "./_legos/current-avatar-conversations/current-avatar-conversations";
@@ -14,7 +15,7 @@ import CurrentAvatarConversations from "./_legos/current-avatar-conversations/cu
 const AvatarConversations = () => {
   const { approvalPending, approved, pending } = lessonStatuses;
   const [currentAvatarConversation, setCurrentAvatarConversation] =
-    useState(null);
+    useRecoilState(currentAvatarConversationAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState(lessonsArrayAtom);
 
   const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
@@ -79,9 +80,9 @@ const AvatarConversations = () => {
                     )}
                     {lesson?.status !== approvalPending &&
                       (StringFormats.capitalizeFirstLetterOfEachWord(
-                        lesson?.status
+                        lessonStatusText[lesson?.status]
                       ) ||
-                        "Pending")}
+                        "Incomplete")}
                   </p>
                 </div>
                 <div className="w-[25%]">
@@ -89,8 +90,7 @@ const AvatarConversations = () => {
                     {FormatDate.formatMilliseconds(lesson.duration) ===
                     "0 seconds"
                       ? "Less Than A Second"
-                      : FormatDate.formatMilliseconds(lesson.duration) ||
-                        "Yet To Start"}
+                      : FormatDate.formatMilliseconds(lesson.duration) || "-"}
                   </p>
                 </div>
                 <div className="w-[25%]">
@@ -99,7 +99,7 @@ const AvatarConversations = () => {
                       ? FormatDate.getDateAndTimeFromMilliseconds(
                           lesson.completed_at
                         )
-                      : "In Progress"}
+                      : "Yet to Start"}
                   </p>
                 </div>
               </div>

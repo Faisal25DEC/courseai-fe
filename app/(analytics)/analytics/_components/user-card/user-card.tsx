@@ -15,6 +15,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { Icon } from "@iconify/react";
+import { getCourseProgress } from "../../utils";
 
 const UserCard = ({
   user,
@@ -75,16 +76,6 @@ const UserCard = ({
       }
     });
     return pendingApproval;
-  };
-  const getCourseProgress = (userAnalytics: any, lessonsArray: any) => {
-    let completedLessons = 0;
-    lessonsArray.forEach((lesson: any) => {
-      if (userAnalytics?.analytics[lesson.id]?.status === "approved") {
-        completedLessons += 1;
-      }
-    });
-
-    return Math.round((completedLessons / lessonsArray.length) * 100);
   };
 
   if (userAnalytics) {

@@ -153,12 +153,16 @@ const CreateLessonModal = () => {
                         {button.label}
                       </div>
                       <div
-                        className={`absolute top-3 left-3 h-3 w-3 rounded-full border-blue-500 border ${
+                        className={`absolute top-3 left-3 h-3 w-3 flex items-center justify-center rounded-full border-blue-500 border ${
                           currentLesson.type === button.value
                             ? "bg-blue-100"
                             : "bg-transparent"
                         }`}
-                      />
+                      >
+                        {currentLesson.type === button.value && (
+                          <div className="bg-blue-500  w-[6px] h-[6px] rounded-full"></div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

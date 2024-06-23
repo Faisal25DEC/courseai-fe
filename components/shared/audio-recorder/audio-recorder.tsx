@@ -38,11 +38,13 @@ const AudioRecorderComp = ({
         "Content-Type": "multipart/form-data",
       },
     });
+    console.log(result.data.conversation);
+    console.log(result.data.transcript);
+    // repeat(sessionInfo.session_id, result.data.text);
+    await talkHandler(result.data.transcript);
     setLoading(false);
     setMicrophoneState("mute");
-    console.log(result.data.transcript);
-    repeat(sessionInfo.session_id, result.data.text);
-    // talkHandler(result.data.text);
+
     // const audio = document.createElement("audio");
     // audio.src = url;
     // console.log(url);

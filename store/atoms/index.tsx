@@ -1,3 +1,4 @@
+import { analyticsTabsValues } from "@/lib/constants";
 import { atom } from "recoil";
 
 export const createLessonModalAtom = atom({
@@ -111,4 +112,13 @@ export const organizationMembersAtom = atom<any>({
 export const globalEnrolledUsersAtom = atom<any>({
   key: "globalEnrolledUsersAtom",
   default: [],
+});
+export const currentAvatarConversationAtom = atom<any>({
+  key: "currentAvatarConversationAtom",
+  default: null,
+});
+
+export const analyticsTabValueAtom = atom({
+  key: "analyticsTabValueAtom",
+  default: analyticsTabsValues.analytics,
 });

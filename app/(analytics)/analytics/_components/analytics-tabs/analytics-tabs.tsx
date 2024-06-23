@@ -3,9 +3,11 @@ import { analyticsTabsValues } from "@/lib/constants";
 import React from "react";
 import UserLessonAnalytics from "../user-lesson-analytics/user-lesson-analytics";
 import AvatarConversations from "../avatar-conversations/avatar-conversations";
+import { useRecoilState } from "recoil";
+import { analyticsTabValueAtom } from "@/store/atoms";
 
 const AnalyticsTabs = () => {
-  const [tabValue, setTabValue] = React.useState(analyticsTabsValues.analytics);
+  const [tabValue, setTabValue] = useRecoilState(analyticsTabValueAtom);
   return (
     <Tabs
       value={tabValue}

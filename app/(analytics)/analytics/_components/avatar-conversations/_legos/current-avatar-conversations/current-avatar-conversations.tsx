@@ -39,8 +39,9 @@ const CurrentAvatarConversations = ({
         <div className="flex flex-col overflow-y-scroll satoshi h-[50vh]">
           <h1 className="px-2 pt-4 pb-2 h2-medium">Transcript</h1>
           <hr />
-          {currentAvatarConversations?.[activeConversation]?.conversation?.map(
-            (item: any, idx: any) => {
+          {currentAvatarConversations?.[activeConversation]?.conversation
+            ?.slice(3)
+            ?.map((item: any, idx: any) => {
               return (
                 item.role !== "system" && (
                   <div
@@ -56,8 +57,7 @@ const CurrentAvatarConversations = ({
                   </div>
                 )
               );
-            }
-          )}
+            })}
         </div>
       </div>
     </div>

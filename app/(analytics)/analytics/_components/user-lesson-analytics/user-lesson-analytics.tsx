@@ -1,6 +1,8 @@
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
 import { StringFormats } from "@/lib/StringFormats";
 import {
+  analyticsTabValueAtom,
+  currentAvatarConversationAtom,
   currentUserLessonAnalyticsAtom,
   lessonsArrayAtom,
 } from "@/store/atoms";
@@ -9,9 +11,16 @@ import { useRecoilState } from "recoil";
 import { textColorBasedOnStatus } from "./constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ApprovalPending from "./_legos/approval-pending/approval-pending";
-import { lessonStatuses, lessonStatusText } from "@/lib/constants";
+import {
+  analyticsTabsValues,
+  lessonStatuses,
+  lessonStatusText,
+} from "@/lib/constants";
 
 const UserLessonAnalytics = () => {
+  const [currentAvatarConversation, setCurrentAvatarConversation] =
+    useRecoilState(currentAvatarConversationAtom);
+  const [tabValue, setTabValue] = useRecoilState(analyticsTabValueAtom);
   const { approvalPending, approved, pending } = lessonStatuses;
   const [lessonsArray, setLessonsArray] = useRecoilState(lessonsArrayAtom);
   const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
@@ -35,9 +44,30 @@ const UserLessonAnalytics = () => {
     currentUserLessonAnalytics,
     lessonsArray
   );
+  const getRecordingsCount = (lesson: any) => {
+    if (lesson?.type !== "avatar") {
+      return "-";
+    }
+    return lesson?.conversations?.length > 0
+      ? `${lesson?.conversations?.length} recordings`
+      : "No recordings";
+  };
+  const viewRecordings = (lesson: any) => {
+    if (lesson?.type !== "avatar") {
+      return null;
+    }
+    setCurrentAvatarConversation(lesson?.conversations);
+    setTabValue(analyticsTabsValues.avatarConversations);
+  };
+  const getClassNames = (lesson: any) => {
+    if (lesson?.type !== "avatar") {
+      return "text-gray-400";
+    }
+    return "text-blue-600 underline font-light";
+  };
 
   const headings = ["Lesson", "Status", "Time Spent", "Completed At"];
-
+  console.log(currentUserLessonAnalytics, lessonAnalyticsArray);
   return (
     <div className="min-h-[80vh] min-w-[990px]">
       <div className="flex items-center gap-4 p-4">
@@ -71,10 +101,10 @@ const UserLessonAnalytics = () => {
               key={lesson.id}
               className="py-4 px-6 border-b border-gray-200 rounded-b-[20px] cursor-pointer flex justify-between items-center rounded-md"
             >
-              <div className="w-[25%]">
+              <div className="flex-1">
                 <p>{lesson.title}</p>
               </div>
-              <div className="w-[25%]">
+              <div className="flex-1">
                 <p
                   className={`${
                     textColorBasedOnStatus[lesson.status || "pending"]
@@ -90,7 +120,7 @@ const UserLessonAnalytics = () => {
                       "Incomplete")}
                 </p>
               </div>
-              <div className="w-[25%]">
+              <div className="flex-1">
                 <p className="text-[13px]">
                   {FormatDate.formatMilliseconds(lesson.duration) ===
                   "0 seconds"
@@ -98,7 +128,7 @@ const UserLessonAnalytics = () => {
                     : FormatDate.formatMilliseconds(lesson.duration) || "-"}
                 </p>
               </div>
-              <div className="w-[25%]">
+              <div className="flex-1">
                 <p className="text-[13px]">
                   {lesson.completed_at
                     ? FormatDate.getDateAndTimeFromMilliseconds(
@@ -107,6 +137,16 @@ const UserLessonAnalytics = () => {
                     : "Yet to Start"}
                 </p>
               </div>
+              {/* <div className="flex-1">
+                <p
+                  onClick={() => {
+                    viewRecordings(lesson);
+                  }}
+                  className={`text-[13px] ${getClassNames(lesson)}`}
+                >
+                  {getRecordingsCount(lesson)}
+                </p>
+              </div> */}
             </div>
           );
         })}

@@ -36,6 +36,18 @@ const Navbar = () => {
 
   const pathname = usePathname();
   const showNavbar = !forbiddenRoutes.includes(pathname.split("/")[1]);
+  const pathMap: {
+    "": "Home";
+    courses: "Course";
+    analytics: "Analytics";
+    settings: "Settings";
+    [key: string]: string;
+  } = {
+    "": "Home",
+    courses: "Course",
+    analytics: "Analytics",
+    settings: "Settings",
+  };
 
   return showNavbar ? (
     <div className="border-b-[1px] border-neutral-200">
@@ -61,7 +73,7 @@ const Navbar = () => {
               <div>
                 <p className="text-gray-600 hover:text-gray-900 text-sm">
                   {StringFormats.capitalizeFirstLetter(
-                    pathname.split("/")[1]
+                    pathMap[pathname.split("/")[1]]
                   ) || "Home"}
                 </p>
               </div>

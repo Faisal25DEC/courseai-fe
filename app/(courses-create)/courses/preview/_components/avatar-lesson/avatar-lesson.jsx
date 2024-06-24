@@ -1,9 +1,4 @@
 "use client";
-import Microphone from "@/components/shared/microphone/microhpone";
-import { DeepgramContextProvider } from "@/context/Deepgram";
-import { MicrophoneContextProvider } from "@/context/Microphone";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -11,19 +6,19 @@ import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
 import { activeLessonAtom } from "@/store/atoms";
 import Webcam from "react-webcam";
-import { v4 as uuidv4 } from "uuid";
 import { currentCourseId } from "@/lib/constants";
 import { useUser } from "@clerk/nextjs";
-import { baseUrl } from "@/lib/config";
 import { StringFormats } from "@/lib/StringFormats";
 import {
   approveLessonRequest,
   getUserAnalytics,
   updateLessonForUser,
 } from "@/services/lesson.service";
-import useTrackLessonDuration from "@/hooks/useTrackLessonDuration";
 import AudioRecorderComp from "@/components/shared/audio-recorder/audio-recorder";
-
+import useInfoModal from "@/hooks/useInfoModal";
+import InfoModal from "@/components/shared/info-modal/info-modal";
+import AvatarConversationsLive from "@/components/shared/avatar-conversations-live/avatar-conversations-live";
+import { Icon } from "@iconify/react";
 const heygen_API = {
   apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
   serverUrl: "https://api.heygen.com",
@@ -51,6 +46,12 @@ export default function AvatarLesson({
   lesson_id,
   lesson,
 }) {
+  const {
+    isInfoModalOpen,
+    onInfoModalOpen,
+    onInfoModalClose,
+    setIsInfoModalOpen,
+  } = useInfoModal();
   const [conversations, setConversations] = useState([]);
   const conversationsRef = useRef([]);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
@@ -74,7 +75,7 @@ export default function AvatarLesson({
   const recorderRef = useRef(null);
   const [isDocumentVisible, setIsDocumentVisible] = useState(false);
   const { user } = useUser();
-
+  console.log("infoModal", isInfoModalOpen);
   useEffect(() => {
     if (lesson.status === "rejected") {
       toast.error("Admin has rejected the approval request.");
@@ -84,10 +85,16 @@ export default function AvatarLesson({
       alert("Please enter your API key and server URL in the api.json file");
     }
   }, []);
+  // useEffect(() => {
+  //   if (sessionInfo?.session_id) {
+  //     talkToOpenAI("Have u understood the instructions?", true);
+  //   }
+  // }, [sessionInfo, lesson?.content?.prompt]);
   async function talkToOpenAI(prompt, newPrompt) {
     const data = await axios.post(`/api/complete`, {
       prompt,
       newPrompt: newPrompt || false,
+      lesson_prompt: newPrompt ? lesson?.content?.prompt : null,
       sessionId: sessionInfo.session_id,
     });
 
@@ -96,8 +103,10 @@ export default function AvatarLesson({
       throw new Error("Server error");
     } else {
       taskInputRef.current.value = "";
-      conversationsRef.current = data.data.conversation;
-
+      conversationsRef.current = [
+        ...conversationsRef.current,
+        { role: "assistant", content: data.data.text },
+      ];
       return data.data.text;
     }
   }
@@ -119,7 +128,7 @@ export default function AvatarLesson({
     }
   }
 
-  async function talkHandler(text) {
+  async function talkHandler(text, newPrompt) {
     if (!sessionInfo) {
       return;
     }
@@ -136,7 +145,7 @@ export default function AvatarLesson({
       }
       setAILoading(true);
       setAITalking(true);
-      const text = await talkToOpenAI(prompt);
+      const text = await talkToOpenAI(prompt, newPrompt);
       const seconds = text.split(" ").length / 2;
 
       setAILoading(false);
@@ -376,19 +385,19 @@ export default function AvatarLesson({
     }
   };
   return (
-    <div className="w-full relative">
+    <div className="w-full relative ml-4">
       <div className="h-[90vh] w-full flex  flex-col">
-        <div className="w-full flex flex-col gap-3 mt-3 relative justify-center items-center">
+        <div className="w-full flex flex-col gap-2 relative justify-center items-center">
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex flex-col w-[900px] justify-center items-center h-full ">
-              <div className="flex self-start gap-2 py-2 items-center justify-between pl-2">
+            <div className="flex flex-col min-w-[900px] justify-center items-center h-full ">
+              <div className="flex self-start gap-2 py-2 items-center justify-between ml-1">
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
                 </h1>
               </div>
-              <div className="flex self-start flex-col gap-2 pb-2 pl-2">
+              <div className="flex self-start flex-col gap-2 pb-2 ml-1">
                 <p className="text-gray-600 text-[16px]">
                   {lesson?.description}
                 </p>
@@ -399,7 +408,7 @@ export default function AvatarLesson({
                     src={"/images/play.png"}
                     className="w-20 h-20 pl-2 hover:scale-[1.1] transition-all duration-300 ease-in-out"
                     onClick={() => {
-                      createNewSession().then(() => {});
+                      onInfoModalOpen("Video will be recorded");
                     }}
                   />
                 </div>
@@ -410,91 +419,110 @@ export default function AvatarLesson({
               <img
                 src={thumbnail}
                 alt="ai-avatar"
-                className="object-cover w-[900px] mt-2 md:rounded-[20px] h-[60vh] shadow-lg"
+                className="object-cover w-[1200px] mt-2 md:rounded-[20px] h-[70vh] shadow-lg"
               />
             </div>
           )}
-          <div className="h-fit flex flex-col justify-center gap-3 items-center relative py-8">
+          <div className="h-fit flex flex-col justify-center gap-2 items-center relative py-4 rounded-[20px]">
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex self-start gap-2 items-center justify-between">
+              <div className="flex self-start gap-2 items-center justify-between ml-1">
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
                 </h1>
               </div>
             )}
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex self-start flex-col gap-2">
+              <div className="flex self-start flex-col gap-2 ml-1">
                 <p className="text-gray-600 text-[16px]">
                   {lesson?.description}
                 </p>
               </div>
             )}
-            <div className="relative">
-              <video
-                align="center"
-                className="h-[60vh] shadow-lg w-full md:w-auto md:rounded-[20px] object-cover mx-auto self-center"
-                ref={mediaElementRef}
-                autoPlay
-                style={{
-                  display: sessionState === "connected" ? "block" : "none",
-                }}
-              />
-              {peerConnection &&
-                sessionInfo &&
-                sessionState === "connected" && (
-                  <Webcam
-                    audio
-                    muted
-                    audioConstraints={audioConstraints}
-                    className="absolute bottom-[1rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
-                    screenshotFormat="image/jpeg"
-                    videoConstraints={videoConstraints}
-                    onUserMedia={startRecording}
-                  ></Webcam>
-                )}
-              {peerConnection &&
-                sessionInfo &&
-                sessionState === "connected" && (
-                  <div className="flex gap-2 items-end left-[50%] translate-x-[-50%] absolute bottom-[1rem]">
-                    <div className="flex flex-col gap-2">
-                      <div className="relative hidden">
-                        <input
-                          placeholder="Write your query and press enter to talk"
-                          className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              talkHandler();
-                            }
-                          }}
-                          ref={taskInputRef}
-                          type="text"
+            <div className=" flex rounded-[20px]">
+              <div className="relative">
+                <video
+                  align="center"
+                  className="h-[70vh] shadow-lg w-full md:w-auto md:rounded-l-[20px] object-cover mx-auto self-center"
+                  ref={mediaElementRef}
+                  autoPlay
+                  style={{
+                    display: sessionState === "connected" ? "block" : "none",
+                  }}
+                />
+                {peerConnection &&
+                  sessionInfo &&
+                  sessionState === "connected" && (
+                    <Webcam
+                      audio
+                      muted
+                      audioConstraints={audioConstraints}
+                      className="absolute bottom-[1rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
+                      screenshotFormat="image/jpeg"
+                      videoConstraints={videoConstraints}
+                      onUserMedia={startRecording}
+                    ></Webcam>
+                  )}
+                {peerConnection &&
+                  sessionInfo &&
+                  sessionState === "connected" && (
+                    <div className="flex gap-2 items-end left-[50%] translate-x-[-50%] absolute bottom-[1rem]">
+                      <div className="flex flex-col gap-2">
+                        <div className="relative hidden">
+                          <input
+                            placeholder="Write your query and press enter to talk"
+                            className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                talkHandler();
+                              }
+                            }}
+                            ref={taskInputRef}
+                            type="text"
+                          />
+                        </div>
+                      </div>
+                      {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
+                      <AudioRecorderComp
+                        conversationsRef={conversationsRef}
+                        repeat={repeat}
+                        sessionInfo={sessionInfo}
+                        talkHandler={talkHandler}
+                      />
+                      <div className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[20px]">
+                        <Icon
+                          className="hover:scale-[1.3] simple-transition"
+                          icon="icomoon-free:phone-hang-up"
                         />
                       </div>
-                    </div>
-                    {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-                    <AudioRecorderComp
-                      repeat={repeat}
-                      sessionInfo={sessionInfo}
-                      talkHandler={talkHandler}
-                    />
-                    {/* <MicrophoneContextProvider>
+                      {/* <MicrophoneContextProvider>
                       <DeepgramContextProvider>
-                        <Microphone
-                          talkHandler={talkHandler}
-                          taskInputRef={taskInputRef}
-                        />
+                      <Microphone
+                      talkHandler={talkHandler}
+                      taskInputRef={taskInputRef}
+                      />
                       </DeepgramContextProvider>
-                    </MicrophoneContextProvider> */}
-                  </div>
+                      </MicrophoneContextProvider> */}
+                    </div>
+                  )}
+              </div>
+              {peerConnection &&
+                sessionInfo &&
+                sessionState === "connected" && (
+                  <AvatarConversationsLive
+                    conversationsRef={conversationsRef}
+                  />
                 )}
             </div>
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
           </div>
         </div>
-        {/* {conversationsRef.current.map((item) => {
-          return <div key={item.content}>{item.content}</div>;
-        })} */}
       </div>
+
+      <InfoModal
+        handleClick={() => {
+          createNewSession().then(() => {});
+        }}
+      />
     </div>
   );
 }

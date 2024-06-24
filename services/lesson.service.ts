@@ -174,3 +174,27 @@ export const getEnrolledUsersInACourse = async (courseId: string) => {
     console.error(error);
   }
 };
+
+export const getEnrolledUsersInACourseWithAnalytics = async (
+  courseId: string
+) => {
+  try {
+    const enrolledUsers = await getEnrolledUsersInACourse(courseId);
+
+    const enrolledUsersWithAnalyticPromise = enrolledUsers.map(
+      async (user: any) => {
+        const analytics = await getUserAnalytics(user.id, courseId);
+        return {
+          ...user,
+          analytics,
+        };
+      }
+    );
+    const enrolledUsersWithAnalytics = await Promise.all(
+      enrolledUsersWithAnalyticPromise
+    );
+    return enrolledUsersWithAnalytics;
+  } catch (error) {
+    console.error(error);
+  }
+};

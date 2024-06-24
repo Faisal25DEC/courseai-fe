@@ -9,6 +9,7 @@ import {
   getCourse,
   getCourseAnalytics,
   getEnrolledUsersInACourse,
+  getEnrolledUsersInACourseWithAnalytics,
 } from "@/services/lesson.service";
 import Modal from "@/components/shared/modal";
 import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
@@ -25,6 +26,7 @@ import useFetchOrganizationMemberships from "@/hooks/useFetchOrganizationMembers
 import useCurrentCourse from "@/hooks/useCurrentCourse";
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
 import AnalyticsTabs from "./_components/analytics-tabs/analytics-tabs";
+import { getCourseProgress } from "./utils";
 const Page = () => {
   const [currentCourse, setCurrentCourse] = useCurrentCourse({
     id: currentCourseId,
@@ -43,9 +45,9 @@ const Page = () => {
   );
   const fetchEnrolledUsers = async () => {
     try {
-      const enrolledUsersWithDate = await getEnrolledUsersInACourse(
-        currentCourseId
-      );
+      const enrolledUsersWithDate =
+        await getEnrolledUsersInACourseWithAnalytics(currentCourseId);
+      console.log(enrolledUsersWithDate);
       setEnrolledUsers(enrolledUsersWithDate);
     } catch (error) {
       toast.error("Failed to fetch enrolled users");
@@ -55,7 +57,14 @@ const Page = () => {
   useEffect(() => {
     fetchEnrolledUsers();
   }, []);
-
+  const getAverageCourseProgress = (lessonsArray: any) => {
+    if (!enrolledUsers) return 0;
+    let totalProgress = 0;
+    enrolledUsers.forEach((user: any) => {
+      totalProgress += getCourseProgress(user.analytics, lessonsArray);
+    });
+    return totalProgress / enrolledUsers.length;
+  };
   const analyticsCards = [
     {
       title: "Total Users",
@@ -72,6 +81,23 @@ const Page = () => {
         />
       ),
     },
+    // {
+    //   title: "Average Course Progress",
+    //   value: getAverageCourseProgress(lessonsArray) + "%",
+    //   icon: (
+    //     <Icon
+    //       className="icon-medium"
+    //       icon="material-symbols-light:play-lesson-outline-rounded"
+    //     />
+    //   ),
+    // },
+    // {
+    //   title: "Number of Students Finished",
+    //   value: enrolledUsers?.filter(
+    //     (user: any) => getCourseProgress(user.analytics, lessonsArray) === 100
+    //   ).length,
+    //   icon: <Icon className="icon-medium" icon="clarity:check-line" />,
+    // },
     // {
     //   title: "Total Lessons",
     //   value: lessonsArray?.length,

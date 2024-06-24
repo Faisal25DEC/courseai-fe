@@ -13,31 +13,24 @@ const GPT4o = "gpt-4o";
 export async function POST(req: NextRequest) {
   if (req.method === "POST") {
     try {
-      const { prompt, newPrompt, sessionId } = await req.json();
+      const { prompt, newPrompt, sessionId, lesson_prompt } = await req.json();
 
       if (!sessionId) {
         return NextResponse.error();
       }
 
       // Reset conversation memory if newPrompt is true
+      console.log(newPrompt);
       if (newPrompt) {
         conversationMemory[sessionId] = [
           {
             role: "system",
-            content: basePrompt + ".\n" + "####\n" + prompt + "####",
-          },
-        ];
-      } else {
-        // Retrieve the previous conversation context if it exists
-        conversationMemory[sessionId] = conversationMemory[sessionId] || [
-          {
-            role: "system",
-            content: systemSetup,
+            content: basePrompt + ".\n" + "####\n" + lesson_prompt + "####",
           },
         ];
       }
 
-      const previousMessages = conversationMemory[sessionId];
+      const previousMessages = conversationMemory[sessionId] || [];
 
       const chatCompletion = await openai.chat.completions.create({
         model: GPT4o,

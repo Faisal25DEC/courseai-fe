@@ -1,13 +1,21 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { analyticsTabsValues } from "@/lib/constants";
-import React from "react";
+import React, { useEffect } from "react";
 import UserLessonAnalytics from "../user-lesson-analytics/user-lesson-analytics";
 import AvatarConversations from "../avatar-conversations/avatar-conversations";
 import { useRecoilState } from "recoil";
-import { analyticsTabValueAtom } from "@/store/atoms";
+import {
+  analyticsTabValueAtom,
+  currentAvatarConversationAtom,
+} from "@/store/atoms";
 
 const AnalyticsTabs = () => {
   const [tabValue, setTabValue] = useRecoilState(analyticsTabValueAtom);
+  const [currentAvatarConversation, setCurrentAvatarConversation] =
+    useRecoilState(currentAvatarConversationAtom);
+  useEffect(() => {
+    setCurrentAvatarConversation(null);
+  }, [tabValue]);
   return (
     <Tabs
       value={tabValue}

@@ -29,6 +29,8 @@ import InfoModal from "@/components/shared/info-modal/info-modal";
 import useInfoModal from "@/hooks/useInfoModal";
 import AvatarConversationsLive from "@/components/shared/avatar-conversations-live/avatar-conversations-live";
 import { Icon } from "@iconify/react";
+import useEndCallModal from "@/hooks/useEndCallModal";
+import EndCallModal from "@/components/shared/end-call-modal/end-call-modal";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
@@ -60,6 +62,12 @@ export default function AvatarLesson({
   lesson_id,
   lesson,
 }) {
+  const {
+    isEndCallModalOpen,
+    onEndCallModalOpen,
+    onEndCallModalClose,
+    setIsEndCallModalOpen,
+  } = useEndCallModal();
   const {
     isInfoModalOpen,
     onInfoModalOpen,
@@ -348,9 +356,12 @@ export default function AvatarLesson({
       const conversation = conversationsRef.current || [];
       formData.append("conversation", new Blob([JSON.stringify(conversation)]));
       try {
-        await axios.post(
+        const response = await axios.post(
           `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
-          formData
+          formData,
+          {
+            maxContentLength: 550 * 1024 * 1024, // Set to 50MB or any other limit
+          }
         );
         toast.success("Recording submitted successfully");
         closeConnectionHandler();
@@ -406,6 +417,9 @@ export default function AvatarLesson({
           toast.error("Failed to send request for approval");
         });
     }
+  };
+  const handleEnd = () => {
+    onEndCallModalOpen();
   };
   return (
     <div className="w-full relative">
@@ -536,7 +550,10 @@ export default function AvatarLesson({
                         repeat={repeat}
                         talkHandler={talkHandler}
                       />
-                      <div className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[20px]">
+                      <div
+                        onClick={handleEnd}
+                        className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[20px]"
+                      >
                         <Icon
                           className="hover:scale-[1.3] simple-transition"
                           icon="icomoon-free:phone-hang-up"
@@ -571,6 +588,15 @@ export default function AvatarLesson({
       <InfoModal
         handleClick={() => {
           createNewSession().then(() => {});
+        }}
+      />
+      <EndCallModal
+        handleSubmit={() => {
+          handleStopAndUpload();
+        }}
+        handleRetry={() => {
+          conversationsRef.current = [];
+          closeConnectionHandler();
         }}
       />
     </div>

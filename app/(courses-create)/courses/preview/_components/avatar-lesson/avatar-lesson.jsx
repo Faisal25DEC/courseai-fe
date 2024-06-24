@@ -384,6 +384,9 @@ export default function AvatarLesson({
         });
     }
   };
+  const handleEnd = () => {
+    closeConnectionHandler();
+  };
   return (
     <div className="w-full relative ml-4">
       <div className="h-[90vh] w-full flex  flex-col">
@@ -446,7 +449,10 @@ export default function AvatarLesson({
                   ref={mediaElementRef}
                   autoPlay
                   style={{
-                    display: sessionState === "connected" ? "block" : "none",
+                    display:
+                      peerConnection && sessionState === "connected"
+                        ? "block"
+                        : "none",
                   }}
                 />
                 {peerConnection &&
@@ -488,7 +494,10 @@ export default function AvatarLesson({
                         sessionInfo={sessionInfo}
                         talkHandler={talkHandler}
                       />
-                      <div className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[20px]">
+                      <div
+                        onClick={handleEnd}
+                        className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[20px]"
+                      >
                         <Icon
                           className="hover:scale-[1.3] simple-transition"
                           icon="icomoon-free:phone-hang-up"

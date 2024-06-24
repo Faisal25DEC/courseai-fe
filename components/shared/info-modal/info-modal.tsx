@@ -13,7 +13,7 @@ const InfoModal = ({ handleClick }: { handleClick: () => void }) => {
   } = useInfoModal();
   return (
     <Modal
-      className="max-w-[500px]"
+      className="max-w-[500px] left-[58%] top-[58%]"
       isOpen={isInfoModalOpen !== ""}
       onClose={onInfoModalClose}
     >

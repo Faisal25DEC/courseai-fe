@@ -127,3 +127,7 @@ export const infoModalAtom = atom({
   key: "infoModalAtom",
   default: "",
 });
+export const endCallModalAtom = atom({
+  key: "endCallModalAtom",
+  default: false,
+});

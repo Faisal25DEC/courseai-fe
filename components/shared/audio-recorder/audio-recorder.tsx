@@ -4,6 +4,9 @@ import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import { FileService } from "@/services/file.service";
 import { createClient } from "@deepgram/sdk";
 import axios from "axios";
+import { SendHorizonalIcon } from "lucide-react";
+import { useRecoilState } from "recoil";
+import { responseLoadingAtom, userTranscriptLoadingAtom } from "@/store/atoms";
 
 const AudioRecorderComp = ({
   talkHandler,
@@ -16,6 +19,11 @@ const AudioRecorderComp = ({
   repeat: any;
   conversationsRef?: any;
 }) => {
+  const [responseLoading, setResponseLoading] =
+    useRecoilState(responseLoadingAtom);
+  const [userTranscriptLoading, setUserTranscriptLoading] = useRecoilState(
+    userTranscriptLoadingAtom
+  );
   const promptCount = useRef(0);
   const [microphoneState, setMicrophoneState] = useState("mute");
   const [loading, setLoading] = useState(false);
@@ -35,14 +43,13 @@ const AudioRecorderComp = ({
     formData.append("sessionId", sessionInfo.session_id);
 
     // Send the FormData object using axios
-    setLoading(true);
+    setUserTranscriptLoading(1);
     const result = await axios.post("/api/audio-record", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log(result.data.conversation);
-    console.log(result.data.transcript);
+    setUserTranscriptLoading(2);
     if (conversationsRef.current) {
       conversationsRef.current = [
         ...conversationsRef.current,
@@ -50,14 +57,15 @@ const AudioRecorderComp = ({
       ];
     }
     // repeat(sessionInfo.session_id, result.data.text);
+
     if (promptCount.current === 0) {
       await talkHandler(result.data.transcript, true);
+      setUserTranscriptLoading(0);
       promptCount.current++;
     } else {
       await talkHandler(result.data.transcript, false);
+      setUserTranscriptLoading(0);
     }
-    setLoading(false);
-    setMicrophoneState("mute");
 
     // const audio = document.createElement("audio");
     // audio.src = url;
@@ -68,6 +76,7 @@ const AudioRecorderComp = ({
   const handleSend = () => {
     if (microphoneState === "send") {
       recorderControls.stopRecording();
+      setMicrophoneState("mute");
     } else {
       recorderControls.startRecording();
       setMicrophoneState("send");
@@ -102,7 +111,13 @@ const AudioRecorderComp = ({
                 className="flex gap-2 items-center"
               >
                 <div className="wavy-loader" />
-                {loading ? <div className="loader"></div> : <div>send</div>}
+                {loading ? (
+                  <div className="loader"></div>
+                ) : (
+                  <div>
+                    <SendHorizonalIcon />
+                  </div>
+                )}
               </div>
             )}
             <div

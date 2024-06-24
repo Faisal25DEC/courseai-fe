@@ -1,4 +1,4 @@
-import { currentUserRoleAtom } from "@/store/atoms";
+import { currentOrganizationIdAtom, currentUserRoleAtom } from "@/store/atoms";
 import {
   useAuth,
   useOrganization,
@@ -15,6 +15,9 @@ const useSetOrganization = () => {
     onNoOrganizationModalClose,
     onNoOrganizationModalOpen,
   } = useNoOrganizationModal();
+  const [currentOrgId, setCurrentOrgId] = useRecoilState(
+    currentOrganizationIdAtom
+  );
   const { user, isLoaded, isSignedIn } = useUser();
   const { signOut } = useAuth();
   const { organization, isLoaded: isOrgLoaded } = useOrganization();
@@ -57,6 +60,7 @@ const useSetOrganization = () => {
   useEffect(() => {
     if (userMemberships.data && organization?.id) {
       const currentOrg = organization?.id;
+      setCurrentOrgId(currentOrg);
       const currentMembership = userMemberships.data.find(
         (mem) => mem.organization.id === currentOrg
       );

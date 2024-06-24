@@ -131,3 +131,16 @@ export const endCallModalAtom = atom({
   key: "endCallModalAtom",
   default: false,
 });
+export const currentOrganizationIdAtom = atom<any>({
+  key: "currentOrganizationIdAtom",
+  default: "",
+});
+export const userTranscriptLoadingAtom = atom({
+  key: "userTranscriptLoadingAtom",
+  default: 0,
+});
+
+export const responseLoadingAtom = atom({
+  key: "responseLoadingAtom",
+  default: false,
+});

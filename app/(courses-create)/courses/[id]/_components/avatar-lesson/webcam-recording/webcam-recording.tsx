@@ -50,7 +50,7 @@ const WebcamRecording = ({
       ] as unknown as MediaStream,
       {
         type: "video",
-        mimeType: "video/webm",
+        mimeType: "video/mp4",
       }
     );
 

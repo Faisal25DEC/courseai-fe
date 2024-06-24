@@ -10,16 +10,24 @@ import {
   OrganizationSwitcher,
   SignedIn,
   UserButton,
+  useUser,
 } from "@clerk/nextjs";
 import { useState } from "react";
 import Modal from "../modal";
-import { currentUserRoleAtom, enrollCourseModalAtom } from "@/store/atoms";
-import { useRecoilState } from "recoil";
+import {
+  currentOrganizationIdAtom,
+  currentUserRoleAtom,
+  enrollCourseModalAtom,
+} from "@/store/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { admin } from "@/lib/constants";
 import useSetOrganization from "@/hooks/useSetOrganization";
 import EnrollCourseModal from "../enroll-course-modal/enroll-course-modal";
 import useEnrollCourseModal from "@/hooks/useEnrollCourseModal";
-
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@iconify/react";
+import { sendInvite } from "@/services/auth.service";
 const Navbar = () => {
   const {
     isEnrollCourseModalOpen,
@@ -30,8 +38,10 @@ const Navbar = () => {
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);
   const [invite, setIsInvite] = useState(false);
+  const { user } = useUser();
   useSetOrganization();
-
+  const organizationId = useRecoilValue(currentOrganizationIdAtom);
+  const [emailAddress, setEmailAddress] = useState("");
   const forbiddenRoutes = ["sign-in", "sign-up"];
 
   const pathname = usePathname();
@@ -48,7 +58,16 @@ const Navbar = () => {
     analytics: "Analytics",
     settings: "Settings",
   };
-
+  const handleInvite = () => {
+    if (emailAddress === "") return;
+    sendInvite({
+      emailAddress,
+      organizationId,
+      inviterUserId: user?.id as string,
+      redirectUrl: "https://dashboard-dev.permian.ai",
+    });
+    setIsInvite(false);
+  };
   return showNavbar ? (
     <div className="border-b-[1px] border-neutral-200">
       <div className="flex items-center justify-between w-[98%] md:w-[92%] pb-[12px] m-auto pt-6 px-6">
@@ -117,12 +136,42 @@ const Navbar = () => {
         <NavTabs />
       </div>
       <Modal
-        className="w-fit justify-center items-center flex"
+        className="w-[400px] justify-center items-center flex"
         isOpen={invite}
         onClose={() => setIsInvite(false)}
       >
         {" "}
-        <OrganizationProfile routing="virtual" />
+        <div className="w-full flex flex-col gap-4 relative">
+          <div className="text-lg px-4 pt-4 font-medium text-gray-700">
+            Invite a User
+          </div>
+          <hr></hr>
+          <div className="flex  px-4 pb-4 flex-col gap-3">
+            <div className="label-container">
+              <label className="text-gray-500 text-[13px]">
+                {" "}
+                To invite a new user, please specify the email{" "}
+              </label>
+              <Input
+                onChange={(e) => setEmailAddress(e.target.value)}
+                className="border border-gray-200 w-full p-2 rounded-md"
+                type="email"
+                placeholder="email"
+                value={emailAddress}
+              />
+            </div>
+            <Button onClick={handleInvite}>Invite</Button>
+          </div>
+          <div
+            onClick={() => setIsInvite(false)}
+            className="absolute cursor-pointer transition-all duration-300 ease-in top-[15px] hover:bg-slate-200 right-[15px] p-[3px] rounded-full "
+          >
+            <Icon
+              icon="system-uicons:cross"
+              style={{ color: "rgb(25,25,25)" }}
+            />
+          </div>
+        </div>
       </Modal>
       {isEnrollCourseModalOpen && <EnrollCourseModal />}
     </div>

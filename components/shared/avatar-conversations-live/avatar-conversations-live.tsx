@@ -62,7 +62,7 @@ const AvatarConversationsLive = ({
                   )}
                 </div>
                 <p
-                  className={`text-gray-700 p-2 w-fit max-w-[230px] text-[13px] ${
+                  className={`text-gray-700 p-2 w-fit max-w-[200px] text-[12px] ${
                     item.role === "user"
                       ? "self-end justify-end bg-gray-200 rounded-b-[17px] rounded-tl-[17px]"
                       : "bg-[#5475f5] text-white rounded-tr-[17px] rounded-b-[17px]"

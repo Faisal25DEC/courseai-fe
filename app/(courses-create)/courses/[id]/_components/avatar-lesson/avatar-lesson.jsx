@@ -9,7 +9,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
-import { activeLessonAtom } from "@/store/atoms";
+import { activeLessonAtom, userAnalyticsAtom } from "@/store/atoms";
 import Webcam from "react-webcam";
 import { v4 as uuidv4 } from "uuid";
 import { currentCourseId } from "@/lib/constants";
@@ -74,6 +74,7 @@ export default function AvatarLesson({
     onInfoModalClose,
     setIsInfoModalOpen,
   } = useInfoModal();
+  const [userAnalytics, setUserAnalytics] = useRecoilState(userAnalyticsAtom);
   const submitButtonRef = useRef(null);
   const [conversations, setConversations] = useState([]);
   const conversationsRef = useRef([]);
@@ -356,21 +357,22 @@ export default function AvatarLesson({
       const conversation = conversationsRef.current || [];
       formData.append("conversation", new Blob([JSON.stringify(conversation)]));
       try {
+        closeConnectionHandler();
         const response = await axios.post(
           `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
           formData,
           {
-            maxContentLength: 550 * 1024 * 1024, // Set to 50MB or any other limit
+            maxContentLength: Infinity,
           }
         );
         toast.success("Recording submitted successfully");
-        closeConnectionHandler();
       } catch (error) {
         toast.error("Failed to submit recording");
       }
     });
   };
   const markComplete = () => {
+    if (lesson?.status === "approved") return;
     if (lesson.submission === "automatic") {
       updateLessonForUser({
         user_id: user?.id,
@@ -470,7 +472,7 @@ export default function AvatarLesson({
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
                 </h1>
 
-                <div className="self-end flex items-center gap-2">
+                {/* <div className="self-end flex items-center gap-2">
                   <Button
                     ref={submitButtonRef}
                     onClick={() => {
@@ -488,7 +490,7 @@ export default function AvatarLesson({
                   ) : (
                     <Button onClick={markComplete}>Mark Complete</Button>
                   )}
-                </div>
+                </div> */}
               </div>
             )}
             {peerConnection && sessionInfo && sessionState === "connected" && (
@@ -592,6 +594,7 @@ export default function AvatarLesson({
       />
       <EndCallModal
         handleSubmit={() => {
+          markComplete();
           handleStopAndUpload();
         }}
         handleRetry={() => {

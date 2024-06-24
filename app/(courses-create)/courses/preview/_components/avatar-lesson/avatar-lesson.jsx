@@ -178,7 +178,7 @@ export default function AvatarLesson({
           "X-Api-Key": apiKey,
         },
         body: JSON.stringify({
-          quality: "medium",
+          quality: "low",
           avatar_name: avatar_name,
           avatar_id: avatar_name + "",
           voice: {

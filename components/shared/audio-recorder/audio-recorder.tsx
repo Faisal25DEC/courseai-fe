@@ -87,7 +87,7 @@ const AudioRecorderComp = ({
           recorderControls={recorderControls}
         />
       </div>
-      <div className="bg-gray-500  simple-transition h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[20px]">
+      <div className="bg-gray-400  simple-transition h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[20px]">
         <div className="">
           <a href="#" onClick={(e: any) => microphoneToggle()} className={``}>
             {microphoneState === "active" && (

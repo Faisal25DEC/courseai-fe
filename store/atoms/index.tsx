@@ -122,3 +122,8 @@ export const analyticsTabValueAtom = atom({
   key: "analyticsTabValueAtom",
   default: analyticsTabsValues.analytics,
 });
+
+export const infoModalAtom = atom({
+  key: "infoModalAtom",
+  default: "",
+});

@@ -81,23 +81,23 @@ const Page = () => {
         />
       ),
     },
-    {
-      title: "Average Course Progress",
-      value: getAverageCourseProgress(lessonsArray) + "%",
-      icon: (
-        <Icon
-          className="icon-medium"
-          icon="material-symbols-light:play-lesson-outline-rounded"
-        />
-      ),
-    },
-    {
-      title: "Number of Students Finished",
-      value: enrolledUsers?.filter(
-        (user: any) => getCourseProgress(user.analytics, lessonsArray) === 100
-      ).length,
-      icon: <Icon className="icon-medium" icon="clarity:check-line" />,
-    },
+    // {
+    //   title: "Average Course Progress",
+    //   value: getAverageCourseProgress(lessonsArray) + "%",
+    //   icon: (
+    //     <Icon
+    //       className="icon-medium"
+    //       icon="material-symbols-light:play-lesson-outline-rounded"
+    //     />
+    //   ),
+    // },
+    // {
+    //   title: "Number of Students Finished",
+    //   value: enrolledUsers?.filter(
+    //     (user: any) => getCourseProgress(user.analytics, lessonsArray) === 100
+    //   ).length,
+    //   icon: <Icon className="icon-medium" icon="clarity:check-line" />,
+    // },
     // {
     //   title: "Total Lessons",
     //   value: lessonsArray?.length,

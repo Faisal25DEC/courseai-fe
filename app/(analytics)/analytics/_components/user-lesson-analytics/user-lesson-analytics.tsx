@@ -66,13 +66,7 @@ const UserLessonAnalytics = () => {
     return "text-blue-600 underline font-light";
   };
 
-  const headings = [
-    "Lesson",
-    "Status",
-    "Time Spent",
-    "Completed At",
-    "Recordings",
-  ];
+  const headings = ["Lesson", "Status", "Time Spent", "Completed At"];
   console.log(currentUserLessonAnalytics, lessonAnalyticsArray);
   return (
     <div className="min-h-[80vh] min-w-[990px]">
@@ -143,7 +137,7 @@ const UserLessonAnalytics = () => {
                     : "Yet to Start"}
                 </p>
               </div>
-              <div className="flex-1">
+              {/* <div className="flex-1">
                 <p
                   onClick={() => {
                     viewRecordings(lesson);
@@ -152,7 +146,7 @@ const UserLessonAnalytics = () => {
                 >
                   {getRecordingsCount(lesson)}
                 </p>
-              </div>
+              </div> */}
             </div>
           );
         })}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { AudioRecorder, useAudioRecorder } from "react-audio-voice-recorder";
 import { FileService } from "@/services/file.service";
@@ -9,11 +9,14 @@ const AudioRecorderComp = ({
   talkHandler,
   sessionInfo,
   repeat,
+  conversationsRef,
 }: {
   talkHandler: any;
   sessionInfo: any;
   repeat: any;
+  conversationsRef?: any;
 }) => {
+  const promptCount = useRef(0);
   const [microphoneState, setMicrophoneState] = useState("mute");
   const [loading, setLoading] = useState(false);
   const microphoneToggle = () => {};
@@ -40,8 +43,19 @@ const AudioRecorderComp = ({
     });
     console.log(result.data.conversation);
     console.log(result.data.transcript);
+    if (conversationsRef.current) {
+      conversationsRef.current = [
+        ...conversationsRef.current,
+        { role: "user", content: result.data.transcript },
+      ];
+    }
     // repeat(sessionInfo.session_id, result.data.text);
-    await talkHandler(result.data.transcript);
+    if (promptCount.current === 0) {
+      await talkHandler(result.data.transcript, true);
+      promptCount.current++;
+    } else {
+      await talkHandler(result.data.transcript, false);
+    }
     setLoading(false);
     setMicrophoneState("mute");
 
@@ -73,7 +87,7 @@ const AudioRecorderComp = ({
           recorderControls={recorderControls}
         />
       </div>
-      <div className="relative btn-gradient simple-transition btn-glow px-[.55rem] !h-9 w-[fit-content] z-[99999999999]">
+      <div className="bg-gray-500  simple-transition h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[20px]">
         <div className="">
           <a href="#" onClick={(e: any) => microphoneToggle()} className={``}>
             {microphoneState === "active" && (

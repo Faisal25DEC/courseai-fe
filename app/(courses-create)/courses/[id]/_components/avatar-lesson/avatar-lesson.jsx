@@ -352,7 +352,7 @@ export default function AvatarLesson({
     recorderRef.current.stopRecording(async () => {
       const blob = recorderRef.current.getBlob();
       const formData = new FormData();
-      const fileName = uuidv4() + ".webm";
+      const fileName = uuidv4() + ".mp4";
       formData.append("file", blob, fileName);
       const conversation = conversationsRef.current || [];
       formData.append("conversation", new Blob([JSON.stringify(conversation)]));

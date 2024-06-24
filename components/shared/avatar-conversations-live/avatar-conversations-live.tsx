@@ -1,20 +1,24 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { responseLoadingAtom, userTranscriptLoadingAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import React, { useEffect, useRef } from "react";
+import { useRecoilValue } from "recoil";
 
 const AvatarConversationsLive = ({
   conversationsRef,
 }: {
   conversationsRef: any;
 }) => {
+  const userTranscriptLoading = useRecoilValue(userTranscriptLoadingAtom);
   const { user } = useUser();
   const scrollAreaRef = useRef<any>(null);
-
+  const responseLoading = useRecoilValue(responseLoadingAtom);
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [conversationsRef.current.length]);
+  }, [conversationsRef.current.length, userTranscriptLoading, responseLoading]);
+  console.log(userTranscriptLoading, "userTranscript");
   return (
     <ScrollArea className="flex flex-col gap-4 h-[70vh] w-[320px] rounded-r-[20px] shadow-1">
       <div className="text-center border-b border-b-gray-200 mb-2">
@@ -73,6 +77,44 @@ const AvatarConversationsLive = ({
               </div>
             );
           })}
+
+        {userTranscriptLoading !== 0 && (
+          <div
+            ref={scrollAreaRef}
+            className={`${
+              userTranscriptLoading === 1
+                ? "justify-end self-end justify-self-end flex-row-reverse"
+                : ""
+            }  flex gap-2 px-4 py-2 w-max items-start`}
+          >
+            {userTranscriptLoading === 1 ? (
+              <img
+                src={user?.imageUrl}
+                alt="user"
+                className="rounded-full w-4 h-4"
+              />
+            ) : (
+              <img
+                src="/logo.png"
+                alt="avatar"
+                className="w-4 h-4 rounded-full"
+              />
+            )}
+            <div
+              className={`text-gray-700 flex justify-center items-center p-2 w-[55px] text-[12px] ${
+                userTranscriptLoading === 1
+                  ? "self-end justify-end bg-gray-200 rounded-b-[17px] rounded-tl-[17px]"
+                  : "bg-[#5475f5] text-white rounded-tr-[17px] rounded-b-[17px]"
+              }`}
+            >
+              {userTranscriptLoading === 1 ? (
+                <div className="message-loader-dark mr-1"></div>
+              ) : (
+                <div className="message-loader ml-1" />
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </ScrollArea>
   );

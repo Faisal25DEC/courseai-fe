@@ -173,7 +173,10 @@ export default function AvatarLesson({
     }
     console.log(text);
     const prompt = taskInputRef?.current?.value || text; // Using the same input for simplicity
-
+    if (prompt.trim() === "") {
+      toast.error("Please provide a valid input");
+      return;
+    }
     try {
       console.log("Prompt:", prompt);
       setAILoading(true);
@@ -555,7 +558,7 @@ export default function AvatarLesson({
                       />
                       <div
                         onClick={handleEnd}
-                        className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[20px]"
+                        className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[10px]"
                       >
                         <Icon
                           className="hover:scale-[1.3] simple-transition"

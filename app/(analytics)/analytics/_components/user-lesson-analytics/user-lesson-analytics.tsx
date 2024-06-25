@@ -109,7 +109,7 @@ const UserLessonAnalytics = () => {
               className="py-4 px-6 border-b border-gray-200 rounded-b-[20px] cursor-pointer flex justify-between items-center rounded-md"
             >
               <div className="flex-1">
-                <p>{lesson.title}</p>
+                <p>{lesson.title?.slice(0, 20)}</p>
               </div>
               <div className="flex-1">
                 <p

@@ -132,6 +132,7 @@ export default function AvatarLesson({
     const data = await axios.post(`/api/complete`, {
       prompt,
       newPrompt: newPrompt || false,
+      lesson_prompt: newPrompt ? lesson?.content?.prompt : null,
       sessionId: sessionInfo.session_id,
     });
 

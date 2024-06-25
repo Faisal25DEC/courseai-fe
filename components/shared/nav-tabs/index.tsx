@@ -29,6 +29,11 @@ export default function NavTabs() {
           : `/analytics/${currentCourseId}`,
       hidden: currentUserRole !== admin,
     },
+    {
+      name: "Settings",
+      href: currentUserRole === admin ? "/settings" : "",
+      hidden: currentUserRole !== admin,
+    },
   ];
 
   return (

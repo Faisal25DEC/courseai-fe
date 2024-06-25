@@ -30,6 +30,7 @@ const CurrentAvatarConversations = ({
       </div>
       <div className="flex flex-col w-[80%] h-full">
         <video
+          preload="metadata"
           typeof="video/mp4"
           className="border border-gray-100 aspect-video h-[40vh]"
           src={currentAvatarConversations?.[activeConversation]?.recording_url}

@@ -64,7 +64,7 @@ const Navbar = () => {
       emailAddress,
       organizationId,
       inviterUserId: user?.id as string,
-      redirectUrl: "https://dashboard-dev.permian.ai",
+      redirectUrl: "https://dashboard-dev.permian.ai/sign-in",
     });
     setIsInvite(false);
   };

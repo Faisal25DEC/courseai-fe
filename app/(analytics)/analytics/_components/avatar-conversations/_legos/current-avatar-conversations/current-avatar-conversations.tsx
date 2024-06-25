@@ -1,16 +1,37 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import { StringFormats } from "@/lib/StringFormats";
+import {
+  analyticsTabValueAtom,
+  currentAvatarConversationAtom,
+} from "@/store/atoms";
+import { useRecoilState } from "recoil";
+import { ChevronLeft } from "lucide-react";
+import { analyticsTabsValues } from "@/lib/constants";
 const CurrentAvatarConversations = ({
   currentAvatarConversations,
 }: {
   currentAvatarConversations: any;
 }) => {
   const [activeConversation, setActiveConversation] = useState(0);
-  console.log(currentAvatarConversations);
+  const [tabValue, setTabValue] = useRecoilState(analyticsTabValueAtom);
+  const [currentAvatarConversation, setCurrentAvatarConversation] =
+    useRecoilState(currentAvatarConversationAtom);
+
+  const handleGoBack = () => {
+    setCurrentAvatarConversation(null);
+    setTabValue(analyticsTabsValues.analytics);
+  };
   return (
     <div className="flex w-full h-full satoshi">
       <div className="w-[20%] h-[90vh] p-2 overflow-y-scroll flex flex-col gap-2 border-r border-r-gray-100">
+        <div
+          onClick={handleGoBack}
+          className="cursor-pointer flex items-center gap-[1px] text-gray-700 "
+        >
+          <ChevronLeft className="text-gray-500 w-5 h-5" />
+          <p>Back</p>
+        </div>
         {currentAvatarConversations?.map((conversation: any, idx: any) => {
           return (
             <div

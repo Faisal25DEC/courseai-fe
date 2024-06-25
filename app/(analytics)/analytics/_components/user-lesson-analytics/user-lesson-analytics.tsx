@@ -56,6 +56,7 @@ const UserLessonAnalytics = () => {
     if (lesson?.type !== "avatar") {
       return null;
     }
+
     setCurrentAvatarConversation(lesson?.conversations);
     setTabValue(analyticsTabsValues.avatarConversations);
   };
@@ -66,7 +67,13 @@ const UserLessonAnalytics = () => {
     return "text-blue-600 underline font-light";
   };
 
-  const headings = ["Lesson", "Status", "Time Spent", "Completed At"];
+  const headings = [
+    "Lesson",
+    "Status",
+    "Time Spent",
+    "Completed At",
+    "Recordings",
+  ];
   console.log(currentUserLessonAnalytics, lessonAnalyticsArray);
   return (
     <div className="min-h-[80vh] min-w-[990px]">
@@ -137,7 +144,7 @@ const UserLessonAnalytics = () => {
                     : "Yet to Start"}
                 </p>
               </div>
-              {/* <div className="flex-1">
+              <div className="flex-1">
                 <p
                   onClick={() => {
                     viewRecordings(lesson);
@@ -146,7 +153,7 @@ const UserLessonAnalytics = () => {
                 >
                   {getRecordingsCount(lesson)}
                 </p>
-              </div> */}
+              </div>
             </div>
           );
         })}

@@ -14,25 +14,27 @@ const AnalyticsTabs = () => {
   const [currentAvatarConversation, setCurrentAvatarConversation] =
     useRecoilState(currentAvatarConversationAtom);
   useEffect(() => {
-    setCurrentAvatarConversation(null);
+    if (tabValue === analyticsTabsValues.analytics) {
+      setCurrentAvatarConversation(null);
+    }
   }, [tabValue]);
   return (
     <Tabs
       value={tabValue}
       defaultValue={analyticsTabsValues.analytics}
-      className=" overflow-hidden rounded-[20px]"
+      className=" overflow-hidden  rounded-[20px]"
     >
-      <TabsList className="w-full">
+      <TabsList className="hidden w-full">
         <TabsTrigger
           onClick={() => setTabValue(analyticsTabsValues.analytics)}
-          className="w-[50%] rounded-[20px]"
+          className="w-[50%] hidden rounded-[20px]"
           value={analyticsTabsValues.analytics}
         >
           Analytics
         </TabsTrigger>
         <TabsTrigger
           onClick={() => setTabValue(analyticsTabsValues.avatarConversations)}
-          className="w-[50%] rounded-[20px]"
+          className="w-[50%] hidden rounded-[20px]"
           value={analyticsTabsValues.avatarConversations}
         >
           Avatar Conversations

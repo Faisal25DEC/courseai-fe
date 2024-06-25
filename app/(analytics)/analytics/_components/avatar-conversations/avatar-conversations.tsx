@@ -40,7 +40,7 @@ const AvatarConversations = () => {
     currentUserLessonAnalytics,
     lessonsArray
   );
-  console.log(avatarLessonAnalyticsArray);
+  console.log(currentAvatarConversation);
   const headings = ["Lesson", "Status", "Time Spent", "Completed At"];
   return (
     <div className="min-h-[90vh] min-w-[990px]">

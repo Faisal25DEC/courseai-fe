@@ -136,7 +136,7 @@ const Navbar = () => {
         <NavTabs />
       </div>
       <Modal
-        className="w-[400px] justify-center items-center flex"
+        className="w-fit justify-center items-center flex"
         isOpen={invite}
         onClose={() => setIsInvite(false)}
       >

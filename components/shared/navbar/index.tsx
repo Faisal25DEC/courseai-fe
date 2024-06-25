@@ -140,7 +140,7 @@ const Navbar = () => {
         isOpen={invite}
         onClose={() => setIsInvite(false)}
       >
-        {" "}
+        {/* {" "}
         <div className="w-full flex flex-col gap-4 relative">
           <div className="text-lg px-4 pt-4 font-medium text-gray-700">
             Invite a User
@@ -171,7 +171,8 @@ const Navbar = () => {
               style={{ color: "rgb(25,25,25)" }}
             />
           </div>
-        </div>
+        </div> */}
+        <OrganizationProfile routing="virtual" />
       </Modal>
       {isEnrollCourseModalOpen && <EnrollCourseModal />}
     </div>

@@ -46,7 +46,7 @@ const PreivewCourse = () => {
                   <div className="">
                     {StringFormats.capitalizeFirstLetterOfEachWord(
                       lesson.title
-                    )}
+                    )?.slice(0, 50)}
                   </div>
                 </div>
               </div>
@@ -58,9 +58,9 @@ const PreivewCourse = () => {
                 >
                   {lessonTypeText[lesson.type]}
                 </Tag>
-                {lesson.status === "rejected" && (
+                {/* {lesson.status === "rejected" && (
                   <Tag bg={colors.lightred}>Rejected</Tag>
-                )}
+                )} */}
                 {/* <Tag>
                 {StringFormats.capitalizeFirstLetterOfEachWord(lesson.status)}
               </Tag> */}

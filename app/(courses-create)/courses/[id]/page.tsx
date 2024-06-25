@@ -105,7 +105,7 @@ const PreivewCourse = () => {
                   <div className="">
                     {StringFormats.capitalizeFirstLetterOfEachWord(
                       lesson.title
-                    )}
+                    )?.slice(0, 50)}
                   </div>
                 </div>
               </div>

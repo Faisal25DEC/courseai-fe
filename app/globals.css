@@ -565,6 +565,8 @@ li {
 }
  .cl-internal-phfxlr{
   width:100% !important;
+  display: flex;
+  justify-content: center;
  
 }
 .cl-internal-1k1s4ua{

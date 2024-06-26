@@ -56,6 +56,7 @@ const UserLessonAnalytics = () => {
     if (lesson?.type !== "avatar") {
       return null;
     }
+
     setCurrentAvatarConversation(lesson?.conversations);
     setTabValue(analyticsTabsValues.avatarConversations);
   };
@@ -66,7 +67,13 @@ const UserLessonAnalytics = () => {
     return "text-blue-600 underline font-light";
   };
 
-  const headings = ["Lesson", "Status", "Time Spent", "Completed At"];
+  const headings = [
+    "Lesson",
+    "Status",
+    "Time Spent",
+    "Completed At",
+    "Recordings",
+  ];
   console.log(currentUserLessonAnalytics, lessonAnalyticsArray);
   return (
     <div className="min-h-[80vh] min-w-[990px]">
@@ -98,11 +105,16 @@ const UserLessonAnalytics = () => {
         {lessonAnalyticsArray.map((lesson: any) => {
           return (
             <div
+              onClick={() => {
+                viewRecordings(lesson);
+              }}
               key={lesson.id}
-              className="py-4 px-6 border-b border-gray-200 rounded-b-[20px] cursor-pointer flex justify-between items-center rounded-md"
+              className={`py-4 px-6 border-b border-gray-200 rounded-b-[20px] ${
+                lesson?.type === "avatar" && "cursor-pointer"
+              } flex justify-between items-center rounded-md`}
             >
-              <div className="flex-1">
-                <p>{lesson.title}</p>
+              <div className="flex-1 text-[13px]">
+                <p>{lesson.title?.slice(0, 28)}</p>
               </div>
               <div className="flex-1">
                 <p
@@ -137,7 +149,7 @@ const UserLessonAnalytics = () => {
                     : "Yet to Start"}
                 </p>
               </div>
-              {/* <div className="flex-1">
+              <div className="flex-1">
                 <p
                   onClick={() => {
                     viewRecordings(lesson);
@@ -146,7 +158,7 @@ const UserLessonAnalytics = () => {
                 >
                   {getRecordingsCount(lesson)}
                 </p>
-              </div> */}
+              </div>
             </div>
           );
         })}

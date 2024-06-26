@@ -27,7 +27,7 @@ export default function NavTabs() {
         currentUserRole === admin
           ? "/analytics"
           : `/analytics/${currentCourseId}`,
-      hidden: currentUserRole !== admin,
+      hidden: false,
     },
     {
       name: "Settings",

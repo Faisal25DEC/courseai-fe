@@ -124,7 +124,7 @@ const UserCard = ({
             alt="avatar"
             className="w-[40px] h-[40px] rounded-full object-cover"
           />
-          {pendingApprovals > 0 && (
+          {/* {pendingApprovals > 0 && (
             <PopoverHover
               className={""}
               trigger={<div className="">{pendingApprovals}</div>}
@@ -133,7 +133,7 @@ const UserCard = ({
               }
               value={"Approval Request Pending"}
             />
-          )}
+          )} */}
         </div>
         <div className="text-gray-700 font-medium">
           {user?.firstName} {user?.lastName}

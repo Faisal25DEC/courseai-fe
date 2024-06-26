@@ -66,7 +66,15 @@ const ApprovalPending = ({ lesson }: { lesson: any }) => {
   };
   return (
     <div className="flex items-center gap-1">
-      <CustomPopover
+      <div className="flex flex-wrap items-center gap-1 outline-none">
+        <p className={`${textColorBasedOnStatus[lesson.status || "pending"]}`}>
+          {StringFormats.capitalizeFirstLetterOfEachWord(
+            lessonStatusText[lesson.status]
+          ) || "Incomplete"}
+        </p>
+        {/* <Icon icon="ion:chevron-down" className="w-4 h-4" /> */}
+      </div>
+      {/* <CustomPopover
         className={"w-fit p-2 min-w-[100px] overflow-hidden"}
         align="end"
         open={isOpen}
@@ -100,7 +108,7 @@ const ApprovalPending = ({ lesson }: { lesson: any }) => {
             <p className={``}>Reject</p>
           </div>
         </div>
-      </CustomPopover>
+      </CustomPopover> */}
     </div>
   );
 };

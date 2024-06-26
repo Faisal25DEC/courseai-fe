@@ -352,8 +352,8 @@ export default function AvatarLesson({
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex flex-col min-w-[900px] justify-center items-center h-full ">
-              <div className="flex self-start gap-2 py-2 items-center justify-between ml-1">
+            <div className="flex flex-col min-w-[100%] justify-center items-center h-full ">
+              {/* <div className="flex self-start gap-2 py-2 items-center justify-between ml-1">
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
                 </h1>
@@ -362,7 +362,7 @@ export default function AvatarLesson({
                 <p className="text-gray-600 text-[16px]">
                   {lesson?.description}
                 </p>
-              </div>
+              </div> */}
               <div className="absolute flex flex-col justify-center items-center h-full gap-[15%]">
                 <div className="flex justify-center cursor-pointer items-center gradient-1 p-4 h-24 w-24 rounded-full">
                   <img
@@ -373,8 +373,6 @@ export default function AvatarLesson({
                     }}
                   />
                 </div>
-                {/* <Button onClick={startAndDisplaySession}>Start Session</Button> */}
-                {/* <Button onClick={closeConnectionHandler}>Close Session</Button> */}
               </div>
 
               <img
@@ -385,7 +383,7 @@ export default function AvatarLesson({
             </div>
           )}
           <div className="h-fit flex flex-col justify-center gap-2 items-center relative py-4 rounded-[20px]">
-            {peerConnection && sessionInfo && sessionState === "connected" && (
+            {/* {peerConnection && sessionInfo && sessionState === "connected" && (
               <div className="flex self-start gap-2 items-center justify-between ml-1">
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
@@ -398,7 +396,7 @@ export default function AvatarLesson({
                   {lesson?.description}
                 </p>
               </div>
-            )}
+            )} */}
             <div className=" flex rounded-[20px]">
               <div className="relative">
                 <video

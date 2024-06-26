@@ -24,7 +24,9 @@ const AnalyticsCard = ({ card }: AnalyticsCardProps) => {
               images={card.usersImageUrl.map((item: any) => item.imageUrl)}
             />
           )}
-          {!card.usersImageUrl && <p className="h3-medium">{card.value}</p>}
+          {(!card.usersImageUrl || !card.usersImageUrl?.length) && (
+            <p className="h3-medium">{card.value}</p>
+          )}
         </div>
       </div>
     </div>

@@ -147,12 +147,6 @@ export default function AvatarLesson({
       console.error("Server error");
       throw new Error("Server error");
     } else {
-      taskInputRef.current.value = "";
-      conversationsRef.current = [
-        ...conversationsRef.current,
-        { role: "assistant", content: data.data.text },
-      ];
-
       return data.data.text;
     }
   }

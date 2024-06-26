@@ -1,6 +1,7 @@
 import React from "react";
 
 const StackedAvatar = ({ images }: { images: string[] }) => {
+  if (images?.length === 0) return <p className="h3-medium">0</p>;
   return (
     <div className="w-[fit-content]">
       <div className="flex gap-[-20px]">

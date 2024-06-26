@@ -108,7 +108,7 @@ const CreateLessonModal = () => {
 
   return (
     <Modal
-      className="h-[80vh] "
+      className="h-[85vh] "
       showIcon
       isOpen={isCreateLessonModalOpen}
       onClose={onCreateLessonModalClose}

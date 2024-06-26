@@ -14,8 +14,10 @@ import {
   lessonsArrayAtom,
 } from "@/store/atoms";
 import { deleteLesson, getCourse } from "@/services/lesson.service";
-import { currentCourseId } from "@/lib/constants";
+import { currentCourseId, lessonTypeText, textFromBg } from "@/lib/constants";
 import { toast } from "sonner";
+import { typeColorObj } from "../../../[id]/constants";
+import Tag from "@/components/shared/tag/tag";
 const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
   const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
   const [lessonModalType, setLessonModalType] =
@@ -101,7 +103,13 @@ const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
       </div> */}
               </div>
             </div>
-            <div>
+            <div className="flex items-center gap-2">
+              <Tag
+                color={textFromBg[typeColorObj[lesson.type]]}
+                bg={typeColorObj[lesson.type]}
+              >
+                {lessonTypeText[lesson.type]}
+              </Tag>
               <CustomPopover
                 open={isPopoverOpen}
                 onOpenChange={setIsPopoverOpen}

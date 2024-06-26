@@ -105,11 +105,16 @@ const UserLessonAnalytics = () => {
         {lessonAnalyticsArray.map((lesson: any) => {
           return (
             <div
+              onClick={() => {
+                viewRecordings(lesson);
+              }}
               key={lesson.id}
-              className="py-4 px-6 border-b border-gray-200 rounded-b-[20px] cursor-pointer flex justify-between items-center rounded-md"
+              className={`py-4 px-6 border-b border-gray-200 rounded-b-[20px] ${
+                lesson?.type === "avatar" && "cursor-pointer"
+              } flex justify-between items-center rounded-md`}
             >
-              <div className="flex-1">
-                <p>{lesson.title?.slice(0, 20)}</p>
+              <div className="flex-1 text-[13px]">
+                <p>{lesson.title?.slice(0, 28)}</p>
               </div>
               <div className="flex-1">
                 <p

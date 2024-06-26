@@ -101,7 +101,7 @@ const Navbar = () => {
         </div>
 
         <SignedIn>
-          <div className="flex items-center gap-[28px]">
+          <div className="flex items-center gap-[28px] text-gray-600">
             <div className="hidden md:flex items-center gap-[32px]">
               {/* {currentUserRole === admin && (
                 <p

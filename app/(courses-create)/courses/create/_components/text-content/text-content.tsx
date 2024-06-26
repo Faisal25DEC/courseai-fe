@@ -17,7 +17,7 @@ const TextContent = () => {
   };
 
   return (
-    <div className="px-8 flex flex-col gap-4 h-[60vh] overflow-auto">
+    <div className="px-8 flex flex-col gap-4 h-[56vh] overflow-auto">
       <h1 className="text-gray-700 font-medium text-xl">Lesson Content</h1>
       {currentLesson ? (
         <Editor

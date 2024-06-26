@@ -26,7 +26,11 @@ import useFetchOrganizationMemberships from "@/hooks/useFetchOrganizationMembers
 import useCurrentCourse from "@/hooks/useCurrentCourse";
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
 import AnalyticsTabs from "./_components/analytics-tabs/analytics-tabs";
-import { getCourseProgress } from "./utils";
+import {
+  getAverageTraningTime,
+  getCourseProgress,
+  getTotalTime,
+} from "./utils";
 const Page = () => {
   const [currentCourse, setCurrentCourse] = useCurrentCourse({
     id: currentCourseId,
@@ -65,12 +69,19 @@ const Page = () => {
     });
     return totalProgress / enrolledUsers.length || 0;
   };
+  const getAverageLearningTime = () => {
+    const time =
+      enrolledUsers?.reduce((acc: any, user: any) => {
+        return acc + getTotalTime(user?.analytics) || 0;
+      }, 0) / enrolledUsers?.length;
+    return FormatDate.formatMilliseconds(time);
+  };
   const analyticsCards = [
-    {
-      title: "Total Users",
-      value: organizationMemberships?.length,
-      icon: <Icon icon="clarity:users-line" className="icon-medium" />,
-    },
+    // {
+    //   title: "Total Users",
+    //   value: organizationMemberships?.length,
+    //   icon: <Icon icon="clarity:users-line" className="icon-medium" />,
+    // },
     {
       title: "Enrolled Users",
       value: enrolledUsers?.length,
@@ -100,6 +111,14 @@ const Page = () => {
         (user: any) => getCourseProgress(user.analytics, lessonsArray) === 100
       ),
       icon: <Icon className="icon-medium" icon="clarity:check-line" />,
+    },
+    {
+      title: "Average Learning Time",
+      value: getAverageLearningTime() as string,
+    },
+    {
+      title: "Average Traning Time",
+      value: getAverageTraningTime(enrolledUsers, lessonsArray) as string,
     },
     // {
     //   title: "Total Lessons",

@@ -83,7 +83,7 @@ const Page = () => {
     },
     {
       title: "Average Course Progress",
-      value: getAverageCourseProgress(lessonsArray) + "%",
+      value: Math.round(getAverageCourseProgress(lessonsArray)) + "%",
       icon: (
         <Icon
           className="icon-medium"
@@ -96,6 +96,9 @@ const Page = () => {
       value: enrolledUsers?.filter(
         (user: any) => getCourseProgress(user.analytics, lessonsArray) === 100
       ).length,
+      usersImageUrl: enrolledUsers?.filter(
+        (user: any) => getCourseProgress(user.analytics, lessonsArray) === 100
+      ),
       icon: <Icon className="icon-medium" icon="clarity:check-line" />,
     },
     // {

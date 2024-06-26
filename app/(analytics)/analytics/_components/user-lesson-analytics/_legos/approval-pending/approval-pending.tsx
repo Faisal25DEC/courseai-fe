@@ -65,7 +65,17 @@ const ApprovalPending = ({ lesson }: { lesson: any }) => {
       });
   };
   return (
-    <div className="flex items-center gap-1">
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        if (isOpen) {
+          setIsOpen(false);
+          return;
+        }
+        setIsOpen(true);
+      }}
+      className="flex items-center gap-1"
+    >
       <CustomPopover
         className={"w-fit p-2 min-w-[100px] overflow-hidden"}
         align="end"

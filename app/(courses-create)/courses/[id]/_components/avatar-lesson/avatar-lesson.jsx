@@ -9,7 +9,11 @@ import axios from "axios";
 import { toast } from "sonner";
 import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
-import { activeLessonAtom, userAnalyticsAtom } from "@/store/atoms";
+import {
+  activeLessonAtom,
+  userAnalyticsAtom,
+  userTranscriptLoadingAtom,
+} from "@/store/atoms";
 import Webcam from "react-webcam";
 import { v4 as uuidv4 } from "uuid";
 import { currentCourseId } from "@/lib/constants";
@@ -74,6 +78,9 @@ export default function AvatarLesson({
     onInfoModalClose,
     setIsInfoModalOpen,
   } = useInfoModal();
+  const [userTranscriptLoading, setUserTranscriptLoading] = useRecoilState(
+    userTranscriptLoadingAtom
+  );
   const [userAnalytics, setUserAnalytics] = useRecoilState(userAnalyticsAtom);
   const submitButtonRef = useRef(null);
   const [conversations, setConversations] = useState([]);
@@ -159,10 +166,16 @@ export default function AvatarLesson({
       },
       body: JSON.stringify({ session_id, text }),
     });
+    taskInputRef.current.value = "";
     if (response.status === 500) {
       throw new Error("Server error");
     } else {
       const data = await response.json();
+      conversationsRef.current = [
+        ...conversationsRef.current,
+        { role: "assistant", content: text },
+      ];
+      setUserTranscriptLoading(0);
       return data.data;
     }
   }
@@ -194,6 +207,7 @@ export default function AvatarLesson({
       }
     } catch (error) {
       console.error("Error talking to AI:", error);
+      toast.error("Error getting response");
     }
   }
 

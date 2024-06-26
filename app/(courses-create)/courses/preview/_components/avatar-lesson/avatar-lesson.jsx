@@ -4,7 +4,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
-import { activeLessonAtom } from "@/store/atoms";
+import { activeLessonAtom, userTranscriptLoadingAtom } from "@/store/atoms";
 import Webcam from "react-webcam";
 import { currentCourseId } from "@/lib/constants";
 import { useUser } from "@clerk/nextjs";
@@ -52,6 +52,9 @@ export default function AvatarLesson({
     onInfoModalClose,
     setIsInfoModalOpen,
   } = useInfoModal();
+  const [userTranscriptLoading, setUserTranscriptLoading] = useRecoilState(
+    userTranscriptLoadingAtom
+  );
   const [conversations, setConversations] = useState([]);
   const conversationsRef = useRef([]);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
@@ -75,7 +78,6 @@ export default function AvatarLesson({
   const recorderRef = useRef(null);
   const [isDocumentVisible, setIsDocumentVisible] = useState(false);
   const { user } = useUser();
-  console.log("infoModal", isInfoModalOpen);
   useEffect(() => {
     if (lesson.status === "rejected") {
       toast.error("Admin has rejected the approval request.");
@@ -102,11 +104,6 @@ export default function AvatarLesson({
       console.error("Server error");
       throw new Error("Server error");
     } else {
-      taskInputRef.current.value = "";
-      conversationsRef.current = [
-        ...conversationsRef.current,
-        { role: "assistant", content: data.data.text },
-      ];
       return data.data.text;
     }
   }
@@ -120,10 +117,17 @@ export default function AvatarLesson({
       },
       body: JSON.stringify({ session_id, text }),
     });
+    taskInputRef.current.value = "";
+
     if (response.status === 500) {
       throw new Error("Server error");
     } else {
       const data = await response.json();
+      conversationsRef.current = [
+        ...conversationsRef.current,
+        { role: "assistant", content: text },
+      ];
+      setUserTranscriptLoading(0);
       return data.data;
     }
   }
@@ -153,11 +157,13 @@ export default function AvatarLesson({
       if (text) {
         // Send the AI's response to Heygen's streaming.task API
         const resp = await repeat(sessionInfo.session_id, text);
+
         setTimeout(() => {
           setAITalking(false);
         }, resp.duration_ms);
       } else {
         console.log("No response from AI");
+        toast.error("Error getting response");
       }
     } catch (error) {
       console.error("Error talking to AI:", error);
@@ -335,54 +341,6 @@ export default function AvatarLesson({
     );
 
     recorderRef.current.startRecording();
-  };
-  const markComplete = () => {
-    if (lesson.submission === "automatic") {
-      updateLessonForUser({
-        user_id: user?.id,
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
-        data: {
-          status: "approved",
-          duration: Date.now() - currenTimeRef.current,
-          completed_at: Date.now(),
-        },
-      })
-        .then(() => {
-          getUserAnalytics(user?.id, currentCourseId).then((res) => {
-            setUserAnalytics(res?.analytics);
-          });
-        })
-        .catch((err) => {
-          toast.error("Failed to mark lesson as complete");
-        });
-    } else {
-      updateLessonForUser({
-        user_id: user?.id,
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
-        data: {
-          status: "approval-pending",
-          duration: Date.now() - currenTimeRef.current,
-        },
-      })
-        .then(() => {
-          approveLessonRequest({
-            lesson_id: lesson.id,
-            course_id: currentCourseId,
-            user_id: user?.id,
-            status: "pending",
-          }).then(() => {
-            toast.success("Request sent for approval");
-            getUserAnalytics(user?.id, currentCourseId).then((res) => {
-              setUserAnalytics(res?.analytics);
-            });
-          });
-        })
-        .catch((err) => {
-          toast.error("Failed to send request for approval");
-        });
-    }
   };
   const handleEnd = () => {
     closeConnectionHandler();

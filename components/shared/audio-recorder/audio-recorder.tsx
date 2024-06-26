@@ -62,11 +62,10 @@ const AudioRecorderComp = ({
 
     if (promptCount.current === 0) {
       await talkHandler(result.data.transcript, true);
-      setUserTranscriptLoading(0);
+
       promptCount.current++;
     } else {
       await talkHandler(result.data.transcript, false);
-      setUserTranscriptLoading(0);
     }
 
     // const audio = document.createElement("audio");

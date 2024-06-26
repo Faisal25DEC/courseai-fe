@@ -99,7 +99,7 @@ const AudioRecorderComp = ({
   return (
     <TooltipComp
       trigger={
-        <div>
+        <div className="simple-transition">
           <div className="hidden">
             <AudioRecorder
               classes={{}}

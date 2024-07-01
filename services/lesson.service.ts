@@ -42,7 +42,7 @@ export const deleteLesson = async (courseId: string, lessonId: string) => {
 export const getCourse = async (courseId: string) => {
   try {
     const response = await axios.get(`${baseUrl}/courses/${courseId}`);
-
+    console.log("response ", response)
     return response.data;
   } catch (error) {
     console.error("Error:", error);

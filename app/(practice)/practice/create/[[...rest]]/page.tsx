@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import React, { useEffect } from "react";
-import CreateLessonModal from "../_components/create-lesson-modal/create-lesson-modal";
+// import CreateLessonModal from "../_components/create-lesson-modal/create-lesson-modal";
 import { useRecoilState } from "recoil";
 import {
   avatarsAtom,
@@ -21,7 +21,7 @@ import { EditIcon2 } from "@/assets/icons/EditIcon";
 import { TrashIcon2 } from "@/assets/icons/TrashIcon";
 import CustomPopover from "@/components/shared/custom-popover/custom-popover";
 import useDisclosure from "@/hooks/useDisclosure";
-import LessonCard from "../_components/lesson-card/lesson-card";
+// import LessonCard from "../_components/lesson-card/lesson-card";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { admin, apiKey, currentCourseId, heygenBaseUrl } from "@/lib/constants";
 import { toast } from "sonner";
@@ -30,6 +30,8 @@ import Link from "next/link";
 import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelpers";
 import { updateCourse } from "@/services/lesson.service";
 import { avatars as avatarsArray } from "@/lib/constants";
+import CreatePracticeLessonModal from "../_components/create-practice-modal/create-practice-modal";
+import LessonCard from "@/app/(courses-create)/courses/create/_components/lesson-card/lesson-card";
 
 const CreateCourse = () => {
   const [currentUserRole, setCurrentUserRole] =
@@ -61,7 +63,7 @@ const CreateCourse = () => {
     isOpen: isCreateLessonModalOpen,
     onOpen: onCreateLessonModalOpen,
     onClose: onCreateLessonModalClose,
-  } = useCreateLessonModal(false);
+  } = useCreateLessonModal(true);
   const popoverContent = [
     {
       title: "Edit",
@@ -199,7 +201,9 @@ const CreateCourse = () => {
         {" "}
         <div className="flex w-[90%] m-auto justify-between items-center py-8">
           <div>
-            <h1 className=" font-normal text-gray-600 text-2xl">Lessons</h1>
+            <h1 className=" font-normal text-gray-600 text-2xl">
+              Practice Lessons
+            </h1>
           </div>
           <div className="flex justify-end gap-4 items-center">
             {currentUserRole === admin && (
@@ -212,7 +216,7 @@ const CreateCourse = () => {
                 >
                   Create Lesson
                 </Button>
-                <Link href="/courses/preview">
+                <Link href="/practice/preview">
                   <Button variant={"outline"}>Preview Course</Button>
                 </Link>
               </div>
@@ -228,16 +232,21 @@ const CreateCourse = () => {
               {...provided.droppableProps}
             >
               {lessonsArray
-                .filter((lesson: any) => lesson.is_practice_lesson !== true)
+                .filter((lesson: any) => lesson?.is_practice_lesson === true)
                 .map((lesson: any, idx: number) => (
-                  <LessonCard key={idx} lesson={lesson} index={idx} isPractice={false}/>
+                  <LessonCard
+                    key={idx}
+                    lesson={lesson}
+                    index={idx}
+                    isPractice={true}
+                  />
                 ))}
 
               {provided.placeholder}
             </div>
           )}
         </StrictModeDroppable>
-        {isCreateLessonModalOpen && <CreateLessonModal />}
+        {isCreateLessonModalOpen && <CreatePracticeLessonModal />}
       </div>
     </DragDropContext>
   );

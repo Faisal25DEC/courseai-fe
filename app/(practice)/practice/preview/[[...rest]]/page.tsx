@@ -10,13 +10,13 @@ import { getCourse } from "@/services/lesson.service";
 import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import VideoLesson from "../_components/video-lesson/video-lesson";
-import TextLesson from "../_components/text-lesson/text-lesson";
-import AvatarLesson from "../_components/avatar-lesson/avatar-lesson";
+
 import Tag from "@/components/shared/tag/tag";
-import { typeColorObj } from "../../[id]/constants";
+
 import { StringFormats } from "@/lib/StringFormats";
 import { Icon } from "@iconify/react";
+import { typeColorObj } from "@/app/(courses-create)/courses/[id]/constants";
+import AvatarLesson from "@/app/(courses-create)/courses/[id]/_components/avatar-lesson/avatar-lesson";
 const PreivewCourse = () => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
@@ -24,11 +24,11 @@ const PreivewCourse = () => {
 
   useEffect(() => {
     getCourse(currentCourseId).then((res) => {
-      const practiceLessons = res.lessons.filter((lesson:any) => lesson.is_practice_lesson !== true);
+      const practiceLessons = res.lessons.filter((lesson:any) => lesson.is_practice_lesson === true);
       setLessonsArray(practiceLessons);
     });
   }, [currentCourseId]);
-
+  
   const handleChangeLesson = (idx: number) => {
     setActiveLesson(idx);
   };
@@ -47,58 +47,49 @@ const PreivewCourse = () => {
           </div>
           {isMenuOpen && (
             <div className="max-w-[300px] shadow-1 mt-2 bg-white a rounded-[20px] px-2 py-8 h-full overflow-auto flex flex-col gap-4">
-              {lessonsArray.map((lesson: any, idx: any) => (
-                <div
-                  onClick={() => handleChangeLesson(idx)}
-                  key={lesson.id}
-                  style={{ opacity: lesson.locked ? 0.5 : 1 }}
-                  className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
-                    activeLesson === idx ? "bg-gray-100" : ""
-                  }`}
-                >
-                  <div className="flex h6-medium items-start gap-2 font-medium">
-                    <span>{idx + 1} </span>
-                    <div className="flex flex-col gap-2">
-                      <div className="">
-                        {StringFormats.capitalizeFirstLetterOfEachWord(
-                          lesson.title
-                        )?.slice(0, 30)}
+              {lessonsArray
+                .filter((lessons: any) => lessons.is_practice_lesson === true)
+                .map((lesson: any, idx: any) => (
+                  <div
+                    onClick={() => handleChangeLesson(idx)}
+                    key={lesson.id}
+                    style={{ opacity: lesson.locked ? 0.5 : 1 }}
+                    className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
+                      activeLesson === idx ? "bg-gray-100" : ""
+                    }`}
+                  >
+                    <div className="flex h6-medium items-start gap-2 font-medium">
+                      <span>{idx + 1} </span>
+                      <div className="flex flex-col gap-2">
+                        <div className="">
+                          {StringFormats.capitalizeFirstLetterOfEachWord(
+                            lesson.title
+                          )?.slice(0, 30)}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-2">
-                    <Tag
-                      color={textFromBg[typeColorObj[lesson.type]]}
-                      bg={typeColorObj[lesson.type]}
-                    >
-                      {lessonTypeText[lesson.type]}
-                    </Tag>
-                    {/* {lesson.status === "rejected" && (
+                    <div className="flex items-center gap-2">
+                      <Tag
+                        color={textFromBg[typeColorObj[lesson.type]]}
+                        bg={typeColorObj[lesson.type]}
+                      >
+                        {lessonTypeText[lesson.type]}
+                      </Tag>
+                      {/* {lesson.status === "rejected" && (
                   <Tag bg={colors.lightred}>Rejected</Tag>
                 )} */}
-                    {/* <Tag>
+                      {/* <Tag>
                 {StringFormats.capitalizeFirstLetterOfEachWord(lesson.status)}
               </Tag> */}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           )}
         </div>
         <div className="w-full border shadow-1 rounded-[20px]  border-gray-200">
-          {lessonsArray[activeLesson]?.type === "video" && (
-            <VideoLesson
-              video={lessonsArray[activeLesson].content}
-              lesson={lessonsArray[activeLesson]}
-            />
-          )}
-          {lessonsArray[activeLesson]?.type === "text" && (
-            <TextLesson
-              lesson_id={lessonsArray[activeLesson].id}
-              lesson={lessonsArray[activeLesson]}
-            />
-          )}
+
           {lessonsArray[activeLesson]?.type === "avatar" && (
             <AvatarLesson
               lesson_id={lessonsArray[activeLesson].id}

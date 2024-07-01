@@ -50,11 +50,13 @@ const Navbar = () => {
     "": "Home";
     courses: "Course";
     analytics: "Analytics";
+    practice: "Practice",
     settings: "Settings";
     [key: string]: string;
   } = {
     "": "Home",
     courses: "Course",
+    practice: "Practice",
     analytics: "Analytics",
     settings: "Settings",
   };

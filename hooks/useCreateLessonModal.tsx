@@ -1,19 +1,34 @@
-import { createLessonModalAtom } from "@/store/atoms/index";
+import {
+  createLessonModalAtom,
+  createPracticeLessonModalAtom,
+} from "@/store/atoms/index";
 import React from "react";
 import { useRecoilState } from "recoil";
 
-const useCreateLessonModal = () => {
+const useCreateLessonModal = (isPractice: boolean) => {
   const [createLessonModalOpen, setCreateLessonModalOpen] = useRecoilState(
     createLessonModalAtom
   );
+
+  const [createPracticeModalOpen, setCreatePracticeModalOpen] = useRecoilState(
+    createPracticeLessonModalAtom
+  );
   const onOpen = () => {
-    setCreateLessonModalOpen(true);
+    if (isPractice) {
+      setCreatePracticeModalOpen(true);
+    } else {
+      setCreateLessonModalOpen(true);
+    }
   };
   const onClose = () => {
-    setCreateLessonModalOpen(false);
+    if (isPractice) {
+      setCreatePracticeModalOpen(false);
+    } else {
+      setCreateLessonModalOpen(false);
+    }
   };
   return {
-    isOpen: createLessonModalOpen,
+    isOpen: isPractice ? createPracticeModalOpen : createLessonModalOpen,
     onOpen,
     onClose,
     setCreateLessonModalOpen,

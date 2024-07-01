@@ -14,19 +14,17 @@ import {
 } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import VideoLesson from "./_components/video-lesson/video-lesson";
-import TextLesson from "./_components/text-lesson/text-lesson";
-import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
 import { useParams } from "next/navigation";
 import useLessonLockedModal from "@/hooks/useLessonLockedModal";
-import LessonLockedModal from "./_components/lesson-locked-modal/lesson-locked-modal";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import useFetchLessons from "@/hooks/useFetchLesson";
 import { StringFormats } from "@/lib/StringFormats";
 
-import { typeColorObj } from "./constants";
 import Tag from "@/components/shared/tag/tag";
+import LessonLockedModal from "@/app/(courses-create)/courses/[id]/_components/lesson-locked-modal/lesson-locked-modal";
+import { typeColorObj } from "@/app/(courses-create)/courses/[id]/constants";
+import AvatarLesson from "@/app/(courses-create)/courses/[id]/_components/avatar-lesson/avatar-lesson";
 
 const PreivewCourse = () => {
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
@@ -50,7 +48,7 @@ const PreivewCourse = () => {
           }
         );
         const practiceLessons = res.lessons.filter(
-          (lesson: any) => lesson.is_practice_lesson !== true
+          (lesson: any) => lesson.is_practice_lesson === true
         );
         setLessonsArray(practiceLessons);
       })
@@ -58,9 +56,9 @@ const PreivewCourse = () => {
         toast.error("Failed to fetch course");
       });
 
-    return () => {
-      setLessonsArray([]);
-    };
+      return () => {
+        setLessonsArray([]);
+      };
   }, [user]);
 
   const checkIfLessonIsLocked = (idx: number) => {
@@ -98,7 +96,7 @@ const PreivewCourse = () => {
       <div className="flex h-full w-[90%] mx-auto">
         <div className="min-w-max border-r-[1px] mr-4 h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 px-4">
           {filteredLessons
-            .filter((lesson: any) => lesson.is_practice_lesson !== true)
+            .filter((lesson: any) => lesson.is_practice_lesson === true)
             .map((lesson: any, idx: any) => (
               <div
                 onClick={() => handleChangeLesson(idx)}
@@ -136,20 +134,7 @@ const PreivewCourse = () => {
               </div>
             ))}
         </div>
-        <div className="w-full">
-          {lessonsArray[activeLesson]?.type === "video" && (
-            <VideoLesson
-              video={lessonsArray[activeLesson].content}
-              lesson={filteredLessons[activeLesson]}
-            />
-          )}
-          {lessonsArray[activeLesson]?.type === "text" && (
-            <TextLesson
-              content={lessonsArray[activeLesson].content}
-              lesson_id={lessonsArray[activeLesson].id}
-              lesson={filteredLessons[activeLesson]}
-            />
-          )}
+        <div className="w-fit">
           {lessonsArray[activeLesson]?.type === "avatar" && (
             <AvatarLesson
               lesson={filteredLessons[activeLesson]}

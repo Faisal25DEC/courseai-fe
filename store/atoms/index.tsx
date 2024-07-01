@@ -6,6 +6,11 @@ export const createLessonModalAtom = atom({
   default: false,
 });
 
+export const createPracticeLessonModalAtom = atom({
+  key: "createPracticeLessonModalAtom",
+  default: false,
+});
+
 interface LessonInterface {
   id?: any;
   title: string;
@@ -14,6 +19,7 @@ interface LessonInterface {
   content: any;
   submission: string;
   submission_status: string;
+  is_practice_lesson: boolean;
 }
 
 export const lessonAtom = atom<LessonInterface>({
@@ -26,8 +32,10 @@ export const lessonAtom = atom<LessonInterface>({
     content: null,
     submission: "",
     submission_status: "",
+    is_practice_lesson:false
   },
 });
+
 
 export const lessonCreateStepsAtom = atom({
   key: "lessonCreateStepsAtom",

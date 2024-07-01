@@ -6,7 +6,7 @@ import {
   currentUserLessonAnalyticsAtom,
   lessonsArrayAtom,
 } from "@/store/atoms";
-import React from "react";
+import React, { useState } from "react";
 import { useRecoilState } from "recoil";
 import { textColorBasedOnStatus } from "./constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -25,6 +25,7 @@ const UserLessonAnalytics = () => {
   const [lessonsArray, setLessonsArray] = useRecoilState(lessonsArrayAtom);
   const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
     useRecoilState(currentUserLessonAnalyticsAtom);
+  const [isPractice, setIsPractice] = useState(false);
 
   const getUserLessonAnalyticsArray = (
     currentUserAnalytics: any,
@@ -74,7 +75,7 @@ const UserLessonAnalytics = () => {
     "Completed At",
     "Recordings",
   ];
-  console.log(currentUserLessonAnalytics, lessonAnalyticsArray);
+  console.log("analytics ", lessonAnalyticsArray);
   return (
     <div className="min-h-[80vh] min-w-[990px]">
       <div className="flex items-center gap-4 p-4">
@@ -92,6 +93,30 @@ const UserLessonAnalytics = () => {
         </div>
       </div>
       <hr />
+      <div className="flex justify-center px-5 py-5">
+        <button
+          className={`mr-7 text-sm ${
+            !isPractice
+              ? "font-semibold text-gray-700 border-b border-b-2 border-black"
+              : "font-normal text-gray-300"
+          } `}
+          onClick={() => {
+            setIsPractice(false);
+          }}
+        >
+          Lessons
+        </button>
+        <button
+          className={`text-sm ${
+            isPractice ? "font-semibold text-gray-700 border-b border-b-2 border-black" : "font-normal text-gray-400"
+          } `}
+          onClick={() => {
+            setIsPractice(true);
+          }}
+        >
+          Practice Lessons
+        </button>
+      </div>
       <div className="flex justify-between items-center py-4 px-6 text-sm font-normal">
         {headings.map((heading) => {
           return (
@@ -102,66 +127,68 @@ const UserLessonAnalytics = () => {
         })}
       </div>
       <div className="h-[70vh] overflow-y-scroll rounded-[20px]">
-        {lessonAnalyticsArray.map((lesson: any) => {
-          return (
-            <div
-              onClick={() => {
-                viewRecordings(lesson);
-              }}
-              key={lesson.id}
-              className={`py-4 px-6 border-b border-gray-200 rounded-b-[20px] ${
-                lesson?.type === "avatar" && "cursor-pointer"
-              } flex justify-between items-center rounded-md`}
-            >
-              <div className="flex-1 text-[13px]">
-                <p>{lesson.title?.slice(0, 28)}</p>
+        {lessonAnalyticsArray
+          .filter((lesson: any) => lesson.is_practice_lesson === isPractice)
+          .map((lesson: any) => {
+            return (
+              <div
+                onClick={() => {
+                  viewRecordings(lesson);
+                }}
+                key={lesson.id}
+                className={`py-4 px-6 border-b border-gray-200 rounded-b-[20px] ${
+                  lesson?.type === "avatar" && "cursor-pointer"
+                } flex justify-between items-center rounded-md`}
+              >
+                <div className="flex-1 text-[13px]">
+                  <p>{lesson.title?.slice(0, 28)}</p>
+                </div>
+                <div className="flex-1">
+                  <p
+                    className={`${
+                      textColorBasedOnStatus[lesson.status || "pending"]
+                    } text-[13px]`}
+                  >
+                    {lesson?.status === approvalPending && (
+                      <ApprovalPending lesson={lesson} />
+                    )}
+                    {lesson?.status !== approvalPending &&
+                      (StringFormats.capitalizeFirstLetterOfEachWord(
+                        lessonStatusText[lesson?.status]
+                      ) ||
+                        "Incomplete")}
+                  </p>
+                </div>
+                <div className="flex-1">
+                  <p className="text-[13px]">
+                    {FormatDate.formatMilliseconds(lesson.duration) ===
+                    "0 seconds"
+                      ? "Less Than A Second"
+                      : FormatDate.formatMilliseconds(lesson.duration) || "-"}
+                  </p>
+                </div>
+                <div className="flex-1">
+                  <p className="text-[13px]">
+                    {lesson.completed_at
+                      ? FormatDate.getDateAndTimeFromMilliseconds(
+                          lesson.completed_at
+                        )
+                      : "Yet to Start"}
+                  </p>
+                </div>
+                <div className="flex-1">
+                  <p
+                    onClick={() => {
+                      viewRecordings(lesson);
+                    }}
+                    className={`text-[13px] ${getClassNames(lesson)}`}
+                  >
+                    {getRecordingsCount(lesson)}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1">
-                <p
-                  className={`${
-                    textColorBasedOnStatus[lesson.status || "pending"]
-                  } text-[13px]`}
-                >
-                  {lesson?.status === approvalPending && (
-                    <ApprovalPending lesson={lesson} />
-                  )}
-                  {lesson?.status !== approvalPending &&
-                    (StringFormats.capitalizeFirstLetterOfEachWord(
-                      lessonStatusText[lesson?.status]
-                    ) ||
-                      "Incomplete")}
-                </p>
-              </div>
-              <div className="flex-1">
-                <p className="text-[13px]">
-                  {FormatDate.formatMilliseconds(lesson.duration) ===
-                  "0 seconds"
-                    ? "Less Than A Second"
-                    : FormatDate.formatMilliseconds(lesson.duration) || "-"}
-                </p>
-              </div>
-              <div className="flex-1">
-                <p className="text-[13px]">
-                  {lesson.completed_at
-                    ? FormatDate.getDateAndTimeFromMilliseconds(
-                        lesson.completed_at
-                      )
-                    : "Yet to Start"}
-                </p>
-              </div>
-              <div className="flex-1">
-                <p
-                  onClick={() => {
-                    viewRecordings(lesson);
-                  }}
-                  className={`text-[13px] ${getClassNames(lesson)}`}
-                >
-                  {getRecordingsCount(lesson)}
-                </p>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </div>
   );

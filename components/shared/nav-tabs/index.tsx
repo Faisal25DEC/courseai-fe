@@ -22,6 +22,14 @@ export default function NavTabs() {
       hidden: false,
     },
     {
+      name: "Practice",
+      href:
+        currentUserRole === admin
+          ? "/practice/create"
+          : `/practice/${currentCourseId}`,
+      hidden: false,
+    },
+    {
       name: "Analytics",
       href:
         currentUserRole === admin

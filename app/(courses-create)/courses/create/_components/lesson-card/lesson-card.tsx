@@ -18,7 +18,15 @@ import { currentCourseId, lessonTypeText, textFromBg } from "@/lib/constants";
 import { toast } from "sonner";
 import { typeColorObj } from "../../../[id]/constants";
 import Tag from "@/components/shared/tag/tag";
-const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
+const LessonCard = ({
+  lesson,
+  index,
+  isPractice,
+}: {
+  lesson: any;
+  index: number;
+  isPractice: boolean;
+}) => {
   const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
@@ -29,7 +37,7 @@ const LessonCard = ({ lesson, index }: { lesson: any; index: number }) => {
     isOpen: isCreateLessonModalOpen,
     onOpen: onCreateLessonModalOpen,
     onClose: onCreateLessonModalClose,
-  } = useCreateLessonModal();
+  } = useCreateLessonModal(isPractice);
   const {
     isOpen: isPopoverOpen,
     onOpen: onPopoverOpen,

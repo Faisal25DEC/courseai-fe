@@ -1,66 +1,262 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { analyticsTabsValues } from "@/lib/constants";
-import React, { useEffect, useRef } from "react";
-import UserLessonAnalytics from "../user-lesson-analytics/user-lesson-analytics";
-import AvatarConversations from "../avatar-conversations/avatar-conversations";
-import { useRecoilState } from "recoil";
+import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
+import { StringFormats } from "@/lib/StringFormats";
 import {
   analyticsTabValueAtom,
   currentAvatarConversationAtom,
+  currentUserLessonAnalyticsAtom,
+  lessonsArrayAtom,
 } from "@/store/atoms";
+import React, { useState } from "react";
+import { useRecoilState } from "recoil";
+import {
+  analyticsTabsValues,
+  lessonStatuses,
+  lessonStatusText,
+} from "@/lib/constants";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { textColorBasedOnStatus } from "../user-lesson-analytics/constants";
+import ApprovalPending from "../user-lesson-analytics/_legos/approval-pending/approval-pending";
 
-const AnalyticsTabs = () => {
-  const tabRef = useRef<any>(null);
-  const [tabValue, setTabValue] = useRecoilState(analyticsTabValueAtom);
+const UserLessonAnalytics = () => {
   const [currentAvatarConversation, setCurrentAvatarConversation] =
     useRecoilState(currentAvatarConversationAtom);
-  useEffect(() => {
-    if (tabRef.current === null) return;
-    tabRef.current.click();
-    if (tabValue === analyticsTabsValues.analytics) {
-      setCurrentAvatarConversation(null);
+  const { approvalPending, approved, pending } = lessonStatuses;
+  const [lessonsArray, setLessonsArray] = useRecoilState(lessonsArrayAtom);
+  const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
+    useRecoilState(currentUserLessonAnalyticsAtom);
+  const [isPractice, setIsPractice] = useState(false);
+
+  const getUserLessonAnalyticsArray = (
+    currentUserAnalytics: any,
+    lessonsArray: any
+  ) => {
+    let lessonAnalyticsArrayAns: any = [];
+    lessonsArray.forEach((lesson: any) => {
+      lessonAnalyticsArrayAns.push({
+        ...lesson,
+        ...currentUserAnalytics.analytics?.[lesson.id],
+      });
+    });
+    return lessonAnalyticsArrayAns;
+  };
+
+  const lessonAnalyticsArray = getUserLessonAnalyticsArray(
+    currentUserLessonAnalytics,
+    lessonsArray
+  );
+
+  const getRecordingsCount = (lesson: any) => {
+    if (lesson?.type !== "avatar") {
+      return "-";
     }
-  }, [tabValue, tabRef]);
+    return lesson?.conversations?.length > 0
+      ? `${lesson?.conversations?.length} recordings`
+      : "No recordings";
+  };
+
+  const viewRecordings = (lesson: any) => {
+    if (lesson?.type !== "avatar") {
+      return null;
+    }
+
+    setCurrentAvatarConversation(lesson?.conversations);
+  };
+
+  const getClassNames = (lesson: any) => {
+    if (lesson?.type !== "avatar") {
+      return "text-gray-400";
+    }
+    return "text-blue-600 underline font-light";
+  };
+
+  const headings = [
+    "Lesson",
+    "Status",
+    "Time Spent",
+    "Completed At",
+    "Recordings",
+  ];
 
   return (
-    <Tabs
-      value={tabValue}
-      defaultValue={analyticsTabsValues.analytics}
-      className=" overflow-hidden outline-none  rounded-[20px]"
-    >
-      <TabsList
-        ref={tabRef}
-        className="!hidden focus-visible:none group-focus-visible:none ring-0 w-full outline-none hidden-unset"
+    <div className="min-h-[80vh] min-w-[990px]">
+      <div className="flex items-center gap-4 p-4">
+        <div>
+          <img
+            src={currentUserLessonAnalytics?.imageUrl}
+            className="w-[40px] h-[40px] object-cover rounded-full"
+          />
+        </div>
+        <div>
+          <p className="text-lg font-normal text-gray-700">
+            {currentUserLessonAnalytics?.firstName}{" "}
+            {currentUserLessonAnalytics?.lastName}&apos;s Analytics
+          </p>
+        </div>
+      </div>
+      <hr />
+      <Tabs
+        defaultValue="lessons"
+        onValueChange={(value) => setIsPractice(value === "practice-lessons")}
       >
-        <TabsTrigger
-          onClick={() => setTabValue(analyticsTabsValues.analytics)}
-          className="w-[50%] hidden outline-none rounded-[20px] hidden-unset"
-          value={analyticsTabsValues.analytics}
-        >
-          Analytics
-        </TabsTrigger>
-        <TabsTrigger
-          onClick={() => setTabValue(analyticsTabsValues.avatarConversations)}
-          className="w-[50%] hidden hidden-unset outline-none rounded-[20px]"
-          value={analyticsTabsValues.avatarConversations}
-        >
-          Avatar Conversations
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent
-        className="outline-none"
-        value={analyticsTabsValues.analytics}
-      >
-        <UserLessonAnalytics />
-      </TabsContent>
-      <TabsContent
-        value={analyticsTabsValues.avatarConversations}
-        className="m-0 outline-none"
-      >
-        <AvatarConversations />
-      </TabsContent>
-    </Tabs>
+        <TabsList className="mx-4 mt-4">
+          <TabsTrigger value="lessons">Lessons</TabsTrigger>
+          <TabsTrigger value="practice-lessons">Practice Lessons</TabsTrigger>
+        </TabsList>
+        <TabsContent value="lessons">
+          <div className="flex justify-between items-center py-4 px-6 text-sm font-normal">
+            {headings.map((heading) => {
+              return (
+                <div key={heading} className="w-[25%]">
+                  <p>{heading}</p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="h-[70vh] overflow-y-scroll rounded-[20px]">
+            {lessonAnalyticsArray
+              .filter((lesson: any) => lesson.is_practice_lesson === isPractice)
+              .map((lesson: any) => {
+                return (
+                  <div
+                    onClick={() => {
+                      viewRecordings(lesson);
+                    }}
+                    key={lesson.id}
+                    className={`py-4 px-6 border-b border-gray-200 rounded-b-[20px] ${
+                      lesson?.type === "avatar" && "cursor-pointer"
+                    } flex justify-between items-center rounded-md`}
+                  >
+                    <div className="flex-1 text-[13px]">
+                      <p>{lesson.title?.slice(0, 28)}</p>
+                    </div>
+                    <div className="flex-1">
+                      <p
+                        className={`${
+                          textColorBasedOnStatus[lesson.status || "pending"]
+                        } text-[13px]`}
+                      >
+                        {lesson?.status === approvalPending && (
+                          <ApprovalPending lesson={lesson} />
+                        )}
+                        {lesson?.status !== approvalPending &&
+                          (StringFormats.capitalizeFirstLetterOfEachWord(
+                            lessonStatusText[lesson?.status]
+                          ) ||
+                            "Incomplete")}
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[13px]">
+                        {FormatDate.formatMilliseconds(lesson.duration) ===
+                        "0 seconds"
+                          ? "Less Than A Second"
+                          : FormatDate.formatMilliseconds(lesson.duration) ||
+                            "-"}
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[13px]">
+                        {lesson.completed_at
+                          ? FormatDate.getDateAndTimeFromMilliseconds(
+                              lesson.completed_at
+                            )
+                          : "Yet to Start"}
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <p
+                        onClick={() => {
+                          viewRecordings(lesson);
+                        }}
+                        className={`text-[13px] ${getClassNames(lesson)}`}
+                      >
+                        {getRecordingsCount(lesson)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </TabsContent>
+        <TabsContent value="practice-lessons">
+          <div className="flex justify-between items-center py-4 px-6 text-sm font-normal">
+            {headings.map((heading) => {
+              return (
+                <div key={heading} className="w-[25%]">
+                  <p>{heading}</p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="h-[70vh] overflow-y-scroll rounded-[20px]">
+            {lessonAnalyticsArray
+              .filter((lesson: any) => lesson.is_practice_lesson === isPractice)
+              .map((lesson: any) => {
+                return (
+                  <div
+                    onClick={() => {
+                      viewRecordings(lesson);
+                    }}
+                    key={lesson.id}
+                    className={`py-4 px-6 border-b border-gray-200 rounded-b-[20px] ${
+                      lesson?.type === "avatar" && "cursor-pointer"
+                    } flex justify-between items-center rounded-md`}
+                  >
+                    <div className="flex-1 text-[13px]">
+                      <p>{lesson.title?.slice(0, 28)}</p>
+                    </div>
+                    <div className="flex-1">
+                      <p
+                        className={`${
+                          textColorBasedOnStatus[lesson.status || "pending"]
+                        } text-[13px]`}
+                      >
+                        {lesson?.status === approvalPending && (
+                          <ApprovalPending lesson={lesson} />
+                        )}
+                        {lesson?.status !== approvalPending &&
+                          (StringFormats.capitalizeFirstLetterOfEachWord(
+                            lessonStatusText[lesson?.status]
+                          ) ||
+                            "Incomplete")}
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[13px]">
+                        {FormatDate.formatMilliseconds(lesson.duration) ===
+                        "0 seconds"
+                          ? "Less Than A Second"
+                          : FormatDate.formatMilliseconds(lesson.duration) ||
+                            "-"}
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-[13px]">
+                        {lesson.completed_at
+                          ? FormatDate.getDateAndTimeFromMilliseconds(
+                              lesson.completed_at
+                            )
+                          : "Yet to Start"}
+                      </p>
+                    </div>
+                    <div className="flex-1">
+                      <p
+                        onClick={() => {
+                          viewRecordings(lesson);
+                        }}
+                        className={`text-[13px] ${getClassNames(lesson)}`}
+                      >
+                        {getRecordingsCount(lesson)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
-export default AnalyticsTabs;
+export default UserLessonAnalytics;

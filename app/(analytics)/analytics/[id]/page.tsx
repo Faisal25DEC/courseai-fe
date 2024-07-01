@@ -67,7 +67,7 @@ const CoordinatorAnalytics = () => {
           ))}
         </div>
         <div className="flex flex-col gap-4">
-          <UserCard user={currentUserAnalytics} key={user?.id} />;
+          <UserCard user={currentUserAnalytics} key={user?.id} />
         </div>
       </div>
       <Modal

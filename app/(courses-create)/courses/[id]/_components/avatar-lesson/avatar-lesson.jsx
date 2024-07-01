@@ -357,7 +357,10 @@ export default function AvatarLesson({
   }, [peerConnection, sessionInfo]);
 
   const handleStopAndUpload = async () => {
-    if (!recorderRef.current) return;
+    if (!recorderRef.current) {
+      closeConnectionHandler();
+      return;
+    }
     if (submitButtonRef.current) {
       submitButtonRef.current.disabled = true;
     }
@@ -473,7 +476,7 @@ export default function AvatarLesson({
               <img
                 src={thumbnail}
                 alt="ai-avatar"
-                className="object-cover w-[1200px] md:rounded-[20px] h-[70vh] shadow-lg"
+                className="object-cover w-[900px] md:rounded-[20px] h-[70vh] shadow-lg"
               />
             </div>
           )}
@@ -606,6 +609,7 @@ export default function AvatarLesson({
       />
       <EndCallModal
         handleSubmit={() => {
+          console.log("ended session");
           markComplete();
           handleStopAndUpload();
         }}

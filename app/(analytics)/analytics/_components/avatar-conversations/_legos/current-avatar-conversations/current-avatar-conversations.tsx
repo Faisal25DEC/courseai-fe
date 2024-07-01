@@ -20,11 +20,52 @@ const CurrentAvatarConversations = ({
   const [tabValue, setTabValue] = useRecoilState(analyticsTabValueAtom);
   const [currentAvatarConversation, setCurrentAvatarConversation] =
     useRecoilState(currentAvatarConversationAtom);
+  const feedbackText: any =
+    currentAvatarConversation?.[activeConversation]?.feedback || "";
 
   const handleGoBack = () => {
     setCurrentAvatarConversation(null);
     setTabValue(analyticsTabsValues.analytics);
   };
+
+  const parseTextToJSX = (text: any) => {
+    const lines = text.split("\n").map((line: any, index: number) => {
+      if (line.startsWith("### ")) {
+        return (
+          <h3 key={index} className="font-semibold mt-4">
+            {line.slice(4)}
+          </h3>
+        );
+      } else if (line.startsWith("**")) {
+        return (
+          <p key={index} className="font-bold mt-2">
+            {line.slice(2, -2)}
+          </p>
+        );
+      } else if (line.match(/^\d+\./)) {
+        return (
+          <li key={index} className="ml-4">
+            {line}
+          </li>
+        );
+      } else if (line.startsWith("- ")) {
+        return (
+          <li key={index} className="ml-4">
+            {line.slice(2)}
+          </li>
+        );
+      } else {
+        return (
+          <p key={index} className="mt-2">
+            {line}
+          </p>
+        );
+      }
+    });
+
+    return <>{lines}</>;
+  };
+
   return (
     <div className="flex w-full h-full satoshi">
       <div className="w-[20%] h-[90vh] p-2 overflow-y-scroll flex flex-col gap-2 border-r border-r-gray-100">
@@ -115,7 +156,7 @@ const CurrentAvatarConversations = ({
                 <h1 className="px-2 pt-2 pb-2 h2-medium">Feedback</h1>
                 <hr />
                 <p className="p-3 text-[15px] text-gray-700">
-                  {currentAvatarConversations?.[activeConversation]?.feedback}
+                  {parseTextToJSX(feedbackText)}
                 </p>
               </div>
             </TabsContent>

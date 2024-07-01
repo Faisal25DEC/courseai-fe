@@ -25,6 +25,7 @@ const UserLessonAnalytics = () => {
   const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
     useRecoilState(currentUserLessonAnalyticsAtom);
   const [isPractice, setIsPractice] = useState(false);
+  const [tabValue, setTabValue] = useRecoilState(analyticsTabValueAtom);
 
   const getUserLessonAnalyticsArray = (
     currentUserAnalytics: any,
@@ -60,6 +61,7 @@ const UserLessonAnalytics = () => {
     }
 
     setCurrentAvatarConversation(lesson?.conversations);
+    setTabValue(analyticsTabsValues.avatarConversations);
   };
 
   const getClassNames = (lesson: any) => {

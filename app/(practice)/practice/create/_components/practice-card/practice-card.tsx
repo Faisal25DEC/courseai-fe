@@ -8,6 +8,7 @@ import { Draggable } from "react-beautiful-dnd";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
+  activeLessonAtom,
   courseIdAtom,
   currentCourseAtom,
   lessonAtom,
@@ -17,9 +18,10 @@ import {
 import { deleteLesson, getCourse } from "@/services/lesson.service";
 import { lessonTypeText, textFromBg } from "@/lib/constants";
 import { toast } from "sonner";
-import { typeColorObj } from "../../../[id]/constants";
+
 import Tag from "@/components/shared/tag/tag";
-const LessonCard = ({
+import { Avatar, Chip } from "@nextui-org/react";
+const PracticeCard = ({
   lesson,
   index,
   isPractice,
@@ -35,6 +37,8 @@ const LessonCard = ({
   const [currentCourse, setCurrentCourse] =
     useRecoilState<any>(currentCourseAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
+  const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
+
   const {
     isOpen: isCreateLessonModalOpen,
     onOpen: onCreateLessonModalOpen,
@@ -89,24 +93,51 @@ const LessonCard = ({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
-          className={`w-full items-baseline relative flex gap-5  ${
-            snapshot.draggingOver ? "shadow-sm bg-gray-50" : ""
+          className={`w-full items-baseline relative flex gap-5 border rounded-lg ${activeLesson === index ? "ml-3":"ml-0"} ${
+            snapshot.draggingOver ? "shadow-sm bg-gray-50" : "" 
           }`}
+          onClick={() => {
+            setActiveLesson(index);
+          }}
         >
           <div className="w-full p-4 rounded-[10px] shadow-1 flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Icon icon="ri:draggable" className="" />
+              {/* <Icon icon="ri:draggable" className="" /> */}
 
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-lg font-normal text-gray-600">
-                      {lesson.title}
-                    </p>
+                  <div className="flex gap-5">
+                    <div className="relative">
+                      <Avatar
+                        isBordered
+                        radius="full"
+                        size="md"
+                        src="https://app.hyperbound.ai/images/male-demo/male-30.jpg"
+                      />
+                      <Icon
+                        icon="fluent-emoji-flat:green-circle"
+                        className="w-4 h-4 bg-white border-2 border-white rounded-full absolute bottom-8 right-0"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 items-start justify-center">
+                      <h4 className="text-small font-semibold leading-none text-default-600">
+                        {lesson.title}
+                      </h4>
+                      <h5 className="text-small tracking-tight text-default-400">
+                        {lesson.description}
+                      </h5>
+                      <div className="mt-3">
+                        <Chip
+                          className="bg-gray-100 font-semibold"
+                          radius="sm"
+                          size="sm"
+                        >
+                          {" "}
+                          {lessonTypeText[lesson.type]}
+                        </Chip>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">{lesson.description}</p>
                 </div>
                 {/* <div>
         <p className="text-sm text-gray-400">Type : {lesson.type}</p>
@@ -114,12 +145,6 @@ const LessonCard = ({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Tag
-                color={textFromBg[typeColorObj[lesson.type]]}
-                bg={typeColorObj[lesson.type]}
-              >
-                {lessonTypeText[lesson.type]}
-              </Tag>
               <CustomPopover
                 open={isPopoverOpen}
                 onOpenChange={setIsPopoverOpen}
@@ -127,6 +152,7 @@ const LessonCard = ({
                 className="p-0 w-[fit-content] min-w-[150px] shadow-2 rounded-[8px]"
                 trigger={
                   <div
+                    className="absolute top-3 right-2"
                     onClick={(e) => {
                       e.stopPropagation();
                       isPopoverOpen ? onPopoverClose() : onPopoverOpen();
@@ -177,4 +203,4 @@ const LessonCard = ({
   );
 };
 
-export default LessonCard;
+export default PracticeCard;

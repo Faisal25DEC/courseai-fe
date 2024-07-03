@@ -25,6 +25,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import useSetOrganization from "@/hooks/useSetOrganization";
 import { admin } from "@/lib/constants";
+import ScoreCardQuestions from "../scorecard-question/scorecard-question";
 
 const sidebarItems = [
   {
@@ -36,7 +37,7 @@ const sidebarItems = [
   {
     key: "practice",
     icon: "hugeicons:bot",
-    title: "Practice Bots",
+    title: "Practice",
     hidden: false,
   },
   {
@@ -54,6 +55,12 @@ const sidebarItems = [
         3
       </Chip>
     ),
+    hidden: false,
+  },
+  {
+    key: "scorecard",
+    icon: "grommet-icons:scorecard",
+    title: "Custom scorecard",
     hidden: false,
   },
   {
@@ -77,6 +84,7 @@ export default function SidebarComponent() {
   const organizationId = useRecoilValue(currentOrganizationIdAtom);
   const [emailAddress, setEmailAddress] = useState("");
   const [invite, setIsInvite] = useState(false);
+  const [scorecard, setScorecard] = useState(false);
   const {
     isEnrollCourseModalOpen,
     onEnrollCourseModalOpen,
@@ -101,6 +109,9 @@ export default function SidebarComponent() {
         return currentUserRole === admin
           ? "/analytics"
           : `/analytics/${currentCourseId}`;
+      case "scorecard":
+        setScorecard(true);
+        return null;
       case "settings":
         return currentUserRole === admin ? "/settings" : "";
       case "invite":
@@ -158,6 +169,14 @@ export default function SidebarComponent() {
         onClose={() => setIsInvite(false)}
       >
         <OrganizationProfile routing="virtual" />
+      </Modal>
+
+      <Modal
+        className="w-fit justify-center items-center flex"
+        isOpen={scorecard}
+        onClose={() => setScorecard(false)}
+      >
+        <ScoreCardQuestions />
       </Modal>
       {isEnrollCourseModalOpen && <EnrollCourseModal />}
     </div>

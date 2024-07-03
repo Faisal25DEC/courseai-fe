@@ -6,7 +6,6 @@ import useDisclosure from "@/hooks/useDisclosure";
 import { useRecoilState } from "recoil";
 import { activeLessonAtom, userTranscriptLoadingAtom } from "@/store/atoms";
 import Webcam from "react-webcam";
-import { currentCourseId } from "@/lib/constants";
 import { useUser } from "@clerk/nextjs";
 import { StringFormats } from "@/lib/StringFormats";
 import {

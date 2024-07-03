@@ -8,15 +8,15 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import useDisclosure from "@/hooks/useDisclosure";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   activeLessonAtom,
+  courseIdAtom,
   userAnalyticsAtom,
   userTranscriptLoadingAtom,
 } from "@/store/atoms";
 import Webcam from "react-webcam";
 import { v4 as uuidv4 } from "uuid";
-import { currentCourseId } from "@/lib/constants";
 import { useUser } from "@clerk/nextjs";
 import { baseUrl } from "@/lib/config";
 import { StringFormats } from "@/lib/StringFormats";
@@ -106,6 +106,7 @@ export default function AvatarLesson({
   // const [blob, setBlob] = useState(null);
   const recorderRef = useRef(null);
   const [isDocumentVisible, setIsDocumentVisible] = useState(false);
+  const currentCourseId = useRecoilValue(courseIdAtom)
   const { user } = useUser();
   useTrackLessonDuration({
     currenTimeRef,

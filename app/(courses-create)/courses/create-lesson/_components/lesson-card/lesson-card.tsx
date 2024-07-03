@@ -6,15 +6,16 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { Draggable } from "react-beautiful-dnd";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
+  courseIdAtom,
   currentCourseAtom,
   lessonAtom,
   lessonModalTypeAtom,
   lessonsArrayAtom,
 } from "@/store/atoms";
 import { deleteLesson, getCourse } from "@/services/lesson.service";
-import { currentCourseId, lessonTypeText, textFromBg } from "@/lib/constants";
+import { lessonTypeText, textFromBg } from "@/lib/constants";
 import { toast } from "sonner";
 import { typeColorObj } from "../../../[id]/constants";
 import Tag from "@/components/shared/tag/tag";
@@ -27,6 +28,7 @@ const LessonCard = ({
   index: number;
   isPractice: boolean;
 }) => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
   const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);

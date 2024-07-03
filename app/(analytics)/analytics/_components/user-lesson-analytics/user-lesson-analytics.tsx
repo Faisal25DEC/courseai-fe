@@ -80,7 +80,7 @@ const UserLessonAnalytics = () => {
   ];
 
   return (
-    <div className="min-h-[80vh] min-w-[990px]">
+    <div className="min-h-[80vh] min-w-[990px] z-40">
       <div className="flex items-center gap-4 p-4">
         <div>
           <img

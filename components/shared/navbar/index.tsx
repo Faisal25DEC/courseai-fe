@@ -48,14 +48,14 @@ const Navbar = () => {
   const showNavbar = !forbiddenRoutes.includes(pathname.split("/")[1]);
   const pathMap: {
     "": "Home";
-    courses: "Course";
+    courses: "Courses";
     analytics: "Analytics";
     practice: "Practice",
     settings: "Settings";
     [key: string]: string;
   } = {
     "": "Home",
-    courses: "Course",
+    courses: "Courses",
     practice: "Practice",
     analytics: "Analytics",
     settings: "Settings",

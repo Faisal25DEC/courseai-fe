@@ -1,10 +1,5 @@
 "use client";
-import {
-  colors,
-  currentCourseId,
-  lessonTypeText,
-  textFromBg,
-} from "@/lib/constants";
+import { colors, lessonTypeText, textFromBg } from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
 import { getCourse, getUserAnalytics } from "@/services/lesson.service";
 import {
@@ -17,18 +12,22 @@ import { useRecoilState } from "recoil";
 import VideoLesson from "./_components/video-lesson/video-lesson";
 import TextLesson from "./_components/text-lesson/text-lesson";
 import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import useLessonLockedModal from "@/hooks/useLessonLockedModal";
 import LessonLockedModal from "./_components/lesson-locked-modal/lesson-locked-modal";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import useFetchLessons from "@/hooks/useFetchLesson";
 import { StringFormats } from "@/lib/StringFormats";
+import NoDataFound from "../../../../public/images/not-found.webp";
 
 import { typeColorObj } from "./constants";
 import Tag from "@/components/shared/tag/tag";
+import Image from "next/image";
 
 const PreivewCourse = () => {
+  const pathname = usePathname();
+  const [currentCourseId, setCurrentCourseId] = useState("");
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
   const { user } = useUser();
   const { id } = useParams();
@@ -40,6 +39,14 @@ const PreivewCourse = () => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [userAnalytics, setUserAnalytics] =
     useRecoilState<any>(userAnalyticsAtom);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const pathParts = pathname.split("/");
+    const courseId = pathParts[pathParts.length - 1];
+    setCurrentCourseId(courseId);
+  }, [pathname]);
+
   useEffect(() => {
     if (!user && userAnalytics === null) return;
     getCourse(id as string)
@@ -56,6 +63,9 @@ const PreivewCourse = () => {
       })
       .catch(() => {
         toast.error("Failed to fetch course");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
     return () => {
@@ -95,76 +105,87 @@ const PreivewCourse = () => {
   const filteredLessons = getLockedLessons(lessonsArray);
   return (
     <div className="w-full h-[calc(100vh-120px)] overflow-y-scroll">
-      <div className="flex h-full w-[90%] mx-auto">
-        <div className="min-w-max border-r-[1px] mr-4 h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 px-4">
-          {filteredLessons
-            .filter((lesson: any) => lesson.is_practice_lesson !== true)
-            .map((lesson: any, idx: any) => (
-              <div
-                onClick={() => handleChangeLesson(idx)}
-                key={lesson.id}
-                style={{ opacity: lesson.locked ? 0.5 : 1 }}
-                className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
-                  activeLesson === idx ? "bg-gray-100" : ""
-                }`}
-              >
-                <div className="flex h6-medium items-start gap-2 font-medium">
-                  <span>{idx + 1} </span>
-                  <div className="flex flex-col gap-2">
-                    <div className="">
-                      {StringFormats.capitalizeFirstLetterOfEachWord(
-                        lesson.title
-                      )?.slice(0, 30)}
+      {isLoading ? (
+        <div className="flex flex-col justify-center items-center h-[70vh]"></div>
+      ) : filteredLessons.length !== 0 ? (
+        <div className="flex h-full w-[90%] mx-auto">
+          <div className="min-w-max border-r-[1px] mr-4 h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 px-4">
+            {filteredLessons
+              .filter((lesson: any) => lesson.is_practice_lesson !== true)
+              .map((lesson: any, idx: any) => (
+                <div
+                  onClick={() => handleChangeLesson(idx)}
+                  key={lesson.id}
+                  style={{ opacity: lesson.locked ? 0.5 : 1 }}
+                  className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
+                    activeLesson === idx ? "bg-gray-100" : ""
+                  }`}
+                >
+                  <div className="flex h6-medium items-start gap-2 font-medium">
+                    <span>{idx + 1} </span>
+                    <div className="flex flex-col gap-2">
+                      <div className="">
+                        {StringFormats.capitalizeFirstLetterOfEachWord(
+                          lesson.title
+                        )?.slice(0, 30)}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <Tag
-                    color={textFromBg[typeColorObj[lesson.type]]}
-                    bg={typeColorObj[lesson.type]}
-                  >
-                    {lessonTypeText[lesson.type]}
-                  </Tag>
-                  {lesson.status === "rejected" && (
-                    <Tag bg={colors.lightred}>Rejected</Tag>
-                  )}
-                  {/* <Tag>
+                  <div className="flex items-center gap-2">
+                    <Tag
+                      color={textFromBg[typeColorObj[lesson.type]]}
+                      bg={typeColorObj[lesson.type]}
+                    >
+                      {lessonTypeText[lesson.type]}
+                    </Tag>
+                    {lesson.status === "rejected" && (
+                      <Tag bg={colors.lightred}>Rejected</Tag>
+                    )}
+                    {/* <Tag>
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson.status)}
                 </Tag> */}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+          </div>
+          <div className="w-full">
+            {lessonsArray[activeLesson]?.type === "video" && (
+              <VideoLesson
+                video={lessonsArray[activeLesson].content}
+                lesson={filteredLessons[activeLesson]}
+              />
+            )}
+            {lessonsArray[activeLesson]?.type === "text" && (
+              <TextLesson
+                content={lessonsArray[activeLesson].content}
+                lesson_id={lessonsArray[activeLesson].id}
+                lesson={filteredLessons[activeLesson]}
+              />
+            )}
+            {lessonsArray[activeLesson]?.type === "avatar" && (
+              <AvatarLesson
+                lesson={filteredLessons[activeLesson]}
+                voice_id={lessonsArray[activeLesson].content?.voice_id}
+                avatar_id={lessonsArray[activeLesson].content?.avatar_id}
+                thumbnail={
+                  lessonsArray[activeLesson].content?.avatar
+                    ?.normal_thumbnail_medium
+                }
+                avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
+                lesson_id={lessonsArray[activeLesson].id}
+              />
+            )}
+          </div>
         </div>
-        <div className="w-full">
-          {lessonsArray[activeLesson]?.type === "video" && (
-            <VideoLesson
-              video={lessonsArray[activeLesson].content}
-              lesson={filteredLessons[activeLesson]}
-            />
-          )}
-          {lessonsArray[activeLesson]?.type === "text" && (
-            <TextLesson
-              content={lessonsArray[activeLesson].content}
-              lesson_id={lessonsArray[activeLesson].id}
-              lesson={filteredLessons[activeLesson]}
-            />
-          )}
-          {lessonsArray[activeLesson]?.type === "avatar" && (
-            <AvatarLesson
-              lesson={filteredLessons[activeLesson]}
-              voice_id={lessonsArray[activeLesson].content?.voice_id}
-              avatar_id={lessonsArray[activeLesson].content?.avatar_id}
-              thumbnail={
-                lessonsArray[activeLesson].content?.avatar
-                  ?.normal_thumbnail_medium
-              }
-              avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
-              lesson_id={lessonsArray[activeLesson].id}
-            />
-          )}
+      ) : (
+        <div className="flex flex-col justify-center items-center h-[70vh]">
+          <Image src={NoDataFound} alt="" width={250} height={250} />
+          <p className="text-sm mt-10">
+            No lessons are available for this course
+          </p>
         </div>
-      </div>
+      )}
       <LessonLockedModal />
     </div>
   );

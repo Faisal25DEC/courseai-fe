@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { currentCourseId } from "@/lib/constants";
+
 import {
   enrollUser,
   getEnrolledUsers,
   getEnrolledUsersInACourse,
 } from "@/services/lesson.service";
+import { courseIdAtom } from "@/store/atoms";
 import React from "react";
+import { useRecoilValue } from "recoil";
 
 const OrganizationMemberCard = ({
   member,
@@ -16,6 +18,8 @@ const OrganizationMemberCard = ({
   enrolledUsers: any;
   setEnrolledUsers: any;
 }) => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
+
   const onMemberCardClick = (member: any) => {
     return null;
   };

@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { currentCourseId } from "@/lib/constants";
 import { StringFormats } from "@/lib/StringFormats";
 import {
   approveLessonRequest,
@@ -10,16 +9,19 @@ import {
 } from "@/services/lesson.service";
 import {
   activeLessonAtom,
+  courseIdAtom,
   lessonsArrayAtom,
   userAnalyticsAtom,
 } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import MuxPlayer from "@mux/mux-player-react";
 import React, { useEffect, useRef, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { toast } from "sonner";
 
 const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
+
   const { user } = useUser();
   const currenTimeRef = useRef<number>(Date.now());
   const [userAnalytics, setUserAnalytics] =

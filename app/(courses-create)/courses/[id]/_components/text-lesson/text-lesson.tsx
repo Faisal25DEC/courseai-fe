@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { currentCourseId } from "@/lib/constants";
 import { StringFormats } from "@/lib/StringFormats";
 import {
   approveLessonRequest,
@@ -11,13 +10,14 @@ import {
 } from "@/services/lesson.service";
 import {
   activeLessonAtom,
+  courseIdAtom,
   lessonsArrayAtom,
   userAnalyticsAtom,
 } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { toast } from "sonner";
 
 const Editor = dynamic(() => import("@/components/editor"), {
@@ -32,6 +32,8 @@ const TextLesson = ({
   lesson_id: any;
   content: any;
 }) => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
+
   const [userAnalytics, setUserAnalytics] =
     useRecoilState<any>(userAnalyticsAtom);
   const { user } = useUser();

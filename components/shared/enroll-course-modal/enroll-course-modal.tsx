@@ -3,18 +3,21 @@ import React, { useEffect, useState } from "react";
 import Modal from "../modal";
 import { useOrganization, useOrganizationList } from "@clerk/nextjs";
 import {
+  courseIdAtom,
   globalEnrolledUsersAtom,
   organizationMembersAtom,
 } from "@/store/atoms";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import OrganizationMemberCard from "./_legos/organization-member-card/organization-member-card";
-import { currentCourseId, member } from "@/lib/constants";
+import { member } from "@/lib/constants";
 import {
   getEnrolledUsers,
   getEnrolledUsersInACourse,
 } from "@/services/lesson.service";
 import { Icon } from "@iconify/react";
 const EnrollCourseModal = () => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
+
   const [organizationMemberships, setOrganizationMemberships] = useRecoilState(
     organizationMembersAtom
   );

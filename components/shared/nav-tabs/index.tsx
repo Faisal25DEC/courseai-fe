@@ -1,24 +1,21 @@
 "use client";
 
-import { admin, currentCourseId } from "@/lib/constants";
-import { currentUserRoleAtom } from "@/store/atoms";
+import { admin } from "@/lib/constants";
+import { courseIdAtom, currentUserRoleAtom } from "@/store/atoms";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 export default function NavTabs() {
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);
   const pathname = usePathname();
-
+  const currentCourseId = useRecoilValue(courseIdAtom);
   const tabs = [
     {
-      name: "Course",
-      href:
-        currentUserRole === admin
-          ? "/courses/create"
-          : `/courses/${currentCourseId}`,
+      name: "Courses",
+      href: currentUserRole === admin ? "/courses/list" : `/courses/list`,
       hidden: false,
     },
     {

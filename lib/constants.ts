@@ -13,8 +13,8 @@ export const heygen_API = {
 
 export const apiKey = heygen_API.apiKey;
 export const heygenBaseUrl = heygen_API.serverUrl;
-export const currentCourseId: string =
-  process.env.NEXT_PUBLIC_CURRENT_COURSE_ID!;
+// export const currentCourseId: string =
+//   process.env.NEXT_PUBLIC_CURRENT_COURSE_ID!;
 export const admin = "org:admin";
 export const member = "org:member";
 

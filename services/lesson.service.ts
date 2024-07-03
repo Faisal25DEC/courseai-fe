@@ -2,6 +2,26 @@ import { baseUrl } from "@/lib/config";
 import axios from "axios";
 import { toast } from "sonner";
 
+export const createCourse = async (data: any) => {
+  try {
+    const response = await axios.post(`${baseUrl}/courses`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+    toast.error("Failed to create course");
+  }
+};
+
+export const getAllCourses = async () => {
+  try {
+    const response = await axios.get(`${baseUrl}/courses`);
+    return response.data;
+  } catch (error) {
+    console.error("Error:", error);
+    toast.error("Failed to create course");
+  }
+};
+
 export const updateLesson = async (
   courseId: string,
   lessonId: string,
@@ -42,7 +62,7 @@ export const deleteLesson = async (courseId: string, lessonId: string) => {
 export const getCourse = async (courseId: string) => {
   try {
     const response = await axios.get(`${baseUrl}/courses/${courseId}`);
-    console.log("response ", response)
+    console.log("response ", response);
     return response.data;
   } catch (error) {
     console.error("Error:", error);

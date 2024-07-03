@@ -3,15 +3,15 @@ import { Icon } from "@iconify/react";
 import { textColorBasedOnStatus } from "../../constants";
 import CustomPopover from "@/components/shared/custom-popover/custom-popover";
 import {
-  currentCourseId,
   lessonStatuses,
   lessonStatusText,
 } from "@/lib/constants";
 import {
+  courseIdAtom,
   currentUserLessonAnalyticsAtom,
   userAnalyticsAtom,
 } from "@/store/atoms";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   approveLessonRequest,
   getUserAnalytics,
@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 import { StringFormats } from "@/lib/StringFormats";
 const ApprovalPending = ({ lesson }: { lesson: any }) => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
   const [isOpen, setIsOpen] = useState(false);
   const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
     useRecoilState(currentUserLessonAnalyticsAtom);

@@ -3,8 +3,9 @@ import React, { useEffect } from "react";
 import Modal from "@/components/shared/modal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
+  courseIdAtom,
   currentCourseAtom,
   lessonAtom,
   lessonCreateStepsAtom,
@@ -22,11 +23,12 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { baseUrl } from "@/lib/config";
 import { getMaxId } from "@/lib/ArrayHelpers/ArrayHelpers";
-import { currentCourseId } from "@/lib/constants";
-import CreateContent from "@/app/(courses-create)/courses/create/_components/create-content/create-content";
-import Submissions from "@/app/(courses-create)/courses/create/_components/submissions/submissions";
+import CreateContent from "@/app/(courses-create)/courses/create-lesson/_components/create-content/create-content";
+import Submissions from "@/app/(courses-create)/courses/create-lesson/_components/submissions/submissions";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 const CreatePracticeLessonModal = () => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
+
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
   const [currentCourse, setCurrentCourse] =

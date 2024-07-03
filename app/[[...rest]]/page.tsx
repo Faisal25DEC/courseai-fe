@@ -4,8 +4,8 @@ import LessonLoader from "@/components/Loaders/lesson-loader/lesson-loader";
 import Modal from "@/components/shared/modal";
 import useNoOrganizationModal from "@/hooks/useNoOrganizationModal";
 import useSetOrganization from "@/hooks/useSetOrganization";
-import { admin, currentCourseId, member } from "@/lib/constants";
-import { currentUserRoleAtom } from "@/store/atoms";
+import { admin, member } from "@/lib/constants";
+import { courseIdAtom, currentUserRoleAtom } from "@/store/atoms";
 import {
   useAuth,
   useOrganization,
@@ -15,9 +15,11 @@ import {
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 export default function Home() {
+  const currentCourseId = useRecoilValue(courseIdAtom);
+
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);
   const {
@@ -30,10 +32,10 @@ export default function Home() {
   useEffect(() => {
     if (currentUserRole) {
       if (currentUserRole === admin) {
-        redirect("/courses/create");
+        redirect("/courses/list");
       }
       if (currentUserRole === member) {
-        redirect(`courses/${currentCourseId}`);
+        redirect(`courses/list`);
       }
     }
   }, [currentUserRole]);

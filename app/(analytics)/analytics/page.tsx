@@ -1,6 +1,5 @@
 "use client";
 import { baseUrl } from "@/lib/config";
-import { currentCourseId } from "@/lib/constants";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -16,8 +15,9 @@ import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
 import useFetchLessons from "@/hooks/useFetchLesson";
 import UserLessonAnalytics from "./_components/user-lesson-analytics/user-lesson-analytics";
 import { Icon } from "@iconify/react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
+  courseIdAtom,
   globalEnrolledUsersAtom,
   organizationMembersAtom,
 } from "@/store/atoms";
@@ -32,6 +32,8 @@ import {
   getTotalTime,
 } from "./utils";
 const Page = () => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
+
   const [currentCourse, setCurrentCourse] = useCurrentCourse({
     id: currentCourseId,
   });

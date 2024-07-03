@@ -1,15 +1,14 @@
 "use client";
 import {
   colors,
-  currentCourseId,
   lessonTypeText,
   textFromBg,
 } from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
 import { getCourse } from "@/services/lesson.service";
-import { activeLessonAtom, lessonsArrayAtom } from "@/store/atoms";
+import { activeLessonAtom, courseIdAtom, lessonsArrayAtom } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 import Tag from "@/components/shared/tag/tag";
 
@@ -18,6 +17,8 @@ import { Icon } from "@iconify/react";
 import { typeColorObj } from "@/app/(courses-create)/courses/[id]/constants";
 import AvatarLesson from "@/app/(courses-create)/courses/[id]/_components/avatar-lesson/avatar-lesson";
 const PreivewCourse = () => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
+
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   const [isMenuOpen, setIsMenuOpen] = useState(false);

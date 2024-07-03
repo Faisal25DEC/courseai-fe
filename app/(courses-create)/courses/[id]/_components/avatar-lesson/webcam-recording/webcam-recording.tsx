@@ -1,6 +1,5 @@
 "use client";
 import { baseUrl } from "@/lib/config";
-import { currentCourseId } from "@/lib/constants";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import React, { useEffect, useRef } from "react";

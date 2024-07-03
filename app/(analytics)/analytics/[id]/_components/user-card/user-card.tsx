@@ -4,16 +4,17 @@ import { Progress } from "@/components/ui/progress";
 import useCurrentUserAnalyticsModal from "@/hooks/useCurrentUserAnalyticsModal";
 import useDisclosure from "@/hooks/useDisclosure";
 import useFetchLessons from "@/hooks/useFetchLesson";
-import { currentCourseId, lessonStatuses } from "@/lib/constants";
+import { lessonStatuses } from "@/lib/constants";
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
 import { expelUser, getUserAnalytics } from "@/services/lesson.service";
 import {
+  courseIdAtom,
   currentUserLessonAnalyticsAtom,
   globalEnrolledUsersAtom,
   lessonsArrayAtom,
 } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { Icon } from "@iconify/react";
 import { getCourseProgress } from "../../../utils";
 
@@ -24,6 +25,7 @@ const UserCard = ({
   user: any;
   fetchEnrolledUsers?: any;
 }) => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
   const [enrolledUsers, setEnrolledUsers] = useRecoilState(
     globalEnrolledUsersAtom
   );

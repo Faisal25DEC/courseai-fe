@@ -5,8 +5,10 @@ import Modal from "@/components/shared/modal";
 import { Input } from "@/components/ui/input";
 import { buttons } from "./constants";
 import { Button } from "@/components/ui/button";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import {
+  courseIdAtom,
+  courseNameAtom,
   currentCourseAtom,
   lessonAtom,
   lessonCreateStepsAtom,
@@ -24,8 +26,8 @@ import Submissions from "../submissions/submissions";
 import axios from "axios";
 import { baseUrl } from "@/lib/config";
 import { getMaxId } from "@/lib/ArrayHelpers/ArrayHelpers";
-import { currentCourseId } from "@/lib/constants";
 const CreateLessonModal = () => {
+  const currentCourseId = useRecoilValue(courseIdAtom);
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
   const [currentCourse, setCurrentCourse] =
@@ -33,6 +35,7 @@ const CreateLessonModal = () => {
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
 
   const [currentLesson, setCurrentLesson] = useRecoilState(lessonAtom);
+  const [courseName, setCourseName] = useRecoilState(courseNameAtom);
   const [lessonCreateSteps, setLessonCreateSteps] = useRecoilState(
     lessonCreateStepsAtom
   );
@@ -47,9 +50,15 @@ const CreateLessonModal = () => {
   const handleChangeType = (value: string) => {
     setCurrentLesson({ ...currentLesson, type: value });
   };
+
   const handleLessonTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentLesson({ ...currentLesson, title: e.target.value });
   };
+
+  const handleCourseTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCourseName(e.target.value);
+  };
+
   const handleLessonDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -89,6 +98,7 @@ const CreateLessonModal = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     console.log(currentLesson.type);
     setCurrentLesson({ ...currentLesson, content: null });

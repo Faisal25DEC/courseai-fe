@@ -1,18 +1,18 @@
 "use client";
-import { currentCourseId } from "@/lib/constants";
 import { StringFormats } from "@/lib/StringFormats";
 import { updateLessonForUser } from "@/services/lesson.service";
-import { activeLessonAtom } from "@/store/atoms";
+import { activeLessonAtom, courseIdAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
 import React, { useEffect } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 const Editor = dynamic(() => import("@/components/editor"), {
   ssr: false,
 });
 const TextLesson = ({ lesson, lesson_id }: { lesson: any; lesson_id: any }) => {
   const { user } = useUser();
+  const currentCourseId = useRecoilValue(courseIdAtom);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const currenTimeRef = React.useRef<number>(0);
   useEffect(() => {

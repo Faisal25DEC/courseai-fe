@@ -11,6 +11,16 @@ export const createPracticeLessonModalAtom = atom({
   default: false,
 });
 
+export const createCourseModalAtom = atom({
+  key: "createCourseModalAtom",
+  default: false,
+});
+
+export const courseIdAtom = atom({
+  key: "courseIdAtom",
+  default: "6667760f255b05556e58b41a",
+});
+
 interface LessonInterface {
   id?: any;
   title: string;
@@ -32,10 +42,9 @@ export const lessonAtom = atom<LessonInterface>({
     content: null,
     submission: "",
     submission_status: "",
-    is_practice_lesson:false
+    is_practice_lesson: false,
   },
 });
-
 
 export const lessonCreateStepsAtom = atom({
   key: "lessonCreateStepsAtom",
@@ -49,6 +58,11 @@ export const avatarsAtom = atom({
 export const voicesAtom = atom({
   key: "voicesAtom",
   default: [],
+});
+
+export const courseNameAtom = atom<any>({
+  key: "courseNameAtom",
+  default: "",
 });
 
 export const currentCourseAtom = atom<any>({

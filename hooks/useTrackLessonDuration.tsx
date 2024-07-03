@@ -1,7 +1,8 @@
-import { currentCourseId } from "@/lib/constants";
 import { updateLessonForUser } from "@/services/lesson.service";
+import { courseIdAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import React, { useEffect } from "react";
+import { useRecoilValue } from "recoil";
 import { toast } from "sonner";
 
 interface IProps {
@@ -18,6 +19,8 @@ const useTrackLessonDuration = ({
   isDocumentVisible,
 }: IProps) => {
   const { user } = useUser();
+  const currentCourseId = useRecoilValue(courseIdAtom);
+
   useEffect(() => {
     return () => {
       if (!user) return;

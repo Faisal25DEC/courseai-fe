@@ -573,3 +573,62 @@ li {
   border: solid 1px rgb(236, 236, 236) !important
 }
 
+.mask-image-content {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  /* opacity: 0.35; */
+}
+
+.mask-image-content-loader {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  /* opacity: 0.35; */
+}
+
+.mask-image {
+  background: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  width: 249px;
+  height: 182px;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='249' height='182' viewBox='0 0 249 182'%3E%3Cdefs%3E%3CclipPath id='se-249-182-0-63.699999999999996'%3E%3Cpath fill='%23000' d='M 0,63.699999999999996%0AC 0,0 0,0 63.699999999999996,0%0AL 185.3,0%0AC 249,0 249,0 249,63.699999999999996%0AL 249,118.30000000000001%0AC 249,182 249,182 185.3,182%0AL 63.699999999999996,182%0AC 0,182 0,182 0,118.30000000000001%0AL 0,63.699999999999996'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23se-249-182-0-63.699999999999996)'%3E%3Crect width='249' height='182' fill='%23000'/%3E%3C/g%3E%3C/svg%3E");
+  mask-position: center center;
+  mask-repeat: no-repeat;
+  opacity: 0.95;
+  /* transition: width 0.3s ease; */
+}
+
+.mask-image-list{
+  background: rgb(0, 0, 0);
+  width: 44px;
+  height: 34px;
+  color: rgb(255, 255, 255);
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='34' viewBox='0 0 44 34'%3E%3Cdefs%3E%3CclipPath id='se-44-34-3.4000000000000004-13.600000000000001'%3E%3Cpath fill='%23000' d='M 0,13.600000000000001%0AC 0,3.4000000000000004 3.4000000000000004,0 13.600000000000001,0%0AL 30.4,0%0AC 40.6,0 44,3.4000000000000004 44,13.600000000000001%0AL 44,20.4%0AC 44,30.6 40.6,34 30.4,34%0AL 13.600000000000001,34%0AC 3.4000000000000004,34 0,30.6 0,20.4%0AL 0,13.600000000000001'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23se-44-34-3.4000000000000004-13.600000000000001)'%3E%3Crect width='44' height='34' fill='%23000'/%3E%3C/g%3E%3C/svg%3E");
+  mask-position: center center;
+  mask-repeat: no-repeat;
+}
+
+.mask-image-loader {
+  background: rgb(207, 207, 207);
+  color: rgb(255, 255, 255);
+  width: 249px;
+  height: 182px;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='249' height='182' viewBox='0 0 249 182'%3E%3Cdefs%3E%3CclipPath id='se-249-182-0-63.699999999999996'%3E%3Cpath fill='%23000' d='M 0,63.699999999999996%0AC 0,0 0,0 63.699999999999996,0%0AL 185.3,0%0AC 249,0 249,0 249,63.699999999999996%0AL 249,118.30000000000001%0AC 249,182 249,182 185.3,182%0AL 63.699999999999996,182%0AC 0,182 0,182 0,118.30000000000001%0AL 0,63.699999999999996'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23se-249-182-0-63.699999999999996)'%3E%3Crect width='249' height='182' fill='%23000'/%3E%3C/g%3E%3C/svg%3E");
+  mask-position: center center;
+  mask-repeat: no-repeat;
+  opacity: 0.95;
+  /* transition: width 0.3s ease; */
+}

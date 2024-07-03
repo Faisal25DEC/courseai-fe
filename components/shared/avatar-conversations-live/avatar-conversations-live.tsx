@@ -28,7 +28,7 @@ const AvatarConversationsLive = ({
       </div>
       {conversationsRef.current.length === 0 && (
         <div className="flex gap-2 py-2 h-[70vh] items-center justify-center">
-          <p className="text-gray-700 text-center w-[250px] text-[13px]">
+          <p className="text-gray-700 flex text-center w-fit text-[13px]">
             Start talking to the Avatar
           </p>
         </div>

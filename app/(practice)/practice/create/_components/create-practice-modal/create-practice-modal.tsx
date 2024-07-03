@@ -27,7 +27,8 @@ import CreateContent from "@/app/(courses-create)/courses/create-lesson/_compone
 import Submissions from "@/app/(courses-create)/courses/create-lesson/_components/submissions/submissions";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 const CreatePracticeLessonModal = () => {
-  const currentCourseId = useRecoilValue(courseIdAtom);
+  // const currentCourseId = useRecoilValue(courseIdAtom);
+  const currentCourseId = "6667760f255b05556e58b41a"
 
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);

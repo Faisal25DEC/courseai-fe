@@ -47,30 +47,6 @@ const sidebarItems = [
     hidden: false,
   },
   {
-    key: "invite",
-    icon: "iconoir:add-user",
-    title: "Invite Users",
-    endContent: (
-      <Chip size="sm" variant="flat">
-        3
-      </Chip>
-    ),
-    hidden: false,
-  },
-  {
-    key: "scorecard",
-    icon: "grommet-icons:scorecard",
-    title: "Custom scorecard",
-    hidden: false,
-  },
-  {
-    key: "help",
-    icon: "formkit:help",
-    title: "Help",
-    href: "mailto:admin@permian.ai",
-    hidden: false,
-  },
-  {
     key: "settings",
     icon: "solar:settings-outline",
     title: "Settings",
@@ -109,14 +85,8 @@ export default function SidebarComponent() {
         return currentUserRole === admin
           ? "/analytics"
           : `/analytics/${currentCourseId}`;
-      case "scorecard":
-        setScorecard(true);
-        return null;
       case "settings":
         return currentUserRole === admin ? "/settings" : "";
-      case "invite":
-        setIsInvite(true);
-        return null;
       default:
         return "#";
     }

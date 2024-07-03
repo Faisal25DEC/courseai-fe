@@ -61,9 +61,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
     const handleSelectionChange = (keys: Selection) => {
       const key = Array.from(keys)[0];
       setSelected(key as React.Key);
-      if (onSelect) {
-        onSelect(key as string);
-      }
+      onSelect?.(key as string);
     };
 
     const sectionClasses = {

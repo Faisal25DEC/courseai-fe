@@ -22,9 +22,9 @@ function ScoreCardQuestions() {
     <div className="w-[100%] p-5 h-[80vh] overflow-auto">
       <h1 className="text-md  font-semibold pb-3">Scorecard Questions</h1>
       <div className="flex flex-col">
-        {questions.map((qs: any) => {
+        {questions.map((qs: any,ind:number) => {
           return (
-            <div className="w-[500px] border-2 rounded-lg p-3 capitalize flex justify-between items-center mb-4">
+            <div key={ind} className="w-[500px] border-2 rounded-lg p-3 capitalize flex justify-between items-center mb-4">
               {qs.question_text}
               <Icon
                 icon="fluent:delete-24-regular"

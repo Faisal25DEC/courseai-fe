@@ -35,6 +35,7 @@ import AvatarConversationsLive from "@/components/shared/avatar-conversations-li
 import { Icon } from "@iconify/react";
 import useEndCallModal from "@/hooks/useEndCallModal";
 import EndCallModal from "@/components/shared/end-call-modal/end-call-modal";
+import { Avatar } from "@nextui-org/react";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
@@ -65,6 +66,7 @@ export default function AvatarPracticeLesson({
   avatar_name,
   lesson_id,
   lesson,
+  setIsPracticeList,
 }) {
   const {
     isEndCallModalOpen,
@@ -106,10 +108,11 @@ export default function AvatarPracticeLesson({
   // const [blob, setBlob] = useState(null);
   const recorderRef = useRef(null);
   const [isDocumentVisible, setIsDocumentVisible] = useState(false);
-  const currentCourseId = useRecoilValue(courseIdAtom)
+  // const currentCourseId = useRecoilValue(courseIdAtom);
+  const currentCourseId = "6667760f255b05556e58b41a"
+
   const { user } = useUser();
 
-  console.log("lesson array ", lesson);
   useTrackLessonDuration({
     currenTimeRef,
     lesson,
@@ -130,6 +133,7 @@ export default function AvatarPracticeLesson({
 
     return () => {
       const duration = Date.now() - currenTimeRef.current;
+      conversationsRef.current = [];
     };
   }, [activeLesson]);
   // useEffect(() => {
@@ -209,6 +213,7 @@ export default function AvatarPracticeLesson({
   }
 
   const createNewSession = async () => {
+    setIsPracticeList(false);
     const avatar = avatar_id;
     const voice = voice_id;
 
@@ -440,16 +445,32 @@ export default function AvatarPracticeLesson({
   };
   const handleEnd = () => {
     onEndCallModalOpen();
+    setIsPracticeList(true);
   };
   return (
     <div className="w-full relative">
       <div className="h-[90vh] w-full flex  flex-col">
-        <div className="w-full flex flex-col gap-3 relative justify-center items-center">
+        <div className="w-full flex flex-col gap-3 mt-3 relative justify-center items-center">
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex justify-center flex-col items-center h-full">
-         
+            <div className="flex justify-center flex-col items-center h-[500px]">
+              <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
+                <Avatar
+                  isBordered
+                  radius="full"
+                  size="md"
+                  src={lesson.content.avatar.normal_thumbnail_small}
+                />
+                <div className="flex flex-col pl-2">
+                  <h1 className="text-sm text-black font-semibold self-start">
+                    {StringFormats.capitalizeFirstLetterOfEachWord(
+                      lesson?.title
+                    )}
+                  </h1>
+                  <p className="text-gray-800 text-sm">{lesson?.description}</p>
+                </div>
+              </div>
 
               <div className="absolute flex flex-col justify-center items-center h-full gap-[15%]">
                 <div className="flex justify-center cursor-pointer items-center gradient-1 p-4 h-24 w-24 rounded-full">
@@ -471,43 +492,27 @@ export default function AvatarPracticeLesson({
               <img
                 src={thumbnail}
                 alt="ai-avatar"
-                className="object-cover w-[900px] md:rounded-[20px] h-[70vh] shadow-lg"
+                className="object-cover w-[400px] md:rounded-[20px] h-[70vh] shadow-lg"
               />
             </div>
           )}
-          <div className="h-fit flex flex-col justify-center gap-3 items-center relative py-8">
+          <div className="h-fit pl-10 flex flex-col justify-center gap-3 items-center relative py-8">
             {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex w-full self-start gap-2 items-center justify-between">
-                <h1 className="h1-medium self-start">
-                  {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
-                </h1>
-
-                {/* <div className="self-end flex items-center gap-2">
-                  <Button
-                    ref={submitButtonRef}
-                    onClick={() => {
-                      handleStopAndUpload();
-                    }}
-                    className=""
-                    variant={"outline"}
-                  >
-                    Submit Recording
-                  </Button>
-                  {lesson.status === "approved" ? (
-                    <Button variant={"outline"}>Completed</Button>
-                  ) : lesson.status === "approval-pending" ? (
-                    <Button>Approval Pending</Button>
-                  ) : (
-                    <Button onClick={markComplete}>Mark Complete</Button>
-                  )}
-                </div> */}
-              </div>
-            )}
-            {peerConnection && sessionInfo && sessionState === "connected" && (
-              <div className="flex self-start flex-col gap-2">
-                <p className="text-gray-600 text-[16px]">
-                  {lesson?.description}
-                </p>
+              <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
+                <Avatar
+                  isBordered
+                  radius="full"
+                  size="md"
+                  src={lesson.content.avatar.normal_thumbnail_small}
+                />
+                <div className="flex flex-col pl-2">
+                  <h1 className="text-sm text-black font-semibold self-start">
+                    {StringFormats.capitalizeFirstLetterOfEachWord(
+                      lesson?.title
+                    )}
+                  </h1>
+                  <p className="text-gray-800 text-sm">{lesson?.description}</p>
+                </div>
               </div>
             )}
             <div className="flex">

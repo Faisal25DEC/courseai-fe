@@ -58,12 +58,15 @@ const WebcamRecording = ({
     recorderRef.current.startRecording();
   };
   useEffect(() => {
+    if (!recorderRef.current) {
+      return;
+    }
     return () => {
       if (lesson.status === "approved") return;
       console.log(recorderRef);
       handleStopAndUpload();
     };
-  }, []);
+  }, [recorderRef.current]);
   return (
     <Webcam
       audio

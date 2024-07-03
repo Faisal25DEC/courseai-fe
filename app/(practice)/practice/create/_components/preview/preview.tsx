@@ -16,8 +16,9 @@ import { StringFormats } from "@/lib/StringFormats";
 import { Icon } from "@iconify/react";
 import { typeColorObj } from "@/app/(courses-create)/courses/[id]/constants";
 import AvatarPracticeLesson from "@/app/(practice)/practice/create/_components/avatar-lesson/avatar-lesson";
-const PreivewPractice = () => {
-  const currentCourseId = useRecoilValue(courseIdAtom);
+const PreivewPractice = ({setIsPracticeList}:any) => {
+  // const currentCourseId = useRecoilValue(courseIdAtom);
+  const currentCourseId = "6667760f255b05556e58b41a"
 
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
@@ -32,10 +33,10 @@ const PreivewPractice = () => {
   console.log("active lesson in preview ", activeLesson)
 
   return (
-    <div className="w-full h-[calc(100vh-120px)] flex justify-center items-center">
+    <div className="w-full h-[calc(100vh-120px)] flex justify-center">
       <div className="flex w-[100%] h-[calc(90vh-120px)] relative mx-7">
         <div className="absolute cursor-pointer top-4 z-50 left-6"></div>
-        <div className="w-full rounded-[20px]  border-gray-200">
+        <div className="w-full rounded-[20px] border-gray-200">
           {lessonsArray[activeLesson]?.type === "avatar" && (
             <AvatarPracticeLesson
               lesson_id={lessonsArray[activeLesson].id}
@@ -47,6 +48,7 @@ const PreivewPractice = () => {
               }
               avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
               lesson={lessonsArray[activeLesson]}
+              setIsPracticeList={setIsPracticeList}
             />
           )}
         </div>

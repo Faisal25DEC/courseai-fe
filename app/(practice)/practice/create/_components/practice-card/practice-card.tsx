@@ -2,7 +2,7 @@ import { EditIcon2 } from "@/assets/icons/EditIcon";
 import { TrashIcon2 } from "@/assets/icons/TrashIcon";
 import CustomPopover from "@/components/shared/custom-popover/custom-popover";
 import useDisclosure from "@/hooks/useDisclosure";
-import React from "react";
+import React, { useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Draggable } from "react-beautiful-dnd";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
@@ -30,7 +30,9 @@ const PracticeCard = ({
   index: number;
   isPractice: boolean;
 }) => {
-  const currentCourseId = useRecoilValue(courseIdAtom);
+  // const currentCourseId = useRecoilValue(courseIdAtom);
+  const currentCourseId = "6667760f255b05556e58b41a"
+
   const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
@@ -44,6 +46,7 @@ const PracticeCard = ({
     onOpen: onCreateLessonModalOpen,
     onClose: onCreateLessonModalClose,
   } = useCreateLessonModal(isPractice);
+  
   const {
     isOpen: isPopoverOpen,
     onOpen: onPopoverOpen,
@@ -93,7 +96,7 @@ const PracticeCard = ({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
-          className={`w-full items-baseline relative flex gap-5 border rounded-lg ${activeLesson === index ? "ml-3":"ml-0"} ${
+          className={`w-full items-baseline relative flex gap-5 border rounded-lg ${activeLesson === index ? "border-gray-700 bg-[#FBFBFB]":"bg-white"} ${
             snapshot.draggingOver ? "shadow-sm bg-gray-50" : "" 
           }`}
           onClick={() => {
@@ -112,7 +115,7 @@ const PracticeCard = ({
                         isBordered
                         radius="full"
                         size="md"
-                        src="https://app.hyperbound.ai/images/male-demo/male-30.jpg"
+                        src={lesson.content.avatar.normal_thumbnail_small}
                       />
                       <Icon
                         icon="fluent-emoji-flat:green-circle"
@@ -126,22 +129,23 @@ const PracticeCard = ({
                       <h5 className="text-small tracking-tight text-default-400">
                         {lesson.description}
                       </h5>
-                      <div className="mt-3">
-                        <Chip
-                          className="bg-gray-100 font-semibold"
-                          radius="sm"
-                          size="sm"
+                      <div className="flex mt-3">
+                        <div
+                          className="bg-gray-100 px-2 py-[2px] text-xs rounded-lg font-semibold"
                         >
                           {" "}
                           {lessonTypeText[lesson.type]}
-                        </Chip>
+                        </div>
+                        <div
+                          className="ml-2 border px-2 py-[2px] text-xs rounded-lg font-semibold bg-black text-white"
+                        >
+                          {" "}
+                          {lesson.content.voice.display_name.split('-')[1]}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                {/* <div>
-        <p className="text-sm text-gray-400">Type : {lesson.type}</p>
-      </div> */}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -149,7 +153,7 @@ const PracticeCard = ({
                 open={isPopoverOpen}
                 onOpenChange={setIsPopoverOpen}
                 align="end"
-                className="p-0 w-[fit-content] min-w-[150px] shadow-2 rounded-[8px]"
+                className="p-0 absolute -top-8 w-[fit-content] min-w-[150px] shadow-2 rounded-[8px]"
                 trigger={
                   <div
                     className="absolute top-3 right-2"

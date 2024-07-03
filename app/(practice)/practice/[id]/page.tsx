@@ -25,7 +25,9 @@ import Image from "next/image";
 import NoDataFound from "../../../../public/images/not-found.webp";
 
 const PreivewCourse = () => {
-  const currentCourseId = useRecoilValue(courseIdAtom);
+  // const currentCourseId = useRecoilValue(courseIdAtom);
+  const currentCourseId = "6667760f255b05556e58b41a"
+
   const [isLoading, setIsLoading] = useState(true);
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
   const { user } = useUser();

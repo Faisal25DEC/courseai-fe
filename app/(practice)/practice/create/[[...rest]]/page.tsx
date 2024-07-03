@@ -38,9 +38,11 @@ import NotFoundImage from "../../../../../public/images/not-found.webp";
 import Image from "next/image";
 import PracticeCard from "../_components/practice-card/practice-card";
 import PreivewPractice from "../_components/preview/preview";
+import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
 
 const CreateCourse = () => {
-  const currentCourseId = useRecoilValue(courseIdAtom);
+  // const currentCourseId = useRecoilValue(courseIdAtom)
+  const currentCourseId = "6667760f255b05556e58b41a";
 
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);
@@ -58,6 +60,7 @@ const CreateCourse = () => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isPracticeList, setIsPracticeList] = useState(true);
 
   useEffect(() => {
     const fetchCurrentCourse = async () => {
@@ -209,14 +212,17 @@ const CreateCourse = () => {
     }
   }, [isCreateLessonModalOpen]);
   const lastItem = popoverContent[popoverContent.length - 1];
+
+  console.log("setIsPracticeList ", isPracticeList);
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="w-[100%] mx-auto flex flex-col gap-2">
         {" "}
         <div className="flex w-[90%] m-auto justify-between items-center py-8">
-          <div>
-            <h1 className=" font-normal text-gray-600 text-2xl">Practice</h1>
-          </div>
+          <Breadcrumbs>
+            <BreadcrumbItem>Practice</BreadcrumbItem>
+            <BreadcrumbItem>Create Practice Lessons</BreadcrumbItem>
+          </Breadcrumbs>
           <div className="flex justify-end gap-4 items-center">
             {currentUserRole === admin && (
               <div className="flex items-center gap-[24px]">
@@ -235,55 +241,65 @@ const CreateCourse = () => {
             )}
           </div>
         </div>
-        <div className="flex flex-row w-[100%]">
-          <div className="ml-10 w-[35%] border-r h-[85vh] pr-4">
-            <StrictModeDroppable droppableId="Visuals">
-              {(provided) => (
-                <div
-                  className=" w-[90%] mx-auto flex flex-col my-2 gap-4"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  {isLoading ? (
-                    <div className="flex flex-col h-[60vh] justify-center items-center"></div>
-                  ) : lessonsArray.length !== 0 ? (
-                    lessonsArray.map((lesson: any, idx: number) =>
-                      lesson.is_practice_lesson === true ? (
-                        <PracticeCard
-                          key={idx}
-                          lesson={lesson}
-                          index={idx}
-                          isPractice={false}
+        <div className={`flex flex-row w-[100%] ${isPracticeList?"h-[85vh] overflow-hidden":"h-[100%]"}  border-t`}>
+          {isPracticeList && (
+            <div className={`my-element pb-7 ml-10 w-[40%] border-r  pr-4 overflow-auto`}>
+              <p className="text-sm text-gray-400 pl-5 py-4">
+                {
+                  lessonsArray.filter(
+                    (ls: any) => ls.is_practice_lesson === true
+                  ).length
+                }{" "}
+                Practice Lessons
+              </p>
+              <StrictModeDroppable droppableId="Visuals">
+                {(provided) => (
+                  <div
+                    className=" w-[90%] mx-auto flex flex-col my-2 gap-4"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {isLoading ? (
+                      <div className="flex  flex-col h-[60vh] justify-center items-center"></div>
+                    ) : lessonsArray.length !== 0 ? (
+                      lessonsArray.map((lesson: any, idx: number) =>
+                        lesson.is_practice_lesson === true ? (
+                          <PracticeCard
+                            key={idx}
+                            lesson={lesson}
+                            index={idx}
+                            isPractice={false}
+                          />
+                        ) : null
+                      )
+                    ) : (
+                      <div className="flex flex-col h-[60vh] justify-center items-center">
+                        <Image
+                          src={NotFoundImage}
+                          alt="No Lessons Found"
+                          width={250}
+                          height={250}
                         />
-                      ) : null
-                    )
-                  ) : (
-                    <div className="flex flex-col h-[60vh] justify-center items-center">
-                      <Image
-                        src={NotFoundImage}
-                        alt="No Lessons Found"
-                        width={250}
-                        height={250}
-                      />
-                      <p className="text-sm mt-10 text-center">
-                        It looks like there are no lessons available. Please{" "}
-                        <span
-                          className="text-blue-500 cursor-pointer"
-                          onClick={() => onCreateLessonModalOpen()}
-                        >
-                          create a new lesson
-                        </span>
-                        to get started.
-                      </p>
-                    </div>
-                  )}
-                  {provided.placeholder}
-                </div>
-              )}
-            </StrictModeDroppable>
-          </div>
-          <div className="w-[75%]">
-            <PreivewPractice />
+                        <p className="text-sm mt-10 text-center">
+                          It looks like there are no lessons available. Please{" "}
+                          <span
+                            className="text-blue-500 cursor-pointer"
+                            onClick={() => onCreateLessonModalOpen()}
+                          >
+                            create a new lesson
+                          </span>
+                          to get started.
+                        </p>
+                      </div>
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </StrictModeDroppable>
+            </div>
+          )}
+          <div className={`${isPracticeList ? "w-[60%] px-3 pt-10" : "w-[100%]"}`}>
+            <PreivewPractice setIsPracticeList={setIsPracticeList} />
           </div>
         </div>
         {isCreateLessonModalOpen && <CreatePracticeLessonModal />}

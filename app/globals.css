@@ -632,3 +632,13 @@ li {
   opacity: 0.95;
   /* transition: width 0.3s ease; */
 }
+
+.my-element::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.my-element {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

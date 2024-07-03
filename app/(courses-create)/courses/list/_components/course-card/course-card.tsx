@@ -75,15 +75,6 @@ function CourseCard({ course }: { course: { id: string; title: string } }) {
               >
                 Edit Title
               </ListboxItem>
-
-              <ListboxItem
-                key="copy"
-                onClick={() => {
-                  setVideoOption(false);
-                }}
-              >
-                View Analytics
-              </ListboxItem>
               <ListboxItem
                 key="delete"
                 color="danger"

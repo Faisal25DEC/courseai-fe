@@ -2,12 +2,13 @@ import { EditIcon2 } from "@/assets/icons/EditIcon";
 import { TrashIcon2 } from "@/assets/icons/TrashIcon";
 import CustomPopover from "@/components/shared/custom-popover/custom-popover";
 import useDisclosure from "@/hooks/useDisclosure";
-import React from "react";
+import React, { useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Draggable } from "react-beautiful-dnd";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
+  activeLessonAtom,
   courseIdAtom,
   currentCourseAtom,
   lessonAtom,
@@ -17,9 +18,10 @@ import {
 import { deleteLesson, getCourse } from "@/services/lesson.service";
 import { lessonTypeText, textFromBg } from "@/lib/constants";
 import { toast } from "sonner";
-import { typeColorObj } from "../../../[id]/constants";
+
 import Tag from "@/components/shared/tag/tag";
-const LessonCard = ({
+import { Avatar, Chip } from "@nextui-org/react";
+const PracticeCard = ({
   lesson,
   index,
   isPractice,
@@ -28,18 +30,23 @@ const LessonCard = ({
   index: number;
   isPractice: boolean;
 }) => {
-  const currentCourseId = useRecoilValue(courseIdAtom);
+  // const currentCourseId = useRecoilValue(courseIdAtom);
+  const currentCourseId = "6667760f255b05556e58b41a"
+
   const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
   const [currentCourse, setCurrentCourse] =
     useRecoilState<any>(currentCourseAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
+  const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
+
   const {
     isOpen: isCreateLessonModalOpen,
     onOpen: onCreateLessonModalOpen,
     onClose: onCreateLessonModalClose,
   } = useCreateLessonModal(isPractice);
+  
   const {
     isOpen: isPopoverOpen,
     onOpen: onPopoverOpen,
@@ -89,44 +96,67 @@ const LessonCard = ({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
-          className={`w-full items-baseline relative flex gap-5  ${
-            snapshot.draggingOver ? "shadow-sm bg-gray-50" : ""
+          className={`w-full items-baseline relative flex gap-5 border rounded-lg ${activeLesson === index ? "border-gray-700 bg-[#FBFBFB]":"bg-white"} ${
+            snapshot.draggingOver ? "shadow-sm bg-gray-50" : "" 
           }`}
+          onClick={() => {
+            setActiveLesson(index);
+          }}
         >
           <div className="w-full p-4 rounded-[10px] shadow-1 flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Icon icon="ri:draggable" className="" />
+              {/* <Icon icon="ri:draggable" className="" /> */}
 
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-lg font-normal text-gray-600">
-                      {lesson.title}
-                    </p>
+                  <div className="flex gap-5">
+                    <div className="relative">
+                      <Avatar
+                        isBordered
+                        radius="full"
+                        size="md"
+                        src={lesson.content.avatar.normal_thumbnail_small}
+                      />
+                      <Icon
+                        icon="fluent-emoji-flat:green-circle"
+                        className="w-4 h-4 bg-white border-2 border-white rounded-full absolute bottom-8 right-0"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 items-start justify-center">
+                      <h4 className="text-small font-semibold leading-none text-default-600">
+                        {lesson.title}
+                      </h4>
+                      <h5 className="text-small tracking-tight text-default-400">
+                        {lesson.description}
+                      </h5>
+                      <div className="flex mt-3">
+                        <div
+                          className="bg-gray-100 px-2 py-[2px] text-xs rounded-lg font-semibold"
+                        >
+                          {" "}
+                          {lessonTypeText[lesson.type]}
+                        </div>
+                        <div
+                          className="ml-2 border px-2 py-[2px] text-xs rounded-lg font-semibold bg-black text-white"
+                        >
+                          {" "}
+                          {lesson.content.voice.display_name.split('-')[1]}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-400">{lesson.description}</p>
-                </div>
-                {/* <div>
-        <p className="text-sm text-gray-400">Type : {lesson.type}</p>
-      </div> */}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Tag
-                color={textFromBg[typeColorObj[lesson.type]]}
-                bg={typeColorObj[lesson.type]}
-              >
-                {lessonTypeText[lesson.type]}
-              </Tag>
               <CustomPopover
                 open={isPopoverOpen}
                 onOpenChange={setIsPopoverOpen}
                 align="end"
-                className="p-0 w-[fit-content] min-w-[150px] shadow-2 rounded-[8px]"
+                className="p-0 absolute -top-8 w-[fit-content] min-w-[150px] shadow-2 rounded-[8px]"
                 trigger={
                   <div
+                    className="absolute top-3 right-2"
                     onClick={(e) => {
                       e.stopPropagation();
                       isPopoverOpen ? onPopoverClose() : onPopoverOpen();
@@ -177,4 +207,4 @@ const LessonCard = ({
   );
 };
 
-export default LessonCard;
+export default PracticeCard;

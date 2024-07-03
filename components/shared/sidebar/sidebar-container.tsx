@@ -25,6 +25,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import useSetOrganization from "@/hooks/useSetOrganization";
 import { admin } from "@/lib/constants";
+import ScoreCardQuestions from "../scorecard-question/scorecard-question";
 
 const sidebarItems = [
   {
@@ -36,31 +37,13 @@ const sidebarItems = [
   {
     key: "practice",
     icon: "hugeicons:bot",
-    title: "Practice Bots",
+    title: "Practice",
     hidden: false,
   },
   {
     key: "analytics",
     icon: "solar:chart-outline",
     title: "Analytics",
-    hidden: false,
-  },
-  {
-    key: "invite",
-    icon: "iconoir:add-user",
-    title: "Invite Users",
-    endContent: (
-      <Chip size="sm" variant="flat">
-        3
-      </Chip>
-    ),
-    hidden: false,
-  },
-  {
-    key: "help",
-    icon: "formkit:help",
-    title: "Help",
-    href: "mailto:admin@permian.ai",
     hidden: false,
   },
   {
@@ -77,6 +60,7 @@ export default function SidebarComponent() {
   const organizationId = useRecoilValue(currentOrganizationIdAtom);
   const [emailAddress, setEmailAddress] = useState("");
   const [invite, setIsInvite] = useState(false);
+  const [scorecard, setScorecard] = useState(false);
   const {
     isEnrollCourseModalOpen,
     onEnrollCourseModalOpen,
@@ -103,9 +87,6 @@ export default function SidebarComponent() {
           : `/analytics/${currentCourseId}`;
       case "settings":
         return currentUserRole === admin ? "/settings" : "";
-      case "invite":
-        setIsInvite(true);
-        return null;
       default:
         return "#";
     }
@@ -158,6 +139,14 @@ export default function SidebarComponent() {
         onClose={() => setIsInvite(false)}
       >
         <OrganizationProfile routing="virtual" />
+      </Modal>
+
+      <Modal
+        className="w-fit justify-center items-center flex"
+        isOpen={scorecard}
+        onClose={() => setScorecard(false)}
+      >
+        <ScoreCardQuestions />
       </Modal>
       {isEnrollCourseModalOpen && <EnrollCourseModal />}
     </div>

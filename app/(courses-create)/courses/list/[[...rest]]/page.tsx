@@ -33,7 +33,7 @@ import CreateLessonModal from "../../create-lesson/_components/create-lesson-mod
 import CourseCard from "../_components/course-card/course-card";
 import CreateCourseModal from "../_components/create-course-modal/create-course-modal";
 import useCreateCourseModal from "@/hooks/useCreateCourseModal";
-import { Tab, Tabs } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs, Tab, Tabs } from "@nextui-org/react";
 import CourseListCard from "../_components/course-card/course-card-list";
 
 const CreateCourse = () => {
@@ -72,16 +72,17 @@ const CreateCourse = () => {
     onClose: onCreateLessonModalClose,
   } = useCreateCourseModal(false);
 
-  const handleTabChange = (key:any) => {
+  const handleTabChange = (key: any) => {
     setSelectedTab(key);
   };
 
   return (
     <div className="w-[100%] mx-auto flex flex-col gap-2">
       <div className="flex w-[90%] m-auto justify-between items-center py-8">
-        <div>
-          <h1 className="font-normal text-gray-600 text-2xl">Courses</h1>
-        </div>
+        <Breadcrumbs>
+          <BreadcrumbItem>Courses</BreadcrumbItem>
+          <BreadcrumbItem>Create Courses</BreadcrumbItem>
+        </Breadcrumbs>
         <div className="flex justify-end gap-4 items-center">
           {currentUserRole === admin && (
             <div className="flex items-center gap-[24px]">
@@ -98,7 +99,11 @@ const CreateCourse = () => {
         </div>
       </div>
       <div className="flex justify-end mx-14">
-        <Tabs aria-label="Options" selectedKey={selectedTab} onSelectionChange={handleTabChange}>
+        <Tabs
+          aria-label="Options"
+          selectedKey={selectedTab}
+          onSelectionChange={handleTabChange}
+        >
           <Tab
             key="grid"
             title={
@@ -122,13 +127,13 @@ const CreateCourse = () => {
       <div className="w-[90%] mx-auto my-2">
         {selectedTab === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {courses.map((cr,ind) => (
+            {courses.map((cr, ind) => (
               <CourseCard key={ind} course={cr} />
             ))}
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {courses.map((cr,ind) => (
+            {courses.map((cr, ind) => (
               <CourseListCard key={ind} course={cr} />
             ))}
           </div>
@@ -140,5 +145,3 @@ const CreateCourse = () => {
 };
 
 export default CreateCourse;
-
-

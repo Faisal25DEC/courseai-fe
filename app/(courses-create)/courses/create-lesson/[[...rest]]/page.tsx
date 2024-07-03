@@ -33,6 +33,7 @@ import { avatars as avatarsArray } from "@/lib/constants";
 import { usePathname } from "next/navigation";
 import NotFoundImage from "../../../../../public/images/not-found.webp";
 import Image from "next/image";
+import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
 
 const CreateCourse = () => {
   const pathname = usePathname();
@@ -235,9 +236,10 @@ const CreateCourse = () => {
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="w-[100%] mx-auto flex flex-col gap-2">
         <div className="flex w-[90%] m-auto justify-between items-center py-8">
-          <div>
-            <h1 className=" font-normal text-gray-600 text-2xl">Lessons</h1>
-          </div>
+          <Breadcrumbs>
+            <BreadcrumbItem>Courses</BreadcrumbItem>
+            <BreadcrumbItem>Create Lessons</BreadcrumbItem>
+          </Breadcrumbs>
           <div className="flex justify-end gap-4 items-center">
             {currentUserRole === admin && (
               <div className="flex items-center gap-[24px]">

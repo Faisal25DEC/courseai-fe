@@ -1,3 +1,4 @@
+import useCreateCourseModal from "@/hooks/useCreateCourseModal";
 import { admin } from "@/lib/constants";
 import { courseIdAtom, currentUserRoleAtom } from "@/store/atoms";
 import { Listbox, ListboxItem } from "@nextui-org/react";
@@ -39,6 +40,12 @@ function CourseCard({ course }: { course: { id: string; title: string } }) {
     };
   }, [videoOptionRef]);
 
+  const {
+    isOpen: isCreateLessonModalOpen,
+    onOpen: onCreateLessonModalOpen,
+    onClose: onCreateLessonModalClose,
+  } = useCreateCourseModal(false);
+
   return (
     <>
       <div className="relative flex justify-center md:justify-start">
@@ -70,6 +77,7 @@ function CourseCard({ course }: { course: { id: string; title: string } }) {
               <ListboxItem
                 key="new"
                 onClick={() => {
+                  onCreateLessonModalOpen();
                   setVideoOption(false);
                 }}
               >

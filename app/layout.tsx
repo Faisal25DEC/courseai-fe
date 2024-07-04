@@ -8,6 +8,7 @@ import CreateLessonModal from "./(courses-create)/courses/create-lesson/_compone
 import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
 import { NextUIProvider } from "@nextui-org/react";
 import SidebarComponent from "@/components/shared/sidebar/sidebar-container";
+import Sidebar from "@/components/Sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,7 +35,7 @@ export default function RootLayout({
               <div className="flex">
                 <SignedIn>
                   <div className="fixed top-0 left-0 h-full w-fit z-10">
-                    <SidebarComponent />
+                    <Sidebar/>
                   </div>
                   <div className="ml-64 flex-1">{children}</div>
                 </SignedIn>

@@ -34,7 +34,7 @@ const PracticeCard = ({
 }) => {
   // const currentCourseId = useRecoilValue(courseIdAtom);
   const currentCourseId = "6667760f255b05556e58b41a";
-
+  
   const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
   const [lessonModalType, setLessonModalType] =
     useRecoilState(lessonModalTypeAtom);
@@ -99,6 +99,14 @@ const PracticeCard = ({
     },
   ];
   const lastItem = popoverContent[popoverContent.length - 1];
+
+  useEffect(() => {
+    // #TODO: temp fix until practice table is separated from course
+    if (index === 9) setActiveLesson(index);
+
+    console.log("active lesson in practice ", activeLesson, index);
+  }, []);
+
   return (
     <Draggable
       key={(index + 1).toString()}

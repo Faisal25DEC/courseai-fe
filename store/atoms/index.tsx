@@ -84,10 +84,21 @@ interface LessonModalTypeInterface {
   lesson: LessonInterface;
 }
 
+interface LessonModalTypeInterface {
+  type: string;
+  lesson: LessonInterface;
+}
+
 export const lessonModalTypeAtom = atom<LessonModalTypeInterface | null>({
   key: "lessonModalTypeAtom",
   default: null,
 });
+
+export const courseModalTypeAtom = atom<any>({
+  key: "courseModalTypeAtom",
+  default: null,
+});
+
 
 export const activeLessonAtom = atom<any>({
   key: "activeLessonAtom",

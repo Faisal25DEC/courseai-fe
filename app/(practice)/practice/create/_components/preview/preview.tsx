@@ -33,10 +33,10 @@ const PreivewPractice = ({setIsPracticeList}:any) => {
   console.log("active lesson in preview ", activeLesson)
 
   return (
-    <div className="w-full h-[calc(100vh-120px)] flex justify-center">
+    <div className="w-full h-full flex items-center justify-center">
       <div className="flex w-[100%] h-[calc(90vh-120px)] relative mx-7">
         <div className="absolute cursor-pointer top-4 z-50 left-6"></div>
-        <div className="w-full rounded-[20px] border-gray-200">
+        <div className="w-full rounded-[20px]">
           {lessonsArray[activeLesson]?.type === "avatar" && (
             <AvatarPracticeLesson
               lesson_id={lessonsArray[activeLesson].id}

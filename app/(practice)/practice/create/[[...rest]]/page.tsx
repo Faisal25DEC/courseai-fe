@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import React, { useEffect, useState } from "react";
-// import CreateLessonModal from "../_components/create-lesson-modal/create-lesson-modal";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   activeLessonAtom,
@@ -23,7 +22,6 @@ import { EditIcon2 } from "@/assets/icons/EditIcon";
 import { TrashIcon2 } from "@/assets/icons/TrashIcon";
 import CustomPopover from "@/components/shared/custom-popover/custom-popover";
 import useDisclosure from "@/hooks/useDisclosure";
-// import LessonCard from "../_components/lesson-card/lesson-card";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { admin, apiKey, heygenBaseUrl } from "@/lib/constants";
 import { toast } from "sonner";
@@ -33,15 +31,13 @@ import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelper
 import { updateCourse } from "@/services/lesson.service";
 import { avatars as avatarsArray } from "@/lib/constants";
 import CreatePracticeLessonModal from "../_components/create-practice-modal/create-practice-modal";
-import LessonCard from "@/app/(courses-create)/courses/create-lesson/_components/lesson-card/lesson-card";
+import PracticeCard from "../_components/practice-card/practice-card";
 import NotFoundImage from "../../../../../public/images/not-found.webp";
 import Image from "next/image";
-import PracticeCard from "../_components/practice-card/practice-card";
 import PreivewPractice from "../_components/preview/preview";
-import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs, Chip, Input } from "@nextui-org/react";
 
 const CreateCourse = () => {
-  // const currentCourseId = useRecoilValue(courseIdAtom)
   const currentCourseId = "6667760f255b05556e58b41a";
 
   const [currentUserRole, setCurrentUserRole] =
@@ -61,6 +57,7 @@ const CreateCourse = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isPracticeList, setIsPracticeList] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchCurrentCourse = async () => {
@@ -76,27 +73,30 @@ const CreateCourse = () => {
     };
     fetchCurrentCourse();
   }, []);
+
   const {
     isOpen: isCreateLessonModalOpen,
     onOpen: onCreateLessonModalOpen,
     onClose: onCreateLessonModalClose,
   } = useCreateLessonModal(true);
+
   const popoverContent = [
     {
       title: "Edit",
       onClick: async () => {},
       icon: EditIcon2,
     },
-
     {
       title: "Delete",
       onClick: () => {},
       icon: TrashIcon2,
     },
   ];
+
   const updateCourseLessons = (data: any) => {
     return null;
   };
+
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
     if (!destination) {
@@ -133,6 +133,7 @@ const CreateCourse = () => {
         });
     }
   };
+
   const fetchAvatarsAndVoices = async () => {
     if (avatars.length > 0 && voices.length > 0) return;
     const { data: voicesData } = await axios.get(
@@ -197,6 +198,7 @@ const CreateCourse = () => {
   useEffect(() => {
     fetchAvatarsAndVoices();
   }, []);
+
   useEffect(() => {
     if (!isCreateLessonModalOpen) {
       setCurrentLesson({
@@ -211,18 +213,37 @@ const CreateCourse = () => {
       setLessonCreateSteps(1);
     }
   }, [isCreateLessonModalOpen]);
+
   const lastItem = popoverContent[popoverContent.length - 1];
 
-  console.log("setIsPracticeList ", isPracticeList);
+  // Filter lessons based on the search query
+  const filteredLessons = lessonsArray.filter((lesson: any) =>
+    lesson.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="w-[100%] mx-auto flex flex-col gap-2">
-        {" "}
-        <div className="flex w-[90%] m-auto justify-between items-center py-8">
-          <Breadcrumbs>
-            <BreadcrumbItem>Practice</BreadcrumbItem>
-            <BreadcrumbItem>Create Practice Lessons</BreadcrumbItem>
-          </Breadcrumbs>
+        <div className="flex w-[90%] m-auto justify-between items-center py-3">
+          <div className="flex flex-col">
+            <Breadcrumbs>
+              <BreadcrumbItem>Practice</BreadcrumbItem>
+              <BreadcrumbItem className="font-bold text-lg">
+                {currentUserRole === admin
+                  ? " Create Practice Lessons"
+                  : "Practice Lessons"}
+                {currentUserRole !== admin && (
+                  <Chip className="ml-2" size="sm">
+                    Free Demo
+                  </Chip>
+                )}
+              </BreadcrumbItem>
+            </Breadcrumbs>
+            <p className="pt-2 text-sm text-black">
+              Choose a Practice Lesson & start a roleplay conversation in {"<"}{" "}
+              10 secs
+            </p>
+          </div>
           <div className="flex justify-end gap-4 items-center">
             {currentUserRole === admin && (
               <div className="flex items-center gap-[24px]">
@@ -241,12 +262,24 @@ const CreateCourse = () => {
             )}
           </div>
         </div>
-        <div className={`flex flex-row w-[100%] ${isPracticeList?"h-[85vh] overflow-hidden":"h-[100%]"}  border-t`}>
+        <div
+          className={`flex flex-row w-[100%] ${
+            isPracticeList ? "h-[85vh] overflow-hidden" : "h-[100%]"
+          }  border-t`}
+        >
           {isPracticeList && (
-            <div className={`my-element pb-7 ml-10 w-[40%] border-r  pr-4 overflow-auto`}>
-              <p className="text-sm text-gray-400 pl-5 py-4">
+            <div
+              className={`my-element pb-7 ml-10 w-[40%] border-r  pr-4 overflow-auto`}
+            >
+              <Input
+                className="m-5 w-[91%]"
+                variant="bordered"
+                placeholder="Search practice lessons..."
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <p className="text-sm text-gray-400 pl-5 pb-4">
                 {
-                  lessonsArray.filter(
+                  filteredLessons.filter(
                     (ls: any) => ls.is_practice_lesson === true
                   ).length
                 }{" "}
@@ -261,8 +294,8 @@ const CreateCourse = () => {
                   >
                     {isLoading ? (
                       <div className="flex  flex-col h-[60vh] justify-center items-center"></div>
-                    ) : lessonsArray.length !== 0 ? (
-                      lessonsArray.map((lesson: any, idx: number) =>
+                    ) : filteredLessons.length !== 0 ? (
+                      filteredLessons.map((lesson: any, idx: number) =>
                         lesson.is_practice_lesson === true ? (
                           <PracticeCard
                             key={idx}
@@ -281,14 +314,7 @@ const CreateCourse = () => {
                           height={250}
                         />
                         <p className="text-sm mt-10 text-center">
-                          It looks like there are no lessons available. Please{" "}
-                          <span
-                            className="text-blue-500 cursor-pointer"
-                            onClick={() => onCreateLessonModalOpen()}
-                          >
-                            create a new lesson
-                          </span>
-                          to get started.
+                          It looks like there are no lessons available.
                         </p>
                       </div>
                     )}
@@ -298,7 +324,9 @@ const CreateCourse = () => {
               </StrictModeDroppable>
             </div>
           )}
-          <div className={`${isPracticeList ? "w-[60%] px-3 pt-10" : "w-[100%]"}`}>
+          <div
+            className={` ${isPracticeList ? "w-[60%] px-3 pt-10" : "w-[100%]"}`}
+          >
             <PreivewPractice setIsPracticeList={setIsPracticeList} />
           </div>
         </div>

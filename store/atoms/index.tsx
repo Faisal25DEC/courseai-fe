@@ -94,6 +94,11 @@ export const activeLessonAtom = atom<any>({
   default: 0,
 });
 
+export const randomNumberAtom = atom<any>({
+  key: "randomNumberAtom",
+  default: 0,
+});
+
 export const noOrgnizationModalAtom = atom({
   key: "noOrgnizationModalAtom",
   default: false,

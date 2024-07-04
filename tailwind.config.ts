@@ -59,6 +59,10 @@ const config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      }, 
+      backgroundImage: {
+        'course-image': "url('/images/card.jpg')",
+        // Add more images if needed
       },
       keyframes: {
         "accordion-down": {

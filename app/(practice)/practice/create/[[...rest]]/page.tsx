@@ -297,6 +297,7 @@ const CreateCourse = () => {
                     ) : filteredLessons.length !== 0 ? (
                       filteredLessons.map((lesson: any, idx: number) =>
                         lesson.is_practice_lesson === true ? (
+                          
                           <PracticeCard
                             key={idx}
                             lesson={lesson}

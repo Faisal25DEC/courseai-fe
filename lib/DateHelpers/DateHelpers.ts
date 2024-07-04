@@ -12,13 +12,13 @@ export const FormatDate = {
 
     let formattedTime = "";
     if (hours > 0) {
-      formattedTime += `${hours} hour${hours !== 1 ? "s" : ""}, `;
+      formattedTime += `${hours} hrs, `;
     }
     if (minutes > 0) {
-      formattedTime += `${minutes} minute${minutes !== 1 ? "s" : ""}, `;
+      formattedTime += `${minutes} min, `;
     }
     if (seconds > 0 || (hours === 0 && minutes === 0)) {
-      formattedTime += `${seconds} second${seconds !== 1 ? "s" : ""}`;
+      formattedTime += `${seconds} sec`;
     }
 
     // Remove any trailing comma and space

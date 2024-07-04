@@ -30,12 +30,13 @@ import Link from "next/link";
 import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelpers";
 import { updateCourse } from "@/services/lesson.service";
 import { avatars as avatarsArray } from "@/lib/constants";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import NotFoundImage from "../../../../../public/images/not-found.webp";
 import Image from "next/image";
 import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
 
 const CreateCourse = () => {
+  const router = useRouter()
   const pathname = usePathname();
   const [currentCourseId, setCurrentCourseId] = useState<string>("");
   const [currentUserRole, setCurrentUserRole] =
@@ -237,7 +238,7 @@ const CreateCourse = () => {
       <div className="w-[100%] mx-auto flex flex-col gap-2">
         <div className="flex w-[90%] m-auto justify-between items-center py-8">
           <Breadcrumbs>
-            <BreadcrumbItem>Courses</BreadcrumbItem>
+            <BreadcrumbItem onPress={()=>{router.push("/courses/list")}}>Courses</BreadcrumbItem>
             <BreadcrumbItem>Create Lessons</BreadcrumbItem>
           </Breadcrumbs>
           <div className="flex justify-end gap-4 items-center">
@@ -254,6 +255,7 @@ const CreateCourse = () => {
           </div>
         </div>
         <hr />
+        
         <StrictModeDroppable droppableId="Visuals">
           {(provided) => (
             <div
@@ -288,7 +290,7 @@ const CreateCourse = () => {
                       className="text-blue-500 cursor-pointer"
                       onClick={() => onCreateLessonModalOpen()}
                     >
-                      create a new lesson
+                      create a new lesson{" "}
                     </span>
                     to get started.
                   </p>

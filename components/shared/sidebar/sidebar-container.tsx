@@ -80,7 +80,7 @@ export default function SidebarComponent() {
       case "practice":
         return currentUserRole === admin
           ? "/practice/create"
-          : `/practice/${currentCourseId}`;
+          : `/practice/create`;
       case "analytics":
         return currentUserRole === admin
           ? "/analytics"
@@ -97,12 +97,13 @@ export default function SidebarComponent() {
       <div className="relative flex h-full w-72 flex-1 flex-col border-r-small border-divider p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 px-2">
-            <div className="flex items-center overflow-hidden">
+            <div className="navbar__logo flex items-center overflow-hidden">
               <img
                 src="/images/permian.webp"
                 alt="logo"
                 className="w-[42px] h-[42px] hidden md:block rounded-full overflow-hidden"
               />
+                <p className="flex h-full items-center text-lg ml-1">Permian</p>
             </div>
           </div>
           <div className="flex items-center justify-end">

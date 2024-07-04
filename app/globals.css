@@ -642,3 +642,21 @@ li {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+.start-gradient {
+  background: rgb(210,139,228);
+  background: linear-gradient(90deg, rgba(210,139,228,1) 0%, rgba(200,148,227,1) 45%, rgba(184,163,224,1) 88%, rgba(183,164,224,1) 88%);
+}
+
+.navbar__logo p {
+  font-weight: 500;
+  font-family: "Sora", sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(0deg,
+      rgb(204, 174, 209) 10.6331%,
+      rgb(168, 172, 181) 82.3299%);
+  background-clip: text;
+}

@@ -5,7 +5,7 @@ import Navbar from "@/components/shared/navbar";
 import RecoilProvider from "@/components/providers/RecoilProvider";
 import { Toaster } from "sonner";
 import CreateLessonModal from "./(courses-create)/courses/create-lesson/_components/create-lesson-modal/create-lesson-modal";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
 import { NextUIProvider } from "@nextui-org/react";
 import SidebarComponent from "@/components/shared/sidebar/sidebar-container";
 
@@ -32,10 +32,15 @@ export default function RootLayout({
             <NextUIProvider>
               <Toaster closeButton />
               <div className="flex">
-                <div className="fixed top-0 left-0 h-full w-fit z-10">
-                  <SidebarComponent />
-                </div>
-                <div className="ml-64 flex-1">{children}</div>
+                <SignedIn>
+                  <div className="fixed top-0 left-0 h-full w-fit z-10">
+                    <SidebarComponent />
+                  </div>
+                  <div className="ml-64 flex-1">{children}</div>
+                </SignedIn>
+                <SignedOut>
+                  <div className="flex-1">{children}</div>
+                </SignedOut>
               </div>
             </NextUIProvider>
           </RecoilProvider>

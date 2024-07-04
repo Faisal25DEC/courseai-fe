@@ -3,7 +3,6 @@ import Microphone from "@/components/shared/microphone/microhpone";
 import { DeepgramContextProvider } from "@/context/Deepgram";
 import { MicrophoneContextProvider } from "@/context/Microphone";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -35,13 +34,13 @@ import AvatarConversationsLive from "@/components/shared/avatar-conversations-li
 import { Icon } from "@iconify/react";
 import useEndCallModal from "@/hooks/useEndCallModal";
 import EndCallModal from "@/components/shared/end-call-modal/end-call-modal";
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Button } from "@nextui-org/react";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
 );
 const heygen_API = {
-  apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
+  apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
   serverUrl: "https://api.heygen.com",
 };
 
@@ -109,9 +108,19 @@ export default function AvatarPracticeLesson({
   const recorderRef = useRef(null);
   const [isDocumentVisible, setIsDocumentVisible] = useState(false);
   // const currentCourseId = useRecoilValue(courseIdAtom);
-  const currentCourseId = "6667760f255b05556e58b41a"
+  const currentCourseId = "6667760f255b05556e58b41a";
 
   const { user } = useUser();
+
+  const [randomNumber, setRandomNumber] = useState(0);
+
+  useEffect(() => {
+    const generateRandomNumber = () => {
+      return Math.floor(Math.random() * 60) + 1;
+    };
+
+    setRandomNumber(generateRandomNumber());
+  }, []);
 
   useTrackLessonDuration({
     currenTimeRef,
@@ -213,7 +222,6 @@ export default function AvatarPracticeLesson({
   }
 
   const createNewSession = async () => {
-    setIsPracticeList(false);
     const avatar = avatar_id;
     const voice = voice_id;
 
@@ -256,6 +264,7 @@ export default function AvatarPracticeLesson({
       toast.success("Session created successfully");
       setPeerConnection(pc);
       setSessionInfo(data.data);
+      setIsPracticeList(false);
     } catch (error) {
       console.error("Failed to create session:", error);
     }
@@ -450,51 +459,73 @@ export default function AvatarPracticeLesson({
   return (
     <div className="w-full relative">
       <div className="h-[90vh] w-full flex  flex-col">
-        <div className="w-full flex flex-col gap-3 mt-3 relative justify-center items-center">
+        <div className="w-full flex flex-col gap-3 mt-5 relative justify-center items-center">
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex justify-center flex-col items-center h-[500px]">
-              <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
-                <Avatar
-                  isBordered
-                  radius="full"
-                  size="md"
-                  src={lesson.content.avatar.normal_thumbnail_small}
-                />
-                <div className="flex flex-col pl-2">
-                  <h1 className="text-sm text-black font-semibold self-start">
-                    {StringFormats.capitalizeFirstLetterOfEachWord(
-                      lesson?.title
-                    )}
-                  </h1>
-                  <p className="text-gray-800 text-sm">{lesson?.description}</p>
-                </div>
-              </div>
+            <>
+              <div className="border-1 shadow-lg border-gray-300 flex justify-center flex-col items-center h-fit p-5 rounded-xl">
+                <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
+                  <Avatar
+                    isBordered
+                    radius="full"
+                    size="md"
+                    src={lesson.content.avatar.normal_thumbnail_small}
+                  />
+                  <div className="flex flex-col pl-2">
+                    <p className="text-sm font-semibold">
+                      Engage in real-time roleplay sessions
+                    </p>
 
-              <div className="absolute flex flex-col justify-center items-center h-full gap-[15%]">
-                <div className="flex justify-center cursor-pointer items-center gradient-1 p-4 h-24 w-24 rounded-full">
+                    {/* <p className="text-gray-800 text-sm w-[300px]">
+                      {lesson?.description}
+                    </p> */}
+                  </div>
+                </div>
+
+                <div className="relative mt-4">
                   <img
-                    src={"/images/play.png"}
-                    style={{
-                      display: isInfoModalOpen !== "" ? "none" : "block",
-                    }}
-                    className="w-20 h-20 pl-2 hover:scale-[1.1] transition-all duration-300 ease-in-out"
-                    onClick={() => {
-                      createNewSession();
-                    }}
+                    src={thumbnail}
+                    alt="ai-avatar"
+                    className="object-cover w-[150px] h-[150px] md:rounded-full shadow-lg"
+                  />
+                  <Icon
+                    icon="fluent-emoji-flat:green-circle"
+                    className="w-6 h-6 bg-white border-2 border-white rounded-full absolute bottom-2 right-2"
                   />
                 </div>
-                {/* <Button onClick={startAndDisplaySession}>Start Session</Button> */}
-                {/* <Button onClick={closeConnectionHandler}>Close Session</Button> */}
-              </div>
+                <h1 className="mt-5 text-gray-700 text-xl capitalize">
+                  {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
+                </h1>
+                <p className="text-[#71717A] text-center text-sm capitalize w-[300px]">
+                  {lesson?.description}
+                </p>
+                <div className="flex mt-3">
+                  <div className="bg-gray-100 px-2 py-[2px] text-xs rounded-lg font-semibold">
+                    {" "}
+                    Live Training
+                  </div>
+                  <div className="ml-2 border border-gray-400 px-2 py-[2px] text-xs rounded-lg font-semibold">
+                    {" "}
+                    {lesson.content.voice.display_name.split("-")[1]}
+                  </div>
+                  {/* <div className="ml-2 border px-2 py-[2px] text-xs rounded-lg font-semibold bg-black text-white">
+                  {" "}
+                  Book rate : {randomNumber}%
 
-              <img
-                src={thumbnail}
-                alt="ai-avatar"
-                className="object-cover w-[400px] md:rounded-[20px] h-[70vh] shadow-lg"
-              />
-            </div>
+                </div> */}
+                </div>
+                <Button
+                  className="py-6 start-gradient text-white text-lg border-none mt-5 w-[400px] cursor-pointer"
+                  onClick={() => {
+                    createNewSession();
+                  }}
+                >
+                  <Icon icon="fluent:call-24-regular" className="w-6 h-6" />
+                  Start Call
+                </Button>
+              </div>
+            </>
           )}
           <div className="h-fit pl-10 flex flex-col justify-center gap-3 items-center relative py-8">
             {peerConnection && sessionInfo && sessionState === "connected" && (

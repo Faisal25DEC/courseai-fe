@@ -7,7 +7,7 @@ export const avatars = [
 ];
 
 export const heygen_API = {
-  apiKey: "YWUxN2ZhNmE3N2Y4NGMxYzg1OTc5NjRkMDk2ZTNhNzgtMTcxNTYyODk2MA==",
+  apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
   serverUrl: "https://api.heygen.com",
 };
 

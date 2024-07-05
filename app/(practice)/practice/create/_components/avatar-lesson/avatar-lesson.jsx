@@ -35,6 +35,8 @@ import { Icon } from "@iconify/react";
 import useEndCallModal from "@/hooks/useEndCallModal";
 import EndCallModal from "@/components/shared/end-call-modal/end-call-modal";
 import { Avatar, Button } from "@nextui-org/react";
+import StartCallModal from "@/components/shared/start-call-modal/start-call-modal";
+import useStartCallModal from "@/hooks/useStartCallModal";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
@@ -73,12 +75,21 @@ export default function AvatarPracticeLesson({
     onEndCallModalClose,
     setIsEndCallModalOpen,
   } = useEndCallModal();
+
+  const {
+    isStartCallModalOpen,
+    onStartCallModalOpen,
+    onStartCallModalClose,
+    setIsStartCallModalOpen,
+  } = useStartCallModal();
+
   const {
     isInfoModalOpen,
     onInfoModalOpen,
     onInfoModalClose,
     setIsInfoModalOpen,
   } = useInfoModal();
+
   const [userTranscriptLoading, setUserTranscriptLoading] = useRecoilState(
     userTranscriptLoadingAtom
   );
@@ -456,6 +467,7 @@ export default function AvatarPracticeLesson({
     onEndCallModalOpen();
     setIsPracticeList(true);
   };
+
   return (
     <div className="w-full relative">
       <div className="h-[90vh] w-full flex  flex-col">
@@ -518,7 +530,7 @@ export default function AvatarPracticeLesson({
                 <Button
                   className="py-6 start-gradient text-white text-lg border-none mt-5 w-[400px] cursor-pointer"
                   onClick={() => {
-                    createNewSession();
+                    onStartCallModalOpen();
                   }}
                 >
                   <Icon icon="fluent:call-24-regular" className="w-6 h-6" />
@@ -647,6 +659,14 @@ export default function AvatarPracticeLesson({
         handleRetry={() => {
           conversationsRef.current = [];
           closeConnectionHandler();
+        }}
+      />
+      <StartCallModal
+        handleSubmit={() => {
+          createNewSession();
+        }}
+        handleRetry={() => {
+          onEndCallModalClose();
         }}
       />
     </div>

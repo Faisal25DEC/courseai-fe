@@ -169,6 +169,10 @@ export const endCallModalAtom = atom({
   key: "endCallModalAtom",
   default: false,
 });
+export const startCallModalAtom = atom({
+  key: "startCallModalAtom",
+  default: false,
+});
 export const currentOrganizationIdAtom = atom<any>({
   key: "currentOrganizationIdAtom",
   default: "",

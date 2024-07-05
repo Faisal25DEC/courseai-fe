@@ -1,6 +1,5 @@
 "use client";
-import { colors, lessonTypeText, textFromBg } from "@/lib/constants";
-import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
+
 import { getCourse } from "@/services/lesson.service";
 import {
   activeLessonAtom,
@@ -9,12 +8,6 @@ import {
 } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-
-import Tag from "@/components/shared/tag/tag";
-
-import { StringFormats } from "@/lib/StringFormats";
-import { Icon } from "@iconify/react";
-import { typeColorObj } from "@/app/(courses-create)/courses/[id]/constants";
 import AvatarPracticeLesson from "@/app/(practice)/practice/create/_components/avatar-lesson/avatar-lesson";
 const PreivewPractice = ({setIsPracticeList}:any) => {
   // const currentCourseId = useRecoilValue(courseIdAtom);
@@ -29,8 +22,6 @@ const PreivewPractice = ({setIsPracticeList}:any) => {
       setLessonsArray(res.lessons);
     });
   }, [currentCourseId]);
-
-  console.log("active lesson in preview ", activeLesson)
 
   return (
     <div className="w-full h-full flex items-center justify-center">

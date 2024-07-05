@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import UserCard from "./_components/user-card/user-card";
 import {
+  getAllCourses,
   getCourse,
   getCourseAnalytics,
   getEnrolledUsersInACourse,
@@ -33,6 +34,20 @@ import {
 } from "./utils";
 const Page = () => {
   const currentCourseId = useRecoilValue(courseIdAtom);
+  const [courses, setCourses] = useState([]);
+  
+  useEffect(() => {
+    const fetchCurrentCourse = async () => {
+      try {
+        const res = await getAllCourses();
+        setCourses(res);
+        console.log("all courses", res);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchCurrentCourse();
+  }, []);
 
   const [currentCourse, setCurrentCourse] = useCurrentCourse({
     id: currentCourseId,

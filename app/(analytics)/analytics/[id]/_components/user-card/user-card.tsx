@@ -67,7 +67,7 @@ const UserCard = ({
     setCurrentUserLessonAnalytics({ ...user, ...userAnalytics });
     onCurrentUserAnalyticsModalOpen();
   };
-  console.log(user);
+
   let value = 0;
   const checkForPendingApproval = (userAnalytics: any, lessonsArray: any) => {
     let pendingApproval = 0;
@@ -149,7 +149,7 @@ const UserCard = ({
           {FormatDate.getDateInDDMMYYYY(user?.enrolled_at)}
         </p>
       </div>
-      <div className="w-[25%] flex gap-2 items-center">
+      {/* <div className="w-[25%] flex gap-2 items-center">
         <Progress
           className="w-[200px] h-2 border border-gray-100"
           value={value}
@@ -193,7 +193,7 @@ const UserCard = ({
             })}
           </CustomPopover>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

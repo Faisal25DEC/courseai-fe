@@ -81,7 +81,7 @@ const CreateCourse = () => {
       <div className="flex w-[90%] m-auto justify-between items-center py-8">
         <Breadcrumbs>
           <BreadcrumbItem>Courses</BreadcrumbItem>
-          <BreadcrumbItem>Create Courses</BreadcrumbItem>
+          <BreadcrumbItem className="font-bold">{currentUserRole === admin && "Create"} Courses</BreadcrumbItem>
         </Breadcrumbs>
         <div className="flex justify-end gap-4 items-center">
           {currentUserRole === admin && (

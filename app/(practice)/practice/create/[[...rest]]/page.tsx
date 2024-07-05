@@ -228,7 +228,7 @@ const CreateCourse = () => {
           <div className="flex flex-col">
             <Breadcrumbs>
               <BreadcrumbItem>Practice</BreadcrumbItem>
-              <BreadcrumbItem className="font-bold text-lg">
+              <BreadcrumbItem className="font-bold">
                 {currentUserRole === admin
                   ? " Create Practice Lessons"
                   : "Practice Lessons"}
@@ -264,7 +264,7 @@ const CreateCourse = () => {
         </div>
         <div
           className={`flex flex-row w-[100%] ${
-            isPracticeList ? "h-[85vh] overflow-hidden" : "h-[100%]"
+            isPracticeList ? "h-[92vh] overflow-hidden" : "h-[100%]"
           }  border-t`}
         >
           {isPracticeList && (

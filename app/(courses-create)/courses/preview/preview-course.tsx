@@ -9,11 +9,11 @@ import { getCourse } from "@/services/lesson.service";
 import { activeLessonAtom, courseIdAtom, lessonsArrayAtom } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import VideoLesson from "../_components/video-lesson/video-lesson";
-import TextLesson from "../_components/text-lesson/text-lesson";
-import AvatarLesson from "../_components/avatar-lesson/avatar-lesson";
+import VideoLesson from "./_components/video-lesson/video-lesson";
+import TextLesson from "./_components/text-lesson/text-lesson";
+import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
 import Tag from "@/components/shared/tag/tag";
-import { typeColorObj } from "../../[id]/constants";
+import { typeColorObj } from "../[id]/constants";
 import { StringFormats } from "@/lib/StringFormats";
 import { Icon } from "@iconify/react";
 const PreivewCourse = () => {
@@ -87,7 +87,7 @@ const PreivewCourse = () => {
             </div>
           )}
         </div>
-        <div className="w-full border shadow-1 rounded-[20px]  border-gray-200">
+        <div className="w-full border shadow-1 rounded-[20px]  border-gray-200 bg-white">
           {lessonsArray[activeLesson]?.type === "video" && (
             <VideoLesson
               video={lessonsArray[activeLesson].content}

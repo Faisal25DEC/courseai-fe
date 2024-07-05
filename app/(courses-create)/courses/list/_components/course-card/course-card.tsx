@@ -74,11 +74,11 @@ function CourseCard({
             <div
               className="absolute inset-0"
               style={{
-                backgroundImage: `url('/images/card.jpg')`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                filter: "brightness(65%)",
-                zIndex: 1,
+                // backgroundImage: `url('/images/card.jpg')`,
+                // backgroundSize: "cover",
+                // backgroundPosition: "center",
+                // filter: "brightness(65%)",
+                // zIndex: 1,
               }}
             />
             <div className="flex flex-col justify-between h-full relative z-10">

@@ -104,11 +104,11 @@ const PreivewCourse = () => {
   };
   const filteredLessons = getLockedLessons(lessonsArray);
   return (
-    <div className="w-full h-[calc(100vh-120px)] overflow-y-scroll">
+    <div className="flex items-center justify-center w-[100%] p-20 h-[100vh]">
       {isLoading ? (
         <div className="flex flex-col justify-center items-center h-[70vh]"></div>
       ) : filteredLessons.length !== 0 ? (
-        <div className="flex h-full w-[90%] mx-auto">
+        <div className="flex h-full w-fit m-20 border border-gray-300 rounded-lg">
           <div className="min-w-max border-r-[1px] mr-4 h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 px-4">
             {filteredLessons
               .filter((lesson: any) => lesson.is_practice_lesson !== true)

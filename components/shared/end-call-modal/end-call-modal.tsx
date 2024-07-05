@@ -27,7 +27,7 @@ const EndCallModal = ({
         <div className="flex gap-2 items-center text-gray-700">
           <InfoIcon />
           <p className="text-[16px] font-medium">
-            Are you sure to close the session
+            Would you like to submit the recording ?
           </p>
         </div>
         <div className="flex justify-end gap-2">
@@ -49,7 +49,7 @@ const EndCallModal = ({
             size="xsm"
             variant="default"
           >
-            Okay
+            Submit
           </Button>
         </div>
       </div>

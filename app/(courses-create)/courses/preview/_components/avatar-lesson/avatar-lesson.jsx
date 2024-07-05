@@ -351,17 +351,7 @@ export default function AvatarLesson({
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex flex-col min-w-[100%] justify-center items-center h-full ">
-              {/* <div className="flex self-start gap-2 py-2 items-center justify-between ml-1">
-                <h1 className="h1-medium self-start">
-                  {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
-                </h1>
-              </div>
-              <div className="flex self-start flex-col gap-2 pb-2 ml-1">
-                <p className="text-gray-600 text-[16px]">
-                  {lesson?.description}
-                </p>
-              </div> */}
+            <div className="flex flex-col p-4 min-w-[100%] justify-center items-center h-full ">
               <div className="absolute flex flex-col justify-center items-center h-full gap-[15%]">
                 <div className="flex justify-center cursor-pointer items-center gradient-1 p-4 h-24 w-24 rounded-full">
                   <img
@@ -377,7 +367,7 @@ export default function AvatarLesson({
               <img
                 src={thumbnail}
                 alt="ai-avatar"
-                className="object-cover w-[1200px] mt-2 md:rounded-[20px] h-[70vh] shadow-lg"
+                className="object-cover w-[1000px] mt-2 md:rounded-[20px] h-[70vh] shadow-lg"
               />
             </div>
           )}

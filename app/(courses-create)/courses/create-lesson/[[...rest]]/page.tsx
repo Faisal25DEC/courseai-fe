@@ -34,9 +34,12 @@ import { usePathname, useRouter } from "next/navigation";
 import NotFoundImage from "../../../../../public/images/not-found.webp";
 import Image from "next/image";
 import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+import PreviewCard from "../_components/preview-card/preview-card";
+import PreivewLesson from "../_components/preview/Preview";
+import PreivewCourse from "../../preview/preview-course";
 
 const CreateCourse = () => {
-  const router = useRouter()
+  const router = useRouter();
   const pathname = usePathname();
   const [currentCourseId, setCurrentCourseId] = useState<string>("");
   const [currentUserRole, setCurrentUserRole] =
@@ -53,6 +56,7 @@ const CreateCourse = () => {
     lessonCreateStepsAtom
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [isPageView, setIsPageView] = useState("edit");
 
   useEffect(() => {
     const pathParts = pathname.split("/");
@@ -235,72 +239,119 @@ const CreateCourse = () => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="w-[100%] mx-auto flex flex-col gap-2">
-        <div className="flex w-[90%] m-auto justify-between items-center py-8">
-          <Breadcrumbs>
-            <BreadcrumbItem onPress={()=>{router.push("/courses/list")}}>Courses</BreadcrumbItem>
-            <BreadcrumbItem>Create Lessons</BreadcrumbItem>
+      <div className="w-[100%] flex flex-col gap-2">
+        <div className="relative flex w-[100%] justify-between items-center pt-3 pb-1 pr-5">
+          <Breadcrumbs className="pl-14">
+            <BreadcrumbItem
+              onPress={() => {
+                router.push("/courses/list");
+              }}
+            >
+              Courses
+            </BreadcrumbItem>
+            <BreadcrumbItem className="font-bold">Create Lessons</BreadcrumbItem>
           </Breadcrumbs>
-          <div className="flex justify-end gap-4 items-center">
+          <div className="mt-2 gap-2 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <button
+              className={`${
+                isPageView === "edit"
+                  ? "border-b-2 font-[600] text-black"
+                  : "text-gray-500"
+              } h-[60px] border-pink-300 text-[15px]  pb-2`}
+              onClick={() => {
+                setIsPageView("edit");
+              }}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => {
+                setIsPageView("preview");
+              }}
+              className={`${
+                isPageView === "preview"
+                  ? "font-[600] border-b-2 text-black"
+                  : "text-gray-500"
+              } border-pink-300 h-[60px] pb-2 ml-4 text-[15px] `}
+            >
+              Preview
+            </button>
+          </div>
+          <div className="flex justify-end items-center">
             {currentUserRole === admin && (
               <div className="flex items-center gap-[24px]">
                 <Button onClick={() => onCreateLessonModalOpen()}>
                   Create Lesson
                 </Button>
-                <Link href="/courses/preview">
+                {/* <Link href="/courses/preview">
                   <Button variant={"outline"}>Preview Course</Button>
-                </Link>
+                </Link> */}
               </div>
             )}
           </div>
         </div>
-        <hr />
-        
-        <StrictModeDroppable droppableId="Visuals">
-          {(provided) => (
-            <div
-              className="w-[90%] mx-auto flex flex-col my-2 gap-4"
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              {isLoading ? (
-                <div className="flex flex-col h-[60vh] justify-center items-center"></div>
-              ) : lessonsArray.length !== 0 ? (
-                lessonsArray
-                  .filter((lesson: any) => lesson.is_practice_lesson !== true)
-                  .map((lesson: any, idx: number) => (
-                    <LessonCard
-                      key={idx}
-                      lesson={lesson}
-                      index={idx}
-                      isPractice={false}
-                    />
-                  ))
-              ) : (
-                <div className="flex flex-col h-[60vh] justify-center items-center">
-                  <Image
-                    src={NotFoundImage}
-                    alt="No Lessons Found"
-                    width={250}
-                    height={250}
-                  />
-                  <p className="text-sm mt-10 text-center">
-                    It looks like there are no lessons available. Please{" "}
-                    <span
-                      className="text-blue-500 cursor-pointer"
-                      onClick={() => onCreateLessonModalOpen()}
-                    >
-                      create a new lesson{" "}
-                    </span>
-                    to get started.
-                  </p>
-                </div>
-              )}
-              {provided.placeholder}
+        {/* <hr /> */}
+        {isPageView === "edit" && (
+          <div className="w-[100%] flex flex-row justify-center border-t bg-gray-100">
+            <div className="w-[20%] h-[92vh] border-r p-3 overflow-auto my-element bg-white ">
+              <StrictModeDroppable droppableId="Visuals">
+                {(provided) => (
+                  <div
+                    className="w-[90%] mx-auto flex flex-col my-2 gap-4"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {isLoading ? (
+                      <div className="flex flex-col h-[60vh] justify-center items-center"></div>
+                    ) : lessonsArray.length !== 0 ? (
+                      lessonsArray
+                        .filter(
+                          (lesson: any) => lesson.is_practice_lesson !== true
+                        )
+                        .map((lesson: any, idx: number) => (
+                          <PreviewCard
+                            key={idx}
+                            lesson={lesson}
+                            index={idx}
+                            isPractice={false}
+                          />
+                        ))
+                    ) : (
+                      <div className="flex flex-col h-[60vh] justify-center items-center">
+                        <Image
+                          src={NotFoundImage}
+                          alt="No Lessons Found"
+                          width={250}
+                          height={250}
+                        />
+                        <p className="text-sm mt-10 text-center">
+                          It looks like there are no lessons available. Please{" "}
+                          <span
+                            className="text-blue-500 cursor-pointer"
+                            onClick={() => onCreateLessonModalOpen()}
+                          >
+                            create a new lesson{" "}
+                          </span>
+                          to get started.
+                        </p>
+                      </div>
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </StrictModeDroppable>
             </div>
-          )}
-        </StrictModeDroppable>
-        {isCreateLessonModalOpen && <CreateLessonModal />}
+            <div className="flex items-center w-[75%] pl-10">
+              <PreivewLesson />
+            </div>
+          </div>
+        )}
+        {isPageView === "preview" && (
+          <div className="h-[92vh] bg-gray-100 w-[100%] flex items-center justify-center">
+            <PreivewCourse />
+          </div>
+        )}
+        {/* {isCreateLessonModalOpen && <CreateLessonModal />} */}
       </div>
     </DragDropContext>
   );

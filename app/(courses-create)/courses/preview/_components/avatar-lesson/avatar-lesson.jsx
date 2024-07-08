@@ -345,8 +345,8 @@ export default function AvatarLesson({
     closeConnectionHandler();
   };
   return (
-    <div className="w-full relative ml-4">
-      <div className="h-[90vh] w-full flex  flex-col">
+    <div className="flex items-center w-full relative ml-10">
+      <div className="h-[90vh] w-full flex flex-col justify-center">
         <div className="w-full flex flex-col gap-2 relative justify-center items-center">
           {(!peerConnection ||
             !sessionInfo ||

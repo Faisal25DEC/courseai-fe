@@ -187,7 +187,7 @@ function PreviewCard({
                 </CustomPopover>
               </div>
             </div>
-            <div className="relative w-full mt-6 my-2">
+            {/* <div className="relative w-full mt-6 my-2">
               <hr className="relative" />
               <div onClick={() => onCreateLessonModalOpen()}>
                 <Icon
@@ -195,7 +195,7 @@ function PreviewCard({
                   className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-gray-700 cursor-pointer"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         )}
       </Draggable>

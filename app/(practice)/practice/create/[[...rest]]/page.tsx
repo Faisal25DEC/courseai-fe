@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -35,7 +35,13 @@ import PracticeCard from "../_components/practice-card/practice-card";
 import NotFoundImage from "../../../../../public/images/not-found.webp";
 import Image from "next/image";
 import PreivewPractice from "../_components/preview/preview";
-import { BreadcrumbItem, Breadcrumbs, Chip, Input } from "@nextui-org/react";
+import {
+  BreadcrumbItem,
+  Breadcrumbs,
+  Button,
+  Chip,
+  Input,
+} from "@nextui-org/react";
 
 const CreateCourse = () => {
   const currentCourseId = "6667760f255b05556e58b41a";
@@ -246,8 +252,9 @@ const CreateCourse = () => {
           </div>
           <div className="flex justify-end gap-4 items-center">
             {currentUserRole === admin && (
-              <div className="flex items-center gap-[24px]">
+              <div className="flex items-center gap-2">
                 <Button
+                  color="primary"
                   onClick={() => {
                     onCreateLessonModalOpen();
                     setLessonModalType(null);
@@ -297,7 +304,6 @@ const CreateCourse = () => {
                     ) : filteredLessons.length !== 0 ? (
                       filteredLessons.map((lesson: any, idx: number) =>
                         lesson.is_practice_lesson === true ? (
-                          
                           <PracticeCard
                             key={idx}
                             lesson={lesson}

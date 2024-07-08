@@ -1,19 +1,19 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import { Icon } from "@iconify/react/dist/iconify.js";
-import { Listbox, ListboxItem, Spacer } from "@nextui-org/react";
+import { Icon } from "@iconify/react";
 import React, { useState, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { courseIdAtom, currentUserRoleAtom } from "@/store/atoms";
 import { admin } from "@/lib/constants";
-import { Key } from "@react-types/shared";
 import Link from "next/link";
 import useSetOrganization from "@/hooks/useSetOrganization";
+import { Spacer } from "@nextui-org/react";
 
 const Sidebar = () => {
   useSetOrganization();
-  const [currentUserRole, setCurrentUserRole] = useRecoilState(currentUserRoleAtom);
+  const [currentUserRole, setCurrentUserRole] =
+    useRecoilState(currentUserRoleAtom);
   const currentCourseId = useRecoilValue(courseIdAtom);
 
   const [selectedKey, setSelectedKey] = useState("courses");
@@ -23,24 +23,13 @@ const Sidebar = () => {
     if (storedKey) {
       setSelectedKey(storedKey);
     }
+
+    return () => {
+      localStorage.setItem("selectedSidebarKey", "courses");
+    };
   }, []);
 
-  const getSidebarHref = (key:any) => {
-    switch (key) {
-      case "courses":
-        return currentUserRole === admin ? "/courses/list" : `/courses/list`;
-      case "practice":
-        return currentUserRole === admin ? "/practice/create" : `/practice/create`;
-      case "analytics":
-        return currentUserRole === admin ? "/analytics" : `/analytics/${currentCourseId}`;
-      case "settings":
-        return currentUserRole === admin ? "/settings" : "/settings";
-      default:
-        return "#";
-    }
-  };
-
-  const handleNavigation = (key:any) => {
+  const handleNavigation = (key: any) => {
     setSelectedKey(key);
     localStorage.setItem("selectedSidebarKey", key);
   };
@@ -65,45 +54,94 @@ const Sidebar = () => {
         </div>
 
         <Spacer y={8} />
-        <div>
-          <Listbox
-            variant="faded"
-            aria-label="Listbox menu with icons"
-            className="text-md font-bold"
-            itemClasses={{
-              base: "text-[20px] gap-4 font-semibold",
-            }}
-            onAction={handleNavigation}
-          >
-            {["courses", "practice", "analytics", "settings"].map((key) => (
-              <ListboxItem
-                key={key}
-                startContent={
-                  <Icon
-                    icon={
-                      key === "courses"
-                        ? "hugeicons:course"
-                        : key === "practice"
-                        ? "hugeicons:bot"
-                        : key === "analytics"
-                        ? "solar:chart-outline"
-                        : "solar:settings-outline"
-                    }
-                  />
-                }
-                className={`${selectedKey === key ? "bg-gray-800 text-white" : ""} ${
-                  selectedKey === key ? "pointer-events-none" : "hover:bg-gray-200"
-                }`}
+        <ul className="text-md font-bold">
+          <>
+            <Link
+              href={
+                currentUserRole === admin ? "/courses/list" : `/courses/list`
+              }
+              legacyBehavior
+            >
+              <li
+                className={`${
+                  selectedKey === "courses" ? "bg-gray-800 text-white" : ""
+                } ${
+                  selectedKey === "courses" ? "" : "hover:bg-gray-200"
+                } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+                onClick={() => handleNavigation("courses")}
               >
-                <Link href={getSidebarHref(key)}>
-                  <p className={selectedKey === key ? "pointer-events-none" : ""}>
-                    {key.charAt(0).toUpperCase() + key.slice(1)}
-                  </p>
-                </Link>
-              </ListboxItem>
-            ))}
-          </Listbox>
-        </div>
+                <Icon icon="hugeicons:course" className="w-5 h-5" />
+
+                <a className="">Courses</a>
+              </li>
+            </Link>
+          </>
+          <>
+            <Link
+              href={
+                currentUserRole === admin
+                  ? "/practice/create"
+                  : `/practice/create`
+              }
+              legacyBehavior
+            >
+              <li
+                className={`${
+                  selectedKey === "practice" ? "bg-gray-800 text-white" : ""
+                } ${
+                  selectedKey === "practice" ? "" : "hover:bg-gray-200"
+                } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+                onClick={() => handleNavigation("practice")}
+              >
+                <Icon icon="hugeicons:bot" className="w-5 h-5" />
+
+                <a>Practice</a>
+              </li>
+            </Link>
+          </>
+          <>
+            <Link
+              href={
+                currentUserRole === admin
+                  ? "/analytics"
+                  : `/analytics/${currentCourseId}`
+              }
+              legacyBehavior
+            >
+              <li
+                className={`${
+                  selectedKey === "analytics" ? "bg-gray-800 text-white" : ""
+                } ${
+                  selectedKey === "analytics" ? "" : "hover:bg-gray-200"
+                } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+                onClick={() => handleNavigation("analytics")}
+              >
+                <Icon icon="solar:chart-outline" className="w-5 h-5" />
+
+                <a>Analytics</a>
+              </li>
+            </Link>
+          </>
+          <>
+            <Link
+              href={currentUserRole === admin ? "/settings" : "/settings"}
+              legacyBehavior
+            >
+              <li
+                className={`${
+                  selectedKey === "settings" ? "bg-gray-800 text-white" : ""
+                } ${
+                  selectedKey === "settings" ? "" : "hover:bg-gray-200"
+                } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+                onClick={() => handleNavigation("settings")}
+              >
+                <Icon icon="solar:settings-outline" className="w-5 h-5" />
+
+                <a>Settings</a>
+              </li>
+            </Link>
+          </>
+        </ul>
       </div>
     </div>
   );

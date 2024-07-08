@@ -1,93 +1,73 @@
 "use client";
-import {
-  colors,
-  lessonTypeText,
-  textFromBg,
-} from "@/lib/constants";
+import { colors, lessonTypeText, textFromBg } from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
 import { getCourse } from "@/services/lesson.service";
-import { activeLessonAtom, courseIdAtom, lessonsArrayAtom } from "@/store/atoms";
+import {
+  activeLessonAtom,
+  courseIdAtom,
+  lessonsArrayAtom,
+} from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+
+import Tag from "@/components/shared/tag/tag";
+import { StringFormats } from "@/lib/StringFormats";
 import VideoLesson from "./_components/video-lesson/video-lesson";
 import TextLesson from "./_components/text-lesson/text-lesson";
 import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
-import Tag from "@/components/shared/tag/tag";
 import { typeColorObj } from "../[id]/constants";
-import { StringFormats } from "@/lib/StringFormats";
-import { Icon } from "@iconify/react";
+import { Chip } from "@nextui-org/react";
 const PreivewCourse = () => {
-  const currentCourseId = useRecoilValue(courseIdAtom);
-
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const currentCourseId = useRecoilValue(courseIdAtom);
 
   useEffect(() => {
     getCourse(currentCourseId).then((res) => {
-      const practiceLessons = res.lessons.filter((lesson:any) => lesson.is_practice_lesson !== true);
-      setLessonsArray(practiceLessons);
+      setLessonsArray(res.lessons);
     });
-  }, [currentCourseId]);
-
+  }, []);
   const handleChangeLesson = (idx: number) => {
     setActiveLesson(idx);
   };
   return (
-    <div className="w-full h-[calc(100vh-120px)] flex justify-center items-center overflow-y-scroll">
-      <div className="flex w-[70%] h-[calc(90vh-120px)] relative mx-auto">
-        <div className="absolute cursor-pointer top-4 z-50 left-6">
-          <div
-            className="p-2 rounded-[10px] flex items-center gap-2 bg-white shadow-1 w-[300px]"
-            onClick={() => {
-              setIsMenuOpen(!isMenuOpen);
-            }}
-          >
-            <Icon icon="quill:hamburger" />
-            <p>{lessonsArray[activeLesson]?.title}</p>
-          </div>
-          {isMenuOpen && (
-            <div className="max-w-[300px] shadow-1 mt-2 bg-white a rounded-[20px] px-2 py-8 h-full overflow-auto flex flex-col gap-4">
-              {lessonsArray.map((lesson: any, idx: any) => (
-                <div
-                  onClick={() => handleChangeLesson(idx)}
-                  key={lesson.id}
-                  style={{ opacity: lesson.locked ? 0.5 : 1 }}
-                  className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
-                    activeLesson === idx ? "bg-gray-100" : ""
-                  }`}
-                >
-                  <div className="flex h6-medium items-start gap-2 font-medium">
-                    <span>{idx + 1} </span>
-                    <div className="flex flex-col gap-2">
-                      <div className="">
-                        {StringFormats.capitalizeFirstLetterOfEachWord(
-                          lesson.title
-                        )?.slice(0, 30)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Tag
-                      color={textFromBg[typeColorObj[lesson.type]]}
-                      bg={typeColorObj[lesson.type]}
-                    >
-                      {lessonTypeText[lesson.type]}
-                    </Tag>
-                    {/* {lesson.status === "rejected" && (
-                  <Tag bg={colors.lightred}>Rejected</Tag>
-                )} */}
-                    {/* <Tag>
-                {StringFormats.capitalizeFirstLetterOfEachWord(lesson.status)}
-              </Tag> */}
+    <div className="w-full h-[92vh] overflow-y-scroll border-1">
+      <div className="flex h-full w-[90%] mx-auto">
+        <div className="min-w-max border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 pr-7">
+          {lessonsArray.map((lesson: any, idx: any) => (
+            <div
+              onClick={() => handleChangeLesson(idx)}
+              key={lesson.id}
+              style={{ opacity: lesson.locked ? 0.5 : 1 }}
+              className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
+                activeLesson === idx ? "bg-gray-100" : ""
+              }`}
+            >
+              <div className="flex h6-medium items-start gap-2 font-medium">
+                <span>{idx + 1}.</span>
+                <div className="flex flex-col gap-2">
+                  <div className="">
+                    {lesson.title?.slice(0, 30)}
                   </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Chip
+                  className={`${
+                    lesson.type === "avatar"
+                      ? "bg-orange-100 text-orange-500 border-orange-500"
+                      : "bg-blue-100 text-blue-500 border-blue-500"
+                  } text-xs border-1`}
+                >
+                  {" "}
+                  {lessonTypeText[lesson.type]}
+                </Chip>
+              </div>
             </div>
-          )}
+          ))}
         </div>
-        <div className="w-full border shadow-1 rounded-[20px]  border-gray-200 bg-white">
+        <div className="w-full">
           {lessonsArray[activeLesson]?.type === "video" && (
             <VideoLesson
               video={lessonsArray[activeLesson].content}

@@ -36,10 +36,10 @@ const PreivewLesson = () => {
     setActiveLesson(idx);
   };
   return (
-    <div className="w-full h-[calc(100vh-120px)] flex justify-center items-center overflow-y-scroll my-element ">
-      <div className="flex w-[100%] h-[calc(90vh-120px)] relative">
+    <div className="w-full h-[90vh] my-4 flex justify-center items-center overflow-y-scroll my-element">
+      <div className="flex w-[100%] h-[90vh] relative">
         
-        <div className="w-full border shadow-1 rounded-[20px] border-gray-200 bg-white">
+        <div className="w-full border rounded-lg border-gray-200 bg-white">
           {lessonsArray[activeLesson]?.type === "video" && (
             <VideoLesson
               video={lessonsArray[activeLesson].content}

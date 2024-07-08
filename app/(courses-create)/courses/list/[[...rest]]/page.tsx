@@ -1,5 +1,4 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -33,7 +32,13 @@ import CreateLessonModal from "../../create-lesson/_components/create-lesson-mod
 import CourseCard from "../_components/course-card/course-card";
 import CreateCourseModal from "../_components/create-course-modal/create-course-modal";
 import useCreateCourseModal from "@/hooks/useCreateCourseModal";
-import { BreadcrumbItem, Breadcrumbs, Tab, Tabs } from "@nextui-org/react";
+import {
+  BreadcrumbItem,
+  Breadcrumbs,
+  Button,
+  Tab,
+  Tabs,
+} from "@nextui-org/react";
 import CourseListCard from "../_components/course-card/course-card-list";
 
 const CreateCourse = () => {
@@ -81,12 +86,15 @@ const CreateCourse = () => {
       <div className="flex w-[90%] m-auto justify-between items-center py-8">
         <Breadcrumbs>
           <BreadcrumbItem>Courses</BreadcrumbItem>
-          <BreadcrumbItem className="font-bold">{currentUserRole === admin && "Create"} Courses</BreadcrumbItem>
+          <BreadcrumbItem className="font-bold">
+            {currentUserRole === admin && "Create"} Courses
+          </BreadcrumbItem>
         </Breadcrumbs>
         <div className="flex justify-end gap-4 items-center">
           {currentUserRole === admin && (
             <div className="flex items-center gap-[24px]">
               <Button
+                color="primary"
                 onClick={() => {
                   onCreateLessonModalOpen();
                   setLessonModalType(null);

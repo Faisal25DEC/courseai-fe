@@ -464,7 +464,7 @@ export default function AvatarLesson({
                     style={{
                       display: isInfoModalOpen !== "" ? "none" : "block",
                     }}
-                    className="w-20 h-20 pl-2 hover:scale-[1.1] transition-all duration-300 ease-in-out"
+                     className="w-20 h-20 pl-2 hover:scale-[1.1] transition-all duration-300 ease-in-out"
                     onClick={() => {
                       onInfoModalOpen("Video will be recorded");
                     }}

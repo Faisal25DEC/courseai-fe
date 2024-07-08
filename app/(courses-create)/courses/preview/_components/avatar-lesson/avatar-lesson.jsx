@@ -345,7 +345,7 @@ export default function AvatarLesson({
     closeConnectionHandler();
   };
   return (
-    <div className="flex items-center w-full relative ml-10">
+    <div className="flex items-center w-full relative">
       <div className="h-[90vh] w-full flex flex-col justify-center">
         <div className="w-full flex flex-col gap-2 relative justify-center items-center">
           {(!peerConnection ||
@@ -367,7 +367,7 @@ export default function AvatarLesson({
               <img
                 src={thumbnail}
                 alt="ai-avatar"
-                className="object-cover w-[1000px] mt-2 md:rounded-[20px] h-[70vh] shadow-lg"
+                className="w-full md:rounded-[20px] h-[70vh] shadow-lg"
               />
             </div>
           )}

@@ -42,7 +42,7 @@ const AudioRecorderComp = ({
 
     // Append the Blob to the FormData object
     formData.append("file", blob, "audio_recording.wav");
-    formData.append("sessionId", sessionInfo.session_id);
+    formData.append("sessionId", sessionInfo.current.session_id);
 
     // Send the FormData object using axios
     setUserTranscriptLoading(1);

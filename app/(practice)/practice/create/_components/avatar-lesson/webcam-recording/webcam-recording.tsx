@@ -2,12 +2,12 @@
 import { baseUrl } from "@/lib/config";
 import { useUser } from "@clerk/nextjs";
 import axios from "axios";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, memo } from "react";
 import Webcam from "react-webcam";
 import RecordRTC from "recordrtc";
 import { v4 as uuidv4 } from "uuid";
 
-const WebcamRecording = ({
+const WebcamRecordingComponent = ({
   lesson,
   recorderRef,
   mediaElementRef,
@@ -29,8 +29,9 @@ const WebcamRecording = ({
     sampleSize: 16,
     channelCount: 2,
   };
+
   const startRecording = (webCamStream: any) => {
-    console.log(recorderRef);
+    console.log('Starting recording');
     mediaElementRef.current.srcObject.width = window.screen.width;
     mediaElementRef.current.srcObject.height = window.screen.height;
     mediaElementRef.current.srcObject.fullcanvas = true;
@@ -53,20 +54,22 @@ const WebcamRecording = ({
       }
     );
 
-    console.log(recorderRef);
+    console.log('Recorder ref:', recorderRef);
 
     recorderRef.current.startRecording();
   };
+
   useEffect(() => {
-    if (!recorderRef.current) {
-      return;
-    }
+    console.log('WebCamRecording mounted');
+
     return () => {
-      if (lesson.status === "approved") return;
-      console.log(recorderRef);
-      handleStopAndUpload();
+      console.log('WebCamRecording unmounted');
+      // if (recorderRef.current && lesson.status !== "approved") {
+      //   handleStopAndUpload();
+      // }
     };
   }, [recorderRef.current]);
+
   return (
     <Webcam
       audio
@@ -76,8 +79,12 @@ const WebcamRecording = ({
       screenshotFormat="image/jpeg"
       videoConstraints={videoConstraints}
       onUserMedia={startRecording}
-    ></Webcam>
+    />
   );
 };
+
+const WebcamRecording = memo(WebcamRecordingComponent);
+
+WebcamRecording.displayName = 'WebcamRecording';
 
 export default WebcamRecording;

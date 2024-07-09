@@ -279,22 +279,23 @@ const CreateCourse = () => {
             </button>
           </div>
           <div className="flex justify-end items-center">
-            {currentUserRole === admin && (
+            {/* {currentUserRole === admin && (
               <div className="flex items-center gap-[24px]">
-                <Button color="primary" onClick={() => onCreateLessonModalOpen()}>
+                <Button
+                  color="primary"
+                  onClick={() => onCreateLessonModalOpen()}
+                >
                   Create Lesson
                 </Button>
-                {/* <Link href="/courses/preview">
-                  <Button variant={"outline"}>Preview Course</Button>
-                </Link> */}
+              
               </div>
-            )}
+            )} */}
           </div>
         </div>
         {/* <hr /> */}
         {isPageView === "edit" && (
           <div className="w-[100%] h-[92vh] flex flex-row justify-center border-t bg-gray-100">
-            <div className="relative shrink-0 w-[20%]  border-r  bg-white ">
+            <div className="relative shrink-0 w-[30%] border-r bg-white py-5">
               <StrictModeDroppable droppableId="Visuals">
                 {(provided) => (
                   <>
@@ -338,20 +339,24 @@ const CreateCourse = () => {
                 )}
               </StrictModeDroppable>
               {currentUserRole === admin && (
-              <div className="absolute left-0 right-0 bottom-0 h-[80px] flex p-4 bg-white shadow-[0px_-1px_0px_rgba(17,_24,_39,_0.08)]">
-                <Button
-                  color="primary"
-                  variant="bordered"
-                  className="w-full font-semibold border-1 border-gray-300 hover:bg-gray-100 mt-2"
-                  size={"sm"}
-                  onClick={() => onCreateLessonModalOpen()}
-                >
-                  <Icon icon="fluent:add-28-filled" className="font-semibold" />
-                  Add Lesson
-                </Button>
-              </div>)}
+                <div className="absolute left-0 right-0 bottom-0 h-[80px] flex p-4 bg-white shadow-[0px_-1px_0px_rgba(17,_24,_39,_0.08)]">
+                  <Button
+                    color="primary"
+                    variant="bordered"
+                    className="w-full font-semibold border-1 border-gray-300 hover:bg-gray-100 mt-2"
+                    size={"sm"}
+                    onClick={() => onCreateLessonModalOpen()}
+                  >
+                    <Icon
+                      icon="fluent:add-28-filled"
+                      className="font-semibold"
+                    />
+                    Add Lesson
+                  </Button>
+                </div>
+              )}
             </div>
-            <div className="flex justify-center items-center w-[75%] px-2">
+            <div className="flex justify-center items-center w-[70%] px-2">
               <PreivewLesson />
             </div>
           </div>

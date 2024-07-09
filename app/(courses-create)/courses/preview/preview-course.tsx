@@ -33,7 +33,7 @@ const PreivewCourse = () => {
   };
   return (
     <div className="w-full h-[92vh] overflow-y-scroll border-1">
-      <div className="flex h-full w-[90%] mx-auto">
+      <div className="flex h-full w-[90%] pl-5">
         <div className="min-w-max border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 pr-7">
           {lessonsArray.map((lesson: any, idx: any) => (
             <div
@@ -47,12 +47,13 @@ const PreivewCourse = () => {
               <div className="flex h6-medium items-start gap-2 font-medium">
                 <span>{idx + 1}.</span>
                 <div className="flex flex-col gap-2">
-                  <div className="">{lesson.title?.slice(0, 30)}</div>
+                  <div className="capitalize">{lesson.title?.slice(0, 30)}</div>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <Chip
+                size="sm"
                   className={`${
                     lesson.type === "avatar"
                       ? "bg-orange-100 text-orange-500 border-orange-500"

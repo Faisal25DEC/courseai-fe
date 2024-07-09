@@ -1,23 +1,17 @@
 import React from "react";
 import Modal from "../modal";
-import useEndCallModal from "@/hooks/useEndCallModal";
 import { InfoIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useStartCallModal from "@/hooks/useStartCallModal";
 
-const StartCallModal = ({
-  handleSubmit,
-  handleRetry,
-}: {
-  handleSubmit: () => void;
-  handleRetry: () => void;
-}) => {
+const StartCallModal = ({ handleSubmit, handleRetry }: any) => {
   const {
     isStartCallModalOpen,
     onStartCallModalOpen,
     onStartCallModalClose,
     setIsStartCallModalOpen,
   } = useStartCallModal();
+
   return (
     <Modal
       className="max-w-[500px] left-[58%] top-[58%]"
@@ -28,9 +22,8 @@ const StartCallModal = ({
         <div className="flex gap-2 items-center text-gray-700">
           <InfoIcon />
           <p className="text-[16px] font-medium">
-            Clicking Start Call will open your camera.
-            Please ensure you are
-            ready and have granted camera permissions.
+            Clicking Start Call will open your camera. Do you want to switch on
+            your camera?
           </p>
         </div>
         <div className="flex justify-end gap-2">
@@ -42,7 +35,7 @@ const StartCallModal = ({
             size="xsm"
             variant="outline"
           >
-            Cancel
+            No
           </Button>
           <Button
             onClick={() => {
@@ -52,7 +45,7 @@ const StartCallModal = ({
             size="xsm"
             variant="default"
           >
-            Continue
+            Yes
           </Button>
         </div>
       </div>

@@ -118,7 +118,6 @@ export default function AvatarPracticeLesson({
   // const [blob, setBlob] = useState(null);
   const recorderRef = useRef(null);
   const [isDocumentVisible, setIsDocumentVisible] = useState(false);
-  // const currentCourseId = useRecoilValue(courseIdAtom);
 
   const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID;
 

@@ -33,7 +33,7 @@ const PracticeCard = ({
   isPractice: boolean;
 }) => {
   // const currentCourseId = useRecoilValue(courseIdAtom);
-  const currentCourseId = "6667760f255b05556e58b41a";
+  const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string;
   
   const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
   const [lessonModalType, setLessonModalType] =

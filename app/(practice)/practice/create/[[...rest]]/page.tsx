@@ -44,7 +44,7 @@ import {
 } from "@nextui-org/react";
 
 const CreateCourse = () => {
-  const currentCourseId = "6667760f255b05556e58b41a";
+  const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string;
 
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);

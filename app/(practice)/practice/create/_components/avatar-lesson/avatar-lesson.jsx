@@ -16,7 +16,7 @@ import {
 } from "@/store/atoms";
 import Webcam from "react-webcam";
 import { v4 as uuidv4 } from "uuid";
-import { useUser } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import { baseUrl } from "@/lib/config";
 import { StringFormats } from "@/lib/StringFormats";
 import {
@@ -119,11 +119,25 @@ export default function AvatarPracticeLesson({
   const recorderRef = useRef(null);
   const [isDocumentVisible, setIsDocumentVisible] = useState(false);
   // const currentCourseId = useRecoilValue(courseIdAtom);
+
   const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID;
+
+  const currentCourseId = "6667760f255b05556e58b41a";
+  const [cameraAllowed, setCameraAllowed] = useState(false);
 
   const { user } = useUser();
 
   const [randomNumber, setRandomNumber] = useState(0);
+
+  const handleSubmit = () => {
+    setCameraAllowed(true);
+    createNewSession();
+  };
+
+  const handleRetry = () => {
+    setCameraAllowed(false);
+    createNewSession();
+  };
 
   useEffect(() => {
     const generateRandomNumber = () => {
@@ -156,11 +170,6 @@ export default function AvatarPracticeLesson({
       conversationsRef.current = [];
     };
   }, [activeLesson]);
-  // useEffect(() => {
-  //   if (sessionInfo?.session_id) {
-  //     talkToOpenAI("Have u understood the instructions?", true);
-  //   }
-  // }, [sessionInfo, lesson?.content?.prompt]);
 
   async function talkToOpenAI(prompt, newPrompt) {
     const data = await axios.post(`/api/complete`, {
@@ -573,7 +582,8 @@ export default function AvatarPracticeLesson({
                   }}
                 />
 
-                {peerConnection &&
+                {cameraAllowed ? (
+                  peerConnection &&
                   sessionInfo &&
                   sessionState === "connected" && (
                     <WebCamRecording
@@ -582,7 +592,18 @@ export default function AvatarPracticeLesson({
                       mediaElementRef={mediaElementRef}
                       handleStopAndUpload={handleStopAndUpload}
                     />
-                  )}
+                  )
+                ) : (
+                  <>
+                    {peerConnection &&
+                      sessionInfo &&
+                      sessionState === "connected" && (
+                        <div className="shadow-lg border border-gray-300 bg-gray-700 absolute bottom-[1rem] h-[120px] w-[180px] right-5 rounded-[20px] flex items-center justify-center">
+                          <UserButton className="w-40 h-40" />
+                        </div>
+                      )}
+                  </>
+                )}
                 {peerConnection &&
                   sessionInfo &&
                   sessionState === "connected" && (
@@ -661,14 +682,7 @@ export default function AvatarPracticeLesson({
           closeConnectionHandler();
         }}
       />
-      <StartCallModal
-        handleSubmit={() => {
-          createNewSession();
-        }}
-        handleRetry={() => {
-          onEndCallModalClose();
-        }}
-      />
+      <StartCallModal handleSubmit={handleSubmit} handleRetry={handleRetry} />
     </div>
   );
 }

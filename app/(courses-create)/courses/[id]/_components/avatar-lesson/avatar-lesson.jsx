@@ -440,13 +440,13 @@ export default function AvatarLesson({
     onEndCallModalOpen();
   };
   return (
-    <div className="w-full relative">
+    <div className="flex items-center w-full relative">
       <div className="h-[90vh] w-full flex  flex-col">
         <div className="w-full flex flex-col gap-3 mt-3 relative justify-center items-center">
           {(!peerConnection ||
             !sessionInfo ||
             sessionState !== "connected") && (
-            <div className="flex justify-center flex-col items-center h-full  w-[1200px]">
+            <div className="flex p-5 justify-center flex-col items-center h-full">
               <div className="flex self-start gap-2 py-2 items-center justify-between pl-2">
                 <h1 className="h1-medium self-start">
                   {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
@@ -464,7 +464,7 @@ export default function AvatarLesson({
                     style={{
                       display: isInfoModalOpen !== "" ? "none" : "block",
                     }}
-                     className="w-20 h-20 pl-2 hover:scale-[1.1] transition-all duration-300 ease-in-out"
+                    className="w-20 h-20 pl-2 hover:scale-[1.1] transition-all duration-300 ease-in-out"
                     onClick={() => {
                       onInfoModalOpen("Video will be recorded");
                     }}
@@ -477,7 +477,8 @@ export default function AvatarLesson({
               <img
                 src={thumbnail}
                 alt="ai-avatar"
-                className="object-cover w-[900px] md:rounded-[20px] h-[70vh] shadow-lg"
+                className="w-full md:rounded-[20px] h-[70vh] shadow-lg"
+
               />
             </div>
           )}

@@ -128,7 +128,7 @@ const PreivewCourse = () => {
             </div>
           ))}
         </div>
-        <div className="w-[80%] pr-5 py-2 border-1 rounded-lg bg-white mr-5 my-4">
+        <div className="w-full pr-5 py-2 border-1 rounded-lg bg-white mr-5 my-4">
           {lessonsArray[activeLesson]?.type === "video" && (
             <VideoLesson
               video={lessonsArray[activeLesson].content}

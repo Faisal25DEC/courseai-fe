@@ -121,7 +121,6 @@ export default function AvatarPracticeLesson({
 
   const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID;
 
-  const currentCourseId = "6667760f255b05556e58b41a";
   const [cameraAllowed, setCameraAllowed] = useState(false);
 
   const { user } = useUser();

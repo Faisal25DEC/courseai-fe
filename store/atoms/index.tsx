@@ -18,7 +18,7 @@ export const createCourseModalAtom = atom({
 
 export const courseIdAtom = atom({
   key: "courseIdAtom",
-  default: "6667760f255b05556e58b41a",
+  default: process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string,
 });
 
 interface LessonInterface {

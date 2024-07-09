@@ -22,6 +22,7 @@ const PreivewCourse = () => {
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   const currentCourseId = useRecoilValue(courseIdAtom);
 
+  const [isPracticeList, setIsPracticeList] = useState<any>(true);
   useEffect(() => {
     getCourse(currentCourseId).then((res) => {
       setLessonsArray(res.lessons);
@@ -46,9 +47,7 @@ const PreivewCourse = () => {
               <div className="flex h6-medium items-start gap-2 font-medium">
                 <span>{idx + 1}.</span>
                 <div className="flex flex-col gap-2">
-                  <div className="">
-                    {lesson.title?.slice(0, 30)}
-                  </div>
+                  <div className="">{lesson.title?.slice(0, 30)}</div>
                 </div>
               </div>
 
@@ -91,6 +90,7 @@ const PreivewCourse = () => {
               }
               avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
               lesson={lessonsArray[activeLesson]}
+              setIsPracticeList={setIsPracticeList}
             />
           )}
         </div>

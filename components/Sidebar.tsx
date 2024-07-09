@@ -123,23 +123,25 @@ const Sidebar = () => {
             </Link>
           </>
           <>
-            <Link
-              href={currentUserRole === admin ? "/settings" : "/settings"}
-              legacyBehavior
-            >
-              <li
-                className={`${
-                  selectedKey === "settings" ? "bg-gray-800 text-white" : ""
-                } ${
-                  selectedKey === "settings" ? "" : "hover:bg-gray-200"
-                } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
-                onClick={() => handleNavigation("settings")}
+            {currentUserRole === admin && (
+              <Link
+                href={currentUserRole === admin ? "/settings" : "/settings"}
+                legacyBehavior
               >
-                <Icon icon="solar:settings-outline" className="w-5 h-5" />
+                <li
+                  className={`${
+                    selectedKey === "settings" ? "bg-gray-800 text-white" : ""
+                  } ${
+                    selectedKey === "settings" ? "" : "hover:bg-gray-200"
+                  } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+                  onClick={() => handleNavigation("settings")}
+                >
+                  <Icon icon="solar:settings-outline" className="w-5 h-5" />
 
-                <a>Settings</a>
-              </li>
-            </Link>
+                  <a>Settings</a>
+                </li>
+              </Link>
+            )}
           </>
         </ul>
       </div>

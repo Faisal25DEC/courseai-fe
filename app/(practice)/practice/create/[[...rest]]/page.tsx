@@ -238,11 +238,6 @@ const CreateCourse = () => {
                 {currentUserRole === admin
                   ? " Create Practice Lessons"
                   : "Practice Lessons"}
-                {currentUserRole !== admin && (
-                  <Chip className="ml-2" size="sm">
-                    Free Demo
-                  </Chip>
-                )}
               </BreadcrumbItem>
             </Breadcrumbs>
             <p className="pt-2 text-sm text-black">

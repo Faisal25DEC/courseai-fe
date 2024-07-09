@@ -9,9 +9,9 @@ import {
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import AvatarPracticeLesson from "@/app/(practice)/practice/create/_components/avatar-lesson/avatar-lesson";
-const PreivewPractice = ({setIsPracticeList}:any) => {
+const PreivewPractice = ({ setIsPracticeList }: any) => {
   // const currentCourseId = useRecoilValue(courseIdAtom);
-  const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string
+  const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string;
 
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);

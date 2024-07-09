@@ -33,6 +33,8 @@ const PreivewCourse = () => {
   const currentCourseId = useRecoilValue(courseIdAtom);
 
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
+  const [isPracticeList, setIsPracticeList] = useState(true);
+  
   const { user } = useUser();
   const { id } = useParams();
   const {
@@ -153,6 +155,7 @@ const PreivewCourse = () => {
               }
               avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
               lesson_id={lessonsArray[activeLesson].id}
+              setIsPracticeList={setIsPracticeList}
             />
           )}
         </div>

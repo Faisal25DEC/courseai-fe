@@ -51,7 +51,6 @@ function PreviewCard({
     setIsOpen: setIsPopoverOpen,
   } = useDisclosure();
 
-
   const popoverContent = [
     {
       title: "Edit",
@@ -86,11 +85,11 @@ function PreviewCard({
   const lastItem = popoverContent[popoverContent.length - 1];
 
   useEffect(() => {
-    if(index===0){
-      setActiveLesson(0)
+    if (index === 0) {
+      setActiveLesson(0);
     }
-  }, [])
-  
+  }, []);
+
   return (
     <>
       <Draggable
@@ -103,10 +102,9 @@ function PreviewCard({
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             ref={provided.innerRef}
-            className={` ${ 
+            className={` ${
               snapshot.draggingOver ? "shadow-sm bg-gray-50" : ""
             }`}
-       
           >
             <div
               className={`flex justify-center items-center ${
@@ -114,13 +112,14 @@ function PreviewCard({
                   ? "border-2 border-pink-200"
                   : "border-1 border-gray-300"
               } w-full h-[150px] rounded-lg mb-3 relative cursor-pointer shadow-md`}
-              onClick={()=>{
-                setActiveLesson(index)
+              onClick={() => {
+                setActiveLesson(index);
               }}
             >
-              <p className="absolute top-2 left-2 text-gray-700 font-semibold capitalize text-sm">
+              <p className="absolute w-[100px] top-2 left-2 text-gray-700 font-semibold capitalize text-sm truncate">
                 {lesson.title}
               </p>
+
               {/* <Tag
                 color={textFromBg[typeColorObj[lesson.type]]}
                 bg={typeColorObj[lesson.type]}
@@ -131,7 +130,7 @@ function PreviewCard({
                 icon="ph:text-align-left-duotone"
                 className="w-[160px] h-[100px] text-gray-300"
               />
-              
+
               <p className="start-gradient absolute bottom-3 left-3 bg-pink-300 text-white flex items-center  px-3 py-1 rounded-full leading-0 cursor-pointer text-md">
                 {index + 1}
               </p>
@@ -200,7 +199,6 @@ function PreviewCard({
         )}
       </Draggable>
       {isCreateLessonModalOpen && <CreateLessonModal />}
-
     </>
   );
 }

@@ -27,7 +27,7 @@ import NoDataFound from "../../../../public/images/not-found.webp";
 const PreivewCourse = () => {
   // const currentCourseId = useRecoilValue(courseIdAtom);
   const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string
-
+  const [isPracticeList, setIsPracticeList] = useState<any>(true);
   const [isLoading, setIsLoading] = useState(true);
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
   const { user } = useUser();
@@ -154,6 +154,7 @@ const PreivewCourse = () => {
                 }
                 avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
                 lesson_id={lessonsArray[activeLesson].id}
+                setIsPracticeList={setIsPracticeList}
               />
             )}
           </div>

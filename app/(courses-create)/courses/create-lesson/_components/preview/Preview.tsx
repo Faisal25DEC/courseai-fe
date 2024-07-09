@@ -24,6 +24,7 @@ const PreivewLesson = () => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isPracticeList, setIsPracticeList] = useState<any>(true);
 
   useEffect(() => {
     getCourse(currentCourseId).then((res) => {
@@ -63,6 +64,7 @@ const PreivewLesson = () => {
               }
               avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
               lesson={lessonsArray[activeLesson]}
+              setIsPracticeList={setIsPracticeList}
             />
           )}
         </div>

@@ -72,7 +72,7 @@ const CreateLessonModal = () => {
   const handleSubmit = async () => {
     try {
       if (lessonModalType?.type === "edit") {
-        const { id, ...currentLessonWithoutId } = currentLesson;
+        const { id, scorecard_questions, ...currentLessonWithoutId } = currentLesson;
         const res1 = await axios.patch(
           `${baseUrl}/courses/${currentCourseId}/lessons/${currentLesson.id}`,
           {
@@ -87,12 +87,13 @@ const CreateLessonModal = () => {
         onCreateLessonModalClose();
         return;
       }
+      const { id, scorecard_questions, ...currentLessonWithoutId } = currentLesson;
       const res1 = await axios.post(
         `${baseUrl}/courses/${currentCourseId}/lessons`,
         {
           id: getMaxId(lessonsArray) + 1,
           scorecard_questions: questions,
-          ...currentLesson,
+          ...currentLessonWithoutId,
           submission_status: "pending",
         }
       );
@@ -104,11 +105,15 @@ const CreateLessonModal = () => {
       console.log(error);
     }
   };
+  
 
   useEffect(() => {
     console.log(currentLesson.type);
     setCurrentLesson({ ...currentLesson, content: null });
 
+    if (lessonModalType?.type === "edit") {
+      setQuestions(currentLesson.scorecard_questions);
+    }
     // return () => {
     //   setCurrentLesson({
     //     title: "",
@@ -120,6 +125,10 @@ const CreateLessonModal = () => {
     //   });
     //   setLessonCreateSteps(1);
     // };
+
+    return () => {
+      setQuestions([]);
+    };
   }, [currentLesson.type]);
 
   const handleAddQuestion = () => {
@@ -127,6 +136,10 @@ const CreateLessonModal = () => {
       setQuestions([...questions, newQuestion.trim()]);
       setNewQuestion("");
     }
+  };
+
+  const handleDeleteQuestion = (index: number) => {
+    setQuestions(questions.filter((_: any, i: number) => i !== index));
   };
 
   return (
@@ -204,8 +217,16 @@ const CreateLessonModal = () => {
               </div>
               <ul className="text-sm mb-2">
                 {questions.map((question: any, index: any) => (
-                  <li key={index}>
+                  <li
+                    className="flex my-2 font-semibold capitalize"
+                    key={index}
+                  >
                     {index + 1}. {question}
+                    <Icon
+                      icon="fluent:delete-16-regular"
+                      className="text-red-400 w-5 h-5 font-bold ml-5 cursor-pointer"
+                      onClick={() => handleDeleteQuestion(index)}
+                    />
                   </li>
                 ))}
               </ul>

@@ -23,7 +23,7 @@ export const courseIdAtom = atom({
 
 export const scorecardQueAtom = atom({
   key: "scorecardQueAtom",
-  default: []
+  default: [],
 });
 interface LessonInterface {
   id?: any;
@@ -34,6 +34,7 @@ interface LessonInterface {
   submission: string;
   submission_status: string;
   is_practice_lesson: boolean;
+  scorecard_questions: Array<string>;
 }
 
 export const lessonAtom = atom<LessonInterface>({
@@ -47,6 +48,7 @@ export const lessonAtom = atom<LessonInterface>({
     submission: "",
     submission_status: "",
     is_practice_lesson: false,
+    scorecard_questions: [],
   },
 });
 
@@ -102,7 +104,6 @@ export const courseModalTypeAtom = atom<any>({
   key: "courseModalTypeAtom",
   default: null,
 });
-
 
 export const activeLessonAtom = atom<any>({
   key: "activeLessonAtom",

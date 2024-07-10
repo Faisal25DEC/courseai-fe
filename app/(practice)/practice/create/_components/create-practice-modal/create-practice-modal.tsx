@@ -72,6 +72,8 @@ const CreatePracticeLessonModal = () => {
         submission_status: currentLesson.submission_status || "pending",
       };
 
+      console.log("Payload being sent for update:", lessonData);
+
       if (lessonModalType?.type === "edit") {
         const { id, ...currentLessonWithoutId } = currentLesson;
         await axios.patch(
@@ -103,12 +105,20 @@ const CreatePracticeLessonModal = () => {
       is_practice_lesson: true,
     });
 
+    if (lessonModalType?.type === "edit") {
+      setQuestions(currentLesson.scorecard_questions);
+    }
+
     return () => {
       setQuestions([]);
     };
   }, [currentLesson.type]);
 
-  console.log("score ", questions);
+  console.log("current less ", currentLesson);
+
+  const handleDeleteQuestion = (index: number) => {
+    setQuestions(questions.filter((_: any, i: number) => i !== index));
+  };
 
   return (
     <Modal
@@ -155,8 +165,16 @@ const CreatePracticeLessonModal = () => {
               </div>
               <ul className="text-sm my-2">
                 {questions.map((question: any, index: any) => (
-                  <li key={index}>
+                  <li
+                    className="flex my-2 font-semibold capitalize"
+                    key={index}
+                  >
                     {index + 1}. {question}
+                    <Icon
+                      icon="fluent:delete-16-regular"
+                      className="text-red-400 w-5 h-5 font-bold ml-5 cursor-pointer"
+                      onClick={() => handleDeleteQuestion(index)}
+                    />
                   </li>
                 ))}
               </ul>

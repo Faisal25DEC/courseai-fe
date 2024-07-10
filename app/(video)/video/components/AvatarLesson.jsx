@@ -405,8 +405,8 @@ function AvatarPracticeLesson({
                     src={lesson.content.avatar.normal_thumbnail_small}
                   />
                   <div className="flex flex-col pl-2">
-                    <p className="text-sm font-semibold">
-                      Engage in real-time roleplay sessions
+                    <p className="max-w-[300px] truncate text-sm font-semibold capitalize">
+                      {lesson.title}
                     </p>
 
                     {/* <p className="text-gray-800 text-sm w-[300px]">
@@ -426,10 +426,7 @@ function AvatarPracticeLesson({
                     className="w-6 h-6 bg-white border-2 border-white rounded-full absolute bottom-2 right-2"
                   />
                 </div>
-                <h1 className="mt-5 text-gray-700 text-xl capitalize">
-                  {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
-                </h1>
-                <p className="text-[#71717A] text-center text-sm capitalize w-[300px]">
+                <p className="mt-5 text-[#71717A] text-center text-sm capitalize w-[300px]">
                   {lesson?.description}
                 </p>
                 <div className="flex mt-3">

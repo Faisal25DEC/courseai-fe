@@ -105,35 +105,35 @@ function PreviewCard({
             ref={provided.innerRef}
             className={` ${
               snapshot.draggingOver ? "shadow-sm bg-gray-50" : ""
-            } mb-3`}
+            }`}
           >
             <div
               onClick={() => setActiveLesson(index)}
               key={lesson.id}
               style={{ opacity: lesson.locked ? 0.5 : 1 }}
-              className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
-                activeLesson === index ? "bg-gray-100" : ""
+              className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
+                activeLesson === index
+                  ? "bg-black border-l-5 border-l-white"
+                  : ""
               }`}
             >
               <div className="flex h6-medium items-start gap-2 font-medium">
-                <span className="">{index + 1}.</span>
+                <span className="text-gray-300">{index + 1}.</span>
                 <div className="flex flex-col gap-2">
-                  <div className="capitalize">{lesson.title?.slice(0, 30)}</div>
-                </div>
-              </div>
+                  <div className="capitalize text-gray-300">
+                    {lesson.title?.slice(0, 30)}
 
-              <div className="flex items-center gap-2">
-                <Chip
-                  size="sm"
-                  className={`${
-                    lesson.type === "avatar"
-                      ? "bg-orange-100 text-orange-500 border-orange-500"
-                      : "bg-blue-100 text-blue-500 border-blue-500"
-                  } text-xs border-1`}
-                >
-                  {" "}
-                  {lessonTypeText[lesson.type]}
-                </Chip>
+                    <p
+                      className={`${
+                        lesson.type === "avatar"
+                          ? "text-orange-200"
+                          : "text-blue-200"
+                      }  text-xs`}
+                    >
+                      {lessonTypeText[lesson.type]}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

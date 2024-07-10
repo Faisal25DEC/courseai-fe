@@ -294,13 +294,26 @@ const CreateCourse = () => {
         </div>
         {/* <hr /> */}
         {isPageView === "edit" && (
-          <div className="w-[100%] h-[92vh] flex flex-row justify-center border-t bg-gray-100">
-            <div className="relative shrink-0 w-[30%] border-r bg-white py-5">
+          <div className="overflow-hidden w-[100%] h-[92vh] flex flex-row justify-center border-t bg-gray-100">
+            <div className="relative w-[30%] border-r bg-gray-800">
+              <div className="flex justify-between items-center border-b-1 border-gray-600  w-full py-5 px-4">
+                <div className="flex ">
+                  <Icon icon="gridicons:menus" className="text-white w-6 h-6" />
+                  <h1 className="text-[15px] text-gray-300 font-semibold pl-2">
+                    Contents
+                  </h1>
+                </div>
+                {/* <Icon
+                  // onClick={() => setshowContent(false)}
+                  icon="carbon:close-outline"
+                  className="cursor-pointer w-7 h-7 text-white"
+                /> */}
+              </div>
               <StrictModeDroppable droppableId="Visuals">
                 {(provided) => (
                   <>
                     <div
-                      className="w-[90%] pt-2 pl-1 pb-20 h-full my-element overflow-auto mx-auto flex flex-col"
+                      className="w-[100%] pb-20 h-full my-element overflow-auto flex flex-col"
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
@@ -339,11 +352,11 @@ const CreateCourse = () => {
                 )}
               </StrictModeDroppable>
               {currentUserRole === admin && (
-                <div className="absolute left-0 right-0 bottom-0 h-[80px] flex p-4 bg-white shadow-[0px_-1px_0px_rgba(17,_24,_39,_0.08)]">
+                <div className="absolute left-0 right-0 bottom-0 h-[80px] flex p-4 bg-gray-800 shadow-[0px_-1px_0px_rgba(17,_24,_39,_0.08)]">
                   <Button
                     color="primary"
                     variant="bordered"
-                    className="w-full font-semibold border-1 border-gray-300 hover:bg-gray-100 mt-2"
+                    className="bg-white cursor-pointer w-full font-semibold border-1 border-gray-300 hover:bg-gray-100 mt-2"
                     size={"sm"}
                     onClick={() => onCreateLessonModalOpen()}
                   >
@@ -362,7 +375,7 @@ const CreateCourse = () => {
           </div>
         )}
         {isPageView === "preview" && (
-          <div className="h-[92vh] w-[100%] flex items-center justify-center">
+          <div className="h-[92vh] w-full flex items-center justify-center">
             <PreivewCourse />
           </div>
         )}

@@ -66,9 +66,9 @@ const UserLessonAnalytics = () => {
     };
     fetchCurrentCourse();
 
-    return () => {
-      setLessonsArray([]);
-    };
+    // return () => {
+    //   setLessonsArray([]);
+    // };
   }, [currentCourseId, setCurrentCourse, setLessonsArray]);
 
   console.log("lessonsArray ", lessonsArray);

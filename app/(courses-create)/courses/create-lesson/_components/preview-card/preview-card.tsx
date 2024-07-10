@@ -139,7 +139,7 @@ function PreviewCard({
           </div>
         )}
       </Draggable>
-      {isCreateLessonModalOpen && <CreateLessonModal />}
+      {/* {isCreateLessonModalOpen && <CreateLessonModal />} */}
     </>
   );
 }

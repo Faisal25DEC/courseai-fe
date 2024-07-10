@@ -246,7 +246,7 @@ const CreateCourse = () => {
             </p>
           </div>
           <div className="flex justify-end gap-4 items-center">
-            {/* {currentUserRole === admin && (
+            {currentUserRole === admin && (
               <div className="flex items-center gap-2">
                 <Button
                   color="primary"
@@ -259,7 +259,7 @@ const CreateCourse = () => {
                 </Button>
               
               </div>
-            )} */}
+            )}
           </div>
         </div>
         <div

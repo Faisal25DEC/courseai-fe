@@ -1,6 +1,7 @@
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
 import { StringFormats } from "@/lib/StringFormats";
 import {
+  activeLessonAtom,
   analyticsTabValueAtom,
   currentAvatarConversationAtom,
   currentCourseAtom,
@@ -38,6 +39,7 @@ const UserLessonAnalytics = () => {
     useRecoilState<any>(currentCourseAtom);
   const [currentCourseId, setCurrentCourseId] = useState<string>("");
   const [selectedTab, setSelectedTab] = useState("courses"); // New state to track selected tab
+  const [activeLesson, setactiveLesson] = useRecoilState(activeLessonAtom)
 
   useEffect(() => {
     const fetchCurrentCourse = async () => {
@@ -199,6 +201,7 @@ const UserLessonAnalytics = () => {
                   return (
                     <div
                       onClick={() => {
+                        setactiveLesson(lesson.id)
                         viewRecordings(lesson);
                       }}
                       key={lesson.id}
@@ -276,6 +279,7 @@ const UserLessonAnalytics = () => {
                 return (
                   <div
                     onClick={() => {
+                      setactiveLesson(lesson.id)
                       viewRecordings(lesson);
                     }}
                     key={lesson.id}

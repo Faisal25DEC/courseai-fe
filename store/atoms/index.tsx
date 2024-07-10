@@ -191,3 +191,10 @@ export const responseLoadingAtom = atom({
   key: "responseLoadingAtom",
   default: false,
 });
+
+export const selectedSidebarKeyAtom = atom({
+  key: "selectedSidebarKeyAtom",
+  default: "courses",
+});
+
+

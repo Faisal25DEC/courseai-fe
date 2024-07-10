@@ -2,36 +2,39 @@
 
 import { UserButton } from "@clerk/nextjs";
 import { Icon } from "@iconify/react";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { courseIdAtom, currentUserRoleAtom } from "@/store/atoms";
+import { courseIdAtom, currentUserRoleAtom, selectedSidebarKeyAtom } from "@/store/atoms";
 import { admin } from "@/lib/constants";
 import Link from "next/link";
 import useSetOrganization from "@/hooks/useSetOrganization";
 import { Spacer } from "@nextui-org/react";
+import { usePathname, useRouter } from "next/navigation";
 
 const Sidebar = () => {
   useSetOrganization();
-  const [currentUserRole, setCurrentUserRole] =
-    useRecoilState(currentUserRoleAtom);
-  const currentCourseId = useRecoilValue(courseIdAtom);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const [selectedKey, setSelectedKey] = useState("courses");
+  const currentUserRole = useRecoilValue(currentUserRoleAtom);
+  const currentCourseId = useRecoilValue(courseIdAtom);
+  const [selectedKey, setSelectedKey] = useRecoilState(selectedSidebarKeyAtom);
 
   useEffect(() => {
-    const storedKey = localStorage.getItem("selectedSidebarKey");
-    if (storedKey) {
-      setSelectedKey(storedKey);
+    if (pathname.includes("/courses")) {
+      setSelectedKey("courses");
+    } else if (pathname.includes("/practice")) {
+      setSelectedKey("practice");
+    } else if (pathname.includes("/analytics")) {
+      setSelectedKey("analytics");
+    } else if (pathname.includes("/settings")) {
+      setSelectedKey("settings");
     }
+  }, [pathname, setSelectedKey]);
 
-    return () => {
-      localStorage.setItem("selectedSidebarKey", "courses");
-    };
-  }, []);
-
-  const handleNavigation = (key: any) => {
+  const handleNavigation = (key: string, path: string) => {
     setSelectedKey(key);
-    localStorage.setItem("selectedSidebarKey", key);
+    router.push(path);
   };
 
   return (
@@ -55,94 +58,52 @@ const Sidebar = () => {
 
         <Spacer y={8} />
         <ul className="text-md font-bold">
-          <>
-            <Link
-              href={
-                currentUserRole === admin ? "/courses/list" : `/courses/list`
-              }
-              legacyBehavior
+          <li
+            className={`${
+              selectedKey === "courses" ? "bg-gray-800 text-white" : ""
+            } ${
+              selectedKey === "courses" ? "" : "hover:bg-gray-200"
+            } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+            onClick={() => handleNavigation("courses", currentUserRole === admin ? "/courses/list" : `/courses/list`)}
+          >
+            <Icon icon="hugeicons:course" className="w-5 h-5" />
+            <span>Courses</span>
+          </li>
+          <li
+            className={`${
+              selectedKey === "practice" ? "bg-gray-800 text-white" : ""
+            } ${
+              selectedKey === "practice" ? "" : "hover:bg-gray-200"
+            } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+            onClick={() => handleNavigation("practice", currentUserRole === admin ? "/practice/create" : `/practice/create`)}
+          >
+            <Icon icon="hugeicons:bot" className="w-5 h-5" />
+            <span>Practice</span>
+          </li>
+          <li
+            className={`${
+              selectedKey === "analytics" ? "bg-gray-800 text-white" : ""
+            } ${
+              selectedKey === "analytics" ? "" : "hover:bg-gray-200"
+            } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+            onClick={() => handleNavigation("analytics", currentUserRole === admin ? "/analytics" : `/analytics/${currentCourseId}`)}
+          >
+            <Icon icon="solar:chart-outline" className="w-5 h-5" />
+            <span>Analytics</span>
+          </li>
+          {currentUserRole === admin && (
+            <li
+              className={`${
+                selectedKey === "settings" ? "bg-gray-800 text-white" : ""
+              } ${
+                selectedKey === "settings" ? "" : "hover:bg-gray-200"
+              } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+              onClick={() => handleNavigation("settings", "/settings")}
             >
-              <li
-                className={`${
-                  selectedKey === "courses" ? "bg-gray-800 text-white" : ""
-                } ${
-                  selectedKey === "courses" ? "" : "hover:bg-gray-200"
-                } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
-                onClick={() => handleNavigation("courses")}
-              >
-                <Icon icon="hugeicons:course" className="w-5 h-5" />
-
-                <a className="">Courses</a>
-              </li>
-            </Link>
-          </>
-          <>
-            <Link
-              href={
-                currentUserRole === admin
-                  ? "/practice/create"
-                  : `/practice/create`
-              }
-              legacyBehavior
-            >
-              <li
-                className={`${
-                  selectedKey === "practice" ? "bg-gray-800 text-white" : ""
-                } ${
-                  selectedKey === "practice" ? "" : "hover:bg-gray-200"
-                } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
-                onClick={() => handleNavigation("practice")}
-              >
-                <Icon icon="hugeicons:bot" className="w-5 h-5" />
-
-                <a>Practice</a>
-              </li>
-            </Link>
-          </>
-          <>
-            <Link
-              href={
-                currentUserRole === admin
-                  ? "/analytics"
-                  : `/analytics/${currentCourseId}`
-              }
-              legacyBehavior
-            >
-              <li
-                className={`${
-                  selectedKey === "analytics" ? "bg-gray-800 text-white" : ""
-                } ${
-                  selectedKey === "analytics" ? "" : "hover:bg-gray-200"
-                } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
-                onClick={() => handleNavigation("analytics")}
-              >
-                <Icon icon="solar:chart-outline" className="w-5 h-5" />
-
-                <a>Analytics</a>
-              </li>
-            </Link>
-          </>
-          <>
-            {currentUserRole === admin && (
-              <Link
-                href={currentUserRole === admin ? "/settings" : "/settings"}
-                legacyBehavior
-              >
-                <li
-                  className={`${
-                    selectedKey === "settings" ? "bg-gray-800 text-white" : ""
-                  } ${
-                    selectedKey === "settings" ? "" : "hover:bg-gray-200"
-                  } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
-                  onClick={() => handleNavigation("settings")}
-                >
-                  <Icon icon="solar:settings-outline" className="w-5 h-5" />
-
-                  <a>Settings</a>
-                </li>
-              </Link>
-            )}
-          </>
+              <Icon icon="solar:settings-outline" className="w-5 h-5" />
+              <span>Settings</span>
+            </li>
+          )}
         </ul>
       </div>
     </div>

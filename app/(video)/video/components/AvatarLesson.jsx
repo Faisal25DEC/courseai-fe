@@ -42,7 +42,11 @@ import {
   NewSessionData,
   StreamingAvatarApi,
 } from "@heygen/streaming-avatar";
-import WebCamRecording from "./webcam-recording/webcam-recording";
+const WebCamRecording = dynamic(
+  () => import("./webcam-recording/webcam-recording"),
+  { ssr: false }
+);
+
 import { evaluateScorecard } from "@/services/gpt.service";
 
 function AvatarPracticeLesson({
@@ -495,7 +499,6 @@ function AvatarPracticeLesson({
                     {lesson?.description}
                   </p> */}
                   </div>
-
                 </div>
 
                 <div className="relative mt-4">

@@ -17,12 +17,15 @@ import TextLesson from "./_components/text-lesson/text-lesson";
 import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
 import { typeColorObj } from "../[id]/constants";
 import { Chip } from "@nextui-org/react";
+import { Icon } from "@iconify/react/dist/iconify.js";
 const PreivewCourse = () => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   const currentCourseId = useRecoilValue(courseIdAtom);
 
   const [isPracticeList, setIsPracticeList] = useState<any>(true);
+  const [showContent, setshowContent] = useState(true);
+
   useEffect(() => {
     getCourse(currentCourseId).then((res) => {
       setLessonsArray(res.lessons);
@@ -32,42 +35,71 @@ const PreivewCourse = () => {
     setActiveLesson(idx);
   };
   return (
-    <div className="w-full h-[92vh] overflow-y-scroll border-1">
-      <div className="flex h-full w-[90%] pl-5">
-        <div className="min-w-max border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col gap-4 py-8 pr-7">
-          {lessonsArray.map((lesson: any, idx: any) => (
-            <div
-              onClick={() => handleChangeLesson(idx)}
-              key={lesson.id}
-              style={{ opacity: lesson.locked ? 0.5 : 1 }}
-              className={`flex cursor-pointer items-start relative justify-between gap-2 hover:bg-gray-100 cursor-pointer duration-200 transition-all ease-linear px-4 py-2  rounded-[8px] ${
-                activeLesson === idx ? "bg-gray-100" : ""
-              }`}
-            >
-              <div className="flex h6-medium items-start gap-2 font-medium">
-                <span>{idx + 1}.</span>
-                <div className="flex flex-col gap-2">
-                  <div className="capitalize">{lesson.title?.slice(0, 30)}</div>
+    <div className="w-full h-[92vh] overflow-hidden border-1 bg-gray-100">
+      <div className="flex h-full w-[100%]">
+        {showContent && (
+          <div className="w-[40%] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col bg-gray-800 text-white">
+            <div className="flex justify-between items-center border-b-1 border-gray-600  w-full py-5 px-4">
+              <div className="flex ">
+                <Icon icon="gridicons:menus" className="text-white w-6 h-6" />
+                <h1 className="text-[15px] text-gray-300 font-semibold pl-2">
+                  Contents
+                </h1>
+              </div>
+              <Icon
+                onClick={() => setshowContent(false)}
+                icon="carbon:close-outline"
+                className="cursor-pointer w-7 h-7 text-white"
+              />
+            </div>
+            {lessonsArray.map((lesson: any, idx: any) => (
+              <div
+                onClick={() => handleChangeLesson(idx)}
+                key={lesson.id}
+                style={{ opacity: lesson.locked ? 0.5 : 1 }}
+                className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
+                  activeLesson === idx
+                    ? "bg-black border-l-5 border-l-white"
+                    : ""
+                }`}
+              >
+                <div className="flex h6-medium items-start gap-2 font-medium">
+                  <span className="text-gray-300">{idx + 1}.</span>
+                  <div className="flex flex-col gap-2">
+                    <div className="capitalize text-gray-300">
+                      {lesson.title?.slice(0, 30)}
+
+                      <p
+                        className={`${
+                          lesson.type === "avatar"
+                            ? "text-orange-200"
+                            : "text-blue-200"
+                        }  text-xs`}
+                      >
+                        {lessonTypeText[lesson.type]}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2">
-                <Chip
-                size="sm"
-                  className={`${
-                    lesson.type === "avatar"
-                      ? "bg-orange-100 text-orange-500 border-orange-500"
-                      : "bg-blue-100 text-blue-500 border-blue-500"
-                  } text-xs border-1`}
-                >
-                  {" "}
-                  {lessonTypeText[lesson.type]}
-                </Chip>
+            ))}
+          </div>
+        )}
+        <div className="w-full pr-5 py-2 border-1 rounded-lg bg-white mx-5 my-4 my-element">
+        {!showContent && (
+            <div className="flex justify-between items-center border-b-1 border-gray-200  w-full py-5 px-4">
+              <div className="flex">
+                <Icon
+                  icon="gridicons:menus"
+                  className="cursor-pointer text-gray-800 w-6 h-6"
+                  onClick={() => setshowContent(true)}
+                />
+                <h1 className="text-[15px] text-gray-800 font-semibold pl-2">
+                  Contents
+                </h1>
               </div>
             </div>
-          ))}
-        </div>
-        <div className="w-full">
+          )}
           {lessonsArray[activeLesson]?.type === "video" && (
             <VideoLesson
               video={lessonsArray[activeLesson].content}

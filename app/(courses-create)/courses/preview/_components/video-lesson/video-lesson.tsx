@@ -16,7 +16,7 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
     };
   }, [activeLesson]);
   return (
-    <div className="h-full flex flex-col w-[900px] gap-6 justify-center mx-auto relative px-8">
+    <div className="h-full flex flex-col w-full gap-6 justify-center mx-auto relative px-8">
       <div className="flex justify-between items-center">
         <h1 className="text-[24px] text-gray-700 font-medium px-4 py-2 relative">
           {StringFormats.capitalizeFirstLetterOfEachWord(lesson.title)}

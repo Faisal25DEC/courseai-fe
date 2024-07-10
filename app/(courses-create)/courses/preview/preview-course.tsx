@@ -38,7 +38,7 @@ const PreivewCourse = () => {
     <div className="w-full h-[92vh] overflow-hidden border-1 bg-gray-100">
       <div className="flex h-full w-[100%]">
         {showContent && (
-          <div className="w-[40%] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col bg-gray-800 text-white">
+          <div className="w-[30%] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col bg-gray-800 text-white my-element">
             <div className="flex justify-between items-center border-b-1 border-gray-600  w-full py-5 px-4">
               <div className="flex ">
                 <Icon icon="gridicons:menus" className="text-white w-6 h-6" />
@@ -85,7 +85,7 @@ const PreivewCourse = () => {
             ))}
           </div>
         )}
-        <div className="w-full pr-5 py-2 border-1 rounded-lg bg-white mx-5 my-4 my-element">
+        <div className="w-[70%] pr-5 py-2 border-1 rounded-lg bg-white my-element m-2">
         {!showContent && (
             <div className="flex justify-between items-center border-b-1 border-gray-200  w-full py-5 px-4">
               <div className="flex">

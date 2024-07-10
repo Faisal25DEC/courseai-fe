@@ -275,95 +275,9 @@ function AvatarPracticeLesson({
     }
   }
 
-  const handleStopAndUpload = async () => {
-    if (!recorderRef.current) {
-      endSession();
-      return;
-    }
-    if (submitButtonRef.current) {
-      submitButtonRef.current.disabled = true;
-    }
-    recorderRef.current.stopRecording(async () => {
-      const blob = recorderRef.current.getBlob();
-      const formData = new FormData();
-      const fileName = uuidv4() + ".mp4";
-      formData.append("file", blob, fileName);
-      const conversation = conversationsRef.current || [];
-      formData.append("conversation", new Blob([JSON.stringify(conversation)]));
-      try {
-        endSession();
-        const response = await axios.post(
-          `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
-          formData,
-          {
-            maxContentLength: Infinity,
-          }
-        );
-        toast.success("Recording submitted successfully");
-      } catch (error) {
-        toast.error("Failed to submit recording");
-      }
-    });
-  };
-  const markComplete = async () => {
-    if (lesson?.status === "approved" || markCompleteCalledRef.current) return;
-    console.log("markComplete");
-    markCompleteCalledRef.current = true;
-    const score = await evaluate();
-    console.log("get score ", score);
-    if (score) {
-      if (lesson.submission === "automatic") {
-        updateLessonForUser({
-          user_id: user?.id,
-          course_id: currentCourseId,
-          lesson_id: lesson.id,
-          data: {
-            status: "approved",
-            duration: Date.now() - currenTimeRef.current,
-            completed_at: Date.now(),
-            scorecard: score,
-          },
-        })
-          .then(() => {
-            getUserAnalytics(user?.id, currentCourseId).then((res) => {
-              setUserAnalytics(res?.analytics);
-            });
-          })
-          .catch((err) => {
-            toast.error("Failed to mark lesson as complete");
-          });
-      } else {
-        updateLessonForUser({
-          user_id: user?.id,
-          course_id: currentCourseId,
-          lesson_id: lesson.id,
-          data: {
-            status: "approval-pending",
-            duration: Date.now() - currenTimeRef.current,
-            scorecard: score,
-          },
-        })
-          .then(() => {
-            approveLessonRequest({
-              lesson_id: lesson.id,
-              course_id: currentCourseId,
-              user_id: user?.id,
-              status: "pending",
-            }).then(() => {
-              toast.success("Request sent for approval");
-              getUserAnalytics(user?.id, currentCourseId).then((res) => {
-                setUserAnalytics(res?.analytics);
-              });
-            });
-          })
-          .catch((err) => {
-            toast.error("Failed to send request for approval");
-          });
-      }
-    }
-  };
   const handleEnd = () => {
-    onEndCallModalOpen();
+    conversationsRef.current = [];
+    endSession();
     setIsPracticeList(true);
   };
 
@@ -581,7 +495,6 @@ function AvatarPracticeLesson({
                     <WebCamRecording
                       recorderRef={recorderRef}
                       mediaElementRef={mediaStream}
-                      handleStopAndUpload={handleStopAndUpload}
                     />
                   )
                 ) : (
@@ -658,22 +571,7 @@ function AvatarPracticeLesson({
         return <div key={item.content}>{item.content}</div>;
       })} */}
       </div>
-      {/* <InfoModal
-        handleClick={() => {
-          createNewSession().then(() => {});
-        }}
-      /> */}
-      <EndCallModal
-        handleSubmit={() => {
-          console.log("ended session");
-          markComplete();
-          handleStopAndUpload();
-        }}
-        handleRetry={() => {
-          conversationsRef.current = [];
-          endSession();
-        }}
-      />
+
       <StartCallModal handleSubmit={handleSubmit} handleRetry={handleRetry} />
     </div>
   );

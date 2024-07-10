@@ -11,12 +11,10 @@ const WebcamRecordingComponent = ({
   lesson,
   recorderRef,
   mediaElementRef,
-  handleStopAndUpload,
 }: {
   lesson: any;
   recorderRef: any;
   mediaElementRef: any;
-  handleStopAndUpload: any;
 }) => {
   const { user } = useUser();
   const videoConstraints = {

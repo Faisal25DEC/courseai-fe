@@ -1,6 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { responseLoadingAtom, userTranscriptLoadingAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useRef } from "react";
 import { useRecoilValue } from "recoil";
 
@@ -52,11 +53,18 @@ const AvatarConversationsLive = ({
                   } rounded-full`}
                 >
                   {item.role === "user" ? (
-                    <img
-                      src={user?.imageUrl}
-                      alt="user"
-                      className="rounded-full w-4 h-4"
-                    />
+                    user ? (
+                      <img
+                        src={user?.imageUrl}
+                        alt="user"
+                        className="rounded-full w-4 h-4"
+                      />
+                    ) : (
+                      <Icon
+                        icon="fa-solid:user-alt"
+                        className="text-black w-4 h-4 "
+                      />
+                    )
                   ) : (
                     <img
                       src="/logo.png"
@@ -88,11 +96,18 @@ const AvatarConversationsLive = ({
             }  flex gap-2 px-4 py-2 w-max items-start`}
           >
             {userTranscriptLoading === 1 ? (
-              <img
-                src={user?.imageUrl}
-                alt="user"
-                className="rounded-full w-4 h-4"
-              />
+              user ? (
+                <img
+                  src={user?.imageUrl}
+                  alt="user"
+                  className="rounded-full w-4 h-4"
+                />
+              ) : (
+                <Icon
+                  icon="fa-solid:user-alt"
+                  className="text-black w-4 h-4 "
+                />
+              )
             ) : (
               <img
                 src="/logo.png"

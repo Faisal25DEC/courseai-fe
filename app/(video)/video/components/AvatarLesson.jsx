@@ -44,8 +44,6 @@ import {
 } from "@heygen/streaming-avatar";
 import WebCamRecording from "./webcam-recording/webcam-recording";
 import { evaluateScorecard } from "@/services/gpt.service";
-import openIcon from "../../../../../../public/images/open.png"
-import Image from "next/image";
 
 function AvatarPracticeLesson({
   avatar_id,
@@ -475,12 +473,12 @@ function AvatarPracticeLesson({
     // console.log("gpt response 1 ", response.answers);
   };
   return (
-    <div className="w-full relative">
+    <div className="w-full relative px-20">
       <div className="h-[90vh] w-full flex  flex-col">
         <div className="w-full flex flex-col gap-3 mt-5 relative justify-center items-center">
           {!data?.current?.sessionId && (
             <>
-              <div className="border-1 shadow-lg border-gray-300 flex justify-center flex-col items-center h-fit p-5 rounded-xl relative">
+              <div className="mt-20 border-1 shadow-lg border-gray-300 flex justify-center flex-col items-center h-fit p-5 rounded-xl relative">
                 <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
                   <Avatar
                     isBordered
@@ -497,19 +495,7 @@ function AvatarPracticeLesson({
                     {lesson?.description}
                   </p> */}
                   </div>
-                  <div
-                    className="absolute right-4 top-4 cursor-pointer"
-                    onClick={() => {
-                      window.open(`/video/${lesson.id}`, "_blank");
-                    }}
-                    title="Open in new tab"
-                  >
-                    <Image src={openIcon} width={20} height={20}/>
-                    {/* <Icon
-                      icon="fluent-mdl2:open-in-new-tab"
-                      className="w-4 h-4"
-                    /> */}
-                  </div>
+
                 </div>
 
                 <div className="relative mt-4">
@@ -599,7 +585,16 @@ function AvatarPracticeLesson({
                   <>
                     {data?.current?.sessionId && (
                       <div className="shadow-lg border border-gray-300 bg-gray-700 absolute bottom-[1rem] h-[120px] w-[180px] right-5 rounded-[20px] flex items-center justify-center">
-                        <UserButton className="w-40 h-40" />
+                        {user ? (
+                          <UserButton className="w-40 h-40" />
+                        ) : (
+                          <div className="rounded-full p-2">
+                            <Icon
+                              icon="fa-solid:user-alt"
+                              className="text-white w-6 h-6 "
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                   </>

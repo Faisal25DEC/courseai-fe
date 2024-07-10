@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/shared/navbar";
+import { ClerkProvider } from "@clerk/nextjs";
 import RecoilProvider from "@/components/providers/RecoilProvider";
-import { Toaster } from "sonner";
-import CreateLessonModal from "./(courses-create)/courses/create-lesson/_components/create-lesson-modal/create-lesson-modal";
-import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
 import { NextUIProvider } from "@nextui-org/react";
-import SidebarComponent from "@/components/shared/sidebar/sidebar-container";
-import Sidebar from "@/components/Sidebar";
+import { Toaster } from "sonner";
+import ClientRootLayout from "./ClientRootLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,17 +29,7 @@ export default function RootLayout({
           <RecoilProvider>
             <NextUIProvider>
               <Toaster closeButton />
-              <div className="flex">
-                <SignedIn>
-                  <div className="fixed top-0 left-0 h-full w-fit z-10">
-                    <Sidebar/>
-                  </div>
-                  <div className="ml-64 flex-1">{children}</div>
-                </SignedIn>
-                <SignedOut>
-                  <div className="flex-1">{children}</div>
-                </SignedOut>
-              </div>
+              <ClientRootLayout>{children}</ClientRootLayout>
             </NextUIProvider>
           </RecoilProvider>
         </ClerkProvider>

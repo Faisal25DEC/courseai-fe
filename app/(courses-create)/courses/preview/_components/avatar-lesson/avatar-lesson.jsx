@@ -42,7 +42,10 @@ import {
   NewSessionData,
   StreamingAvatarApi,
 } from "@heygen/streaming-avatar";
-import WebCamRecording from "./webcam-recording/webcam-recording";
+const WebCamRecording = dynamic(
+  () => import("./webcam-recording/webcam-recording"),
+  { ssr: false }
+);
 
 function AvatarPracticeLesson({
   avatar_id,

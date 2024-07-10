@@ -8,10 +8,11 @@ import {
 } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import AvatarPracticeLesson from "../components/AvatarLesson";
+import AvatarPracticeLesson from "../../components/AvatarLesson";
 import { useParams } from "next/navigation";
 const PreivewPractice = () => {
   const { lessonId } = useParams();
+  
   console.log("lesson id ", typeof lessonId);
   // const currentCourseId = useRecoilValue(courseIdAtom);
   const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string;

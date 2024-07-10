@@ -44,8 +44,9 @@ import {
 } from "@heygen/streaming-avatar";
 
 import { evaluateScorecard } from "@/services/gpt.service";
-import openIcon from "../../../../../../public/images/open.png"
+import openIcon from "../../../../../../public/images/open.png";
 import Image from "next/image";
+import { generateRandomSegment } from "@/utils/helpers";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
@@ -142,6 +143,8 @@ function AvatarPracticeLesson({
 
   const apiKey = heygen_API.apiKey;
   const SERVER_URL = heygen_API.serverUrl;
+
+  const randomSegment = generateRandomSegment();
 
   const handleSubmit = () => {
     // setCameraAllowed(true);
@@ -504,11 +507,14 @@ function AvatarPracticeLesson({
                   <div
                     className="absolute right-4 top-4 cursor-pointer"
                     onClick={() => {
-                      window.open(`/video/${lesson.id}`, "_blank");
+                      window.open(
+                        `/video/${randomSegment}/${lesson.id}`,
+                        "_blank"
+                      );
                     }}
                     title="Open in new tab"
                   >
-                    <Image src={openIcon} width={20} height={20}/>
+                    <Image src={openIcon} width={20} height={20} />
                     {/* <Icon
                       icon="fluent-mdl2:open-in-new-tab"
                       className="w-4 h-4"

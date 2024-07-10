@@ -42,7 +42,8 @@ import {
   NewSessionData,
   StreamingAvatarApi,
 } from "@heygen/streaming-avatar";
-import WebCamRecording from "./webcam-recording/webcam-recording"
+import WebCamRecording from "./webcam-recording/webcam-recording";
+import { evaluateScorecard } from "@/services/gpt.service";
 
 function AvatarPracticeLesson({
   avatar_id,
@@ -81,7 +82,7 @@ function AvatarPracticeLesson({
   const [debug, setDebug] = useState();
   const [avatarId, setAvatarId] = useState("");
   const [voiceId, setVoiceId] = useState("");
-  const data = useRef(null)
+  const data = useRef(null);
   const [text, setText] = useState("");
   const [message, setMessage] = useState("");
   const [initialized, setInitialized] = useState(false); // Track initialization
@@ -120,15 +121,13 @@ function AvatarPracticeLesson({
   const currentCourseId = "6667760f255b05556e58b41a";
   // const [cameraAllowed, setCameraAllowed] = useState(false);
   const cameraAllowed = useRef(false);
-  // const WebCamRecording = dynamic(
-  //   () => import("./webcam-recording/webcam-recording"),
-  //   { ssr: false }
-  // );
+  const [scorecardAns, setScorecardAns] = useState([]);
 
   const { user } = useUser();
 
   const [randomNumber, setRandomNumber] = useState(0);
   const [sessionActive, setSessionActive] = useState(false);
+  const markCompleteCalledRef = useRef(false);
 
   const heygen_API = {
     apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
@@ -302,53 +301,61 @@ function AvatarPracticeLesson({
       }
     });
   };
-  const markComplete = () => {
-    if (lesson?.status === "approved") return;
-    if (lesson.submission === "automatic") {
-      updateLessonForUser({
-        user_id: user?.id,
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
-        data: {
-          status: "approved",
-          duration: Date.now() - currenTimeRef.current,
-          completed_at: Date.now(),
-        },
-      })
-        .then(() => {
-          getUserAnalytics(user?.id, currentCourseId).then((res) => {
-            setUserAnalytics(res?.analytics);
-          });
+  const markComplete = async () => {
+    if (lesson?.status === "approved" || markCompleteCalledRef.current) return;
+    console.log("markComplete");
+    markCompleteCalledRef.current = true;
+    const score = await evaluate();
+    console.log("get score ", score);
+    if (score) {
+      if (lesson.submission === "automatic") {
+        updateLessonForUser({
+          user_id: user?.id,
+          course_id: currentCourseId,
+          lesson_id: lesson.id,
+          data: {
+            status: "approved",
+            duration: Date.now() - currenTimeRef.current,
+            completed_at: Date.now(),
+            scorecard: score,
+          },
         })
-        .catch((err) => {
-          toast.error("Failed to mark lesson as complete");
-        });
-    } else {
-      updateLessonForUser({
-        user_id: user?.id,
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
-        data: {
-          status: "approval-pending",
-          duration: Date.now() - currenTimeRef.current,
-        },
-      })
-        .then(() => {
-          approveLessonRequest({
-            lesson_id: lesson.id,
-            course_id: currentCourseId,
-            user_id: user?.id,
-            status: "pending",
-          }).then(() => {
-            toast.success("Request sent for approval");
+          .then(() => {
             getUserAnalytics(user?.id, currentCourseId).then((res) => {
               setUserAnalytics(res?.analytics);
             });
+          })
+          .catch((err) => {
+            toast.error("Failed to mark lesson as complete");
           });
+      } else {
+        updateLessonForUser({
+          user_id: user?.id,
+          course_id: currentCourseId,
+          lesson_id: lesson.id,
+          data: {
+            status: "approval-pending",
+            duration: Date.now() - currenTimeRef.current,
+            scorecard: score,
+          },
         })
-        .catch((err) => {
-          toast.error("Failed to send request for approval");
-        });
+          .then(() => {
+            approveLessonRequest({
+              lesson_id: lesson.id,
+              course_id: currentCourseId,
+              user_id: user?.id,
+              status: "pending",
+            }).then(() => {
+              toast.success("Request sent for approval");
+              getUserAnalytics(user?.id, currentCourseId).then((res) => {
+                setUserAnalytics(res?.analytics);
+              });
+            });
+          })
+          .catch((err) => {
+            toast.error("Failed to send request for approval");
+          });
+      }
     }
   };
   const handleEnd = () => {
@@ -390,7 +397,7 @@ function AvatarPracticeLesson({
         setDebug
       );
       // setData(res);
-      data.current = res
+      data.current = res;
       setStream(avatar.current.mediaStream);
       setIsPracticeList(false);
       toast.dismiss();
@@ -450,16 +457,21 @@ function AvatarPracticeLesson({
       setDebug
     );
     // setData(null);
-    data.current = null
+    data.current = null;
     setStream(undefined);
   }
 
-  console.log('AvatarPracticeLesson render:', {
-    sessionActive,
-    cameraAllowed: cameraAllowed.current,
-    dataSessionId: data?.current?.sessionId,
-  });
+  const evaluate = async () => {
+    const data = {
+      scorecardQuestions: lesson.scorecard_questions,
+      conversation: conversationsRef.current,
+    };
 
+    const response = await evaluateScorecard(data);
+    return response.answers;
+    // setScorecardAns(response.answers);
+    // console.log("gpt response 1 ", response.answers);
+  };
   return (
     <div className="w-full relative">
       <div className="h-[90vh] w-full flex  flex-col">

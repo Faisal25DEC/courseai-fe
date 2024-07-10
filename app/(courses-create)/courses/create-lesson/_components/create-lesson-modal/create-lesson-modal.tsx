@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 import Modal from "@/components/shared/modal";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
   lessonCreateStepsAtom,
   lessonModalTypeAtom,
   lessonsArrayAtom,
+  scorecardQueAtom,
 } from "@/store/atoms";
 import {
   decrementLessonCreateStepSelector,
@@ -39,6 +40,9 @@ const CreateLessonModal = () => {
   const [lessonCreateSteps, setLessonCreateSteps] = useRecoilState(
     lessonCreateStepsAtom
   );
+  const [newQuestion, setNewQuestion] = useState("");
+  const [questions, setQuestions] = useRecoilState<any>(scorecardQueAtom);
+
   const incrementStep = useSetRecoilState(incrementLessonCreateStepSelector);
   const decrementStep = useSetRecoilState(decrementLessonCreateStepSelector);
   const {
@@ -72,6 +76,7 @@ const CreateLessonModal = () => {
         const res1 = await axios.patch(
           `${baseUrl}/courses/${currentCourseId}/lessons/${currentLesson.id}`,
           {
+            scorecard_questions: questions,
             ...currentLessonWithoutId,
             submission_status: currentLesson.submission_status || "pending",
           }
@@ -86,6 +91,7 @@ const CreateLessonModal = () => {
         `${baseUrl}/courses/${currentCourseId}/lessons`,
         {
           id: getMaxId(lessonsArray) + 1,
+          scorecard_questions: questions,
           ...currentLesson,
           submission_status: "pending",
         }
@@ -115,6 +121,13 @@ const CreateLessonModal = () => {
     //   setLessonCreateSteps(1);
     // };
   }, [currentLesson.type]);
+
+  const handleAddQuestion = () => {
+    if (newQuestion.trim() !== "") {
+      setQuestions([...questions, newQuestion.trim()]);
+      setNewQuestion("");
+    }
+  };
 
   return (
     <Modal
@@ -179,6 +192,24 @@ const CreateLessonModal = () => {
               </div>
             </div>
             <Submissions />
+            <div className="label-container">
+              <label className="label">Add Scorecard Questions</label>
+              <div className="flex gap-2">
+                <Input
+                  value={newQuestion}
+                  onChange={(e) => setNewQuestion(e.target.value)}
+                  placeholder="Enter question"
+                />
+                <Button onClick={handleAddQuestion}>Add</Button>
+              </div>
+              <ul className="text-sm mb-2">
+                {questions.map((question: any, index: any) => (
+                  <li key={index}>
+                    {index + 1}. {question}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         )}
         {lessonCreateSteps === 1 && (

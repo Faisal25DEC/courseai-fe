@@ -43,6 +43,7 @@ import {
   StreamingAvatarApi,
 } from "@heygen/streaming-avatar";
 import WebCamRecording from "./webcam-recording/webcam-recording";
+import { evaluateScorecard } from "@/services/gpt.service";
 
 function AvatarPracticeLesson({
   avatar_id,
@@ -120,11 +121,7 @@ function AvatarPracticeLesson({
   const currentCourseId = "6667760f255b05556e58b41a";
   // const [cameraAllowed, setCameraAllowed] = useState(false);
   const cameraAllowed = useRef(false);
-  // const WebCamRecording = dynamic(
-  //   () => import("./webcam-recording/webcam-recording"),
-  //   { ssr: false }
-  // );
-
+  const [scorecardAns, setScorecardAns] = useState([]);
   const { user } = useUser();
 
   const [randomNumber, setRandomNumber] = useState(0);
@@ -313,6 +310,7 @@ function AvatarPracticeLesson({
           status: "approved",
           duration: Date.now() - currenTimeRef.current,
           completed_at: Date.now(),
+          scorecard: scorecardAns,
         },
       })
         .then(() => {
@@ -331,6 +329,7 @@ function AvatarPracticeLesson({
         data: {
           status: "approval-pending",
           duration: Date.now() - currenTimeRef.current,
+          scorecard: scorecardAns,
         },
       })
         .then(() => {
@@ -454,11 +453,18 @@ function AvatarPracticeLesson({
     setStream(undefined);
   }
 
-  console.log("AvatarPracticeLesson render:", {
-    sessionActive,
-    cameraAllowed: cameraAllowed.current,
-    dataSessionId: data?.current?.sessionId,
-  });
+  const evaluate = async () => {
+    const data = {
+      scorecardQuestions: lesson.scorecard_questions,
+      conversation: conversationsRef.current,
+    };
+
+    const response = await evaluateScorecard(data);
+    // console.log("gpt response: " + response.data);
+    setScorecardAns(response.data);
+  };
+
+  console.log("gpt answer: " , scorecardAns)
 
   return (
     <div className="w-full relative">
@@ -610,8 +616,9 @@ function AvatarPracticeLesson({
         }}
       /> */}
       <EndCallModal
-        handleSubmit={() => {
+        handleSubmit={async () => {
           console.log("ended session");
+          await evaluate();
           markComplete();
           handleStopAndUpload();
         }}

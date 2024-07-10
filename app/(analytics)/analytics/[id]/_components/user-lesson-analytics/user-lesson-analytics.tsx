@@ -1,6 +1,7 @@
 import { FormatDate } from "@/lib/DateHelpers/DateHelpers";
 import { StringFormats } from "@/lib/StringFormats";
 import {
+  activeLessonAtom,
   analyticsTabValueAtom,
   currentAvatarConversationAtom,
   currentCourseAtom,
@@ -37,6 +38,7 @@ const UserLessonAnalytics = () => {
   const [currentCourse, setCurrentCourse] =
     useRecoilState<any>(currentCourseAtom);
   const [currentCourseId, setCurrentCourseId] = useState<string>("");
+  const [activeLesson, setactiveLesson] = useRecoilState(activeLessonAtom)
 
   useEffect(() => {
     const fetchCurrentCourse = async () => {
@@ -67,9 +69,9 @@ const UserLessonAnalytics = () => {
     };
     fetchCurrentCourse();
 
-    return () => {
-      setLessonsArray([]);
-    };
+    // return () => {
+    //   setLessonsArray([]);
+    // };
   }, [currentCourseId, setCurrentCourse, setLessonsArray]);
 
   console.log("lessonsArray ", lessonsArray);
@@ -203,6 +205,7 @@ const UserLessonAnalytics = () => {
                       return (
                         <div
                           onClick={() => {
+                            setactiveLesson(lesson.id)
                             viewRecordings(lesson);
                           }}
                           key={lesson.id}
@@ -283,6 +286,7 @@ const UserLessonAnalytics = () => {
                       return (
                         <div
                           onClick={() => {
+                            setactiveLesson(lesson.id)
                             viewRecordings(lesson);
                           }}
                           key={lesson.id}

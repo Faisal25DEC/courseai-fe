@@ -61,9 +61,9 @@ const PreivewCourse = () => {
         setIsLoading(false);
       });
 
-    return () => {
-      setLessonsArray([]);
-    };
+    // return () => {
+    //   setLessonsArray([]);
+    // };
   }, [user]);
 
   const checkIfLessonIsLocked = (idx: number) => {

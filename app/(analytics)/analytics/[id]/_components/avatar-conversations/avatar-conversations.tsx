@@ -1,4 +1,5 @@
 import {
+  activeLessonAtom,
   currentAvatarConversationAtom,
   currentUserLessonAnalyticsAtom,
   lessonsArrayAtom,
@@ -16,6 +17,7 @@ const AvatarConversations = () => {
   const { approvalPending, approved, pending } = lessonStatuses;
   const [currentAvatarConversation, setCurrentAvatarConversation] =
     useRecoilState(currentAvatarConversationAtom);
+  const [activeLesson, setactiveLesson] = useRecoilState(activeLessonAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState(lessonsArrayAtom);
 
   const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
@@ -41,6 +43,8 @@ const AvatarConversations = () => {
     lessonsArray
   );
   const headings = ["Lesson", "Status", "Time Spent", "Completed At"];
+
+  console.log("avatarLessonAnalyticsArray",avatarLessonAnalyticsArray)
   return (
     <div className="min-h-[90vh] min-w-[990px]">
       {currentAvatarConversation === null && (
@@ -61,6 +65,7 @@ const AvatarConversations = () => {
               <div
                 onClick={() => {
                   setCurrentAvatarConversation(lesson?.conversations);
+                  setactiveLesson(lesson.id);
                 }}
                 key={lesson.id}
                 className="py-4 px-6 border-b border-gray-200 rounded-b-[20px] cursor-pointer flex justify-between items-center rounded-md"
@@ -109,6 +114,8 @@ const AvatarConversations = () => {
       {currentAvatarConversation !== null && (
         <CurrentAvatarConversations
           currentAvatarConversations={currentAvatarConversation}
+          lessonsArray={lessonsArray}
+          avatarLessonAnalyticsArray={avatarLessonAnalyticsArray}
         />
       )}
     </div>

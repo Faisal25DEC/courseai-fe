@@ -8,7 +8,7 @@ const EndCallModal = ({
   handleSubmit,
   handleRetry,
 }: {
-  handleSubmit: () => void;
+  handleSubmit: () => Promise<void>;
   handleRetry: () => void;
 }) => {
   const {

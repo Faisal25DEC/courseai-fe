@@ -21,6 +21,10 @@ export const courseIdAtom = atom({
   default: process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string,
 });
 
+export const scorecardQueAtom = atom({
+  key: "scorecardQueAtom",
+  default: []
+});
 interface LessonInterface {
   id?: any;
   title: string;

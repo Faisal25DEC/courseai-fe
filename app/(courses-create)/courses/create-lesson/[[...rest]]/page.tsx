@@ -82,9 +82,9 @@ const CreateCourse = () => {
     };
     fetchCurrentCourse();
 
-    return () => {
-      setLessonsArray([]);
-    };
+    // return () => {
+    //   setLessonsArray([]);
+    // };
   }, [currentCourseId, setCurrentCourse, setLessonsArray]);
 
   const fetchAvatarsAndVoices = async () => {
@@ -241,7 +241,7 @@ const CreateCourse = () => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="w-[100%] flex flex-col gap-2">
-        <div className="relative flex w-[100%] justify-between items-center pt-3 pb-1 pr-5">
+        <div className="relative flex w-[100%] justify-between items-center pt-3 pb-1 pr-5 h-[55px]">
           <Breadcrumbs className="pl-12">
             <BreadcrumbItem
               onPress={() => {
@@ -366,7 +366,7 @@ const CreateCourse = () => {
             <PreivewCourse />
           </div>
         )}
-        {/* {isCreateLessonModalOpen && <CreateLessonModal />} */}
+        {isCreateLessonModalOpen && <CreateLessonModal />}
       </div>
     </DragDropContext>
   );

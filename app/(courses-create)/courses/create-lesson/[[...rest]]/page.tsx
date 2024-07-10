@@ -242,7 +242,7 @@ const CreateCourse = () => {
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="w-[100%] flex flex-col gap-2">
         <div className="relative flex w-[100%] justify-between items-center pt-3 pb-1 pr-5 h-[55px]">
-          <Breadcrumbs className="pl-12">
+          <Breadcrumbs className="pl-8">
             <BreadcrumbItem
               onPress={() => {
                 router.push("/courses/list");

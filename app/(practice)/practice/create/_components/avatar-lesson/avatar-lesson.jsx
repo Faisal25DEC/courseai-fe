@@ -511,6 +511,16 @@ function AvatarPracticeLesson({
     setChat("");
   };
 
+  useEffect(() => {
+    if (data.current?.sessionId) {
+      setTimeout(() => {
+        const welcome_message =
+          "Hey welcome to the interactive video." + " " + lesson?.description;
+        const resp = repeat(data.current?.sessionId, welcome_message);
+      }, 2000);
+    }
+  }, [data.current?.sessionId]);
+
   return (
     <div className="w-full relative">
       <div className="h-[90vh] w-full flex  flex-col">

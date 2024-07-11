@@ -85,7 +85,7 @@ const PreivewCourse = () => {
             ))}
           </div>
         )}
-        <div className={`${showContent? "w-[70%]":"w-[100%]"} pr-5 py-2 border-1 rounded-lg bg-white my-element m-2`}>
+        <div className={`${showContent? "w-[70%]":"w-[100%]"} pr-5 py-2 border-1 rounded-lg bg-white my-element m-2 overflow-y-scroll`}>
         {!showContent && (
             <div className="flex justify-between items-center border-b-1 border-gray-200  w-full py-5 px-4">
               <div className="flex">

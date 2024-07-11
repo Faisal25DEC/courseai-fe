@@ -47,6 +47,7 @@ import { evaluateScorecard } from "@/services/gpt.service";
 import openIcon from "../../../../../../public/images/open.png";
 import Image from "next/image";
 import { generateRandomSegment } from "@/utils/helpers";
+import Configure from "@/app/(video)/video/components/Configure";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
@@ -130,6 +131,7 @@ function AvatarPracticeLesson({
   const cameraAllowed = useRef(false);
   const [scorecardAns, setScorecardAns] = useState([]);
   const [chat, setChat] = useState("");
+  const [isStartCall, setIsStartCall] = useState(false);
 
   const { user } = useUser();
 
@@ -190,6 +192,7 @@ function AvatarPracticeLesson({
     return () => {
       const duration = Date.now() - currenTimeRef.current;
       conversationsRef.current = [];
+      setIsStartCall(false);
     };
   }, [activeLesson]);
 
@@ -388,7 +391,7 @@ function AvatarPracticeLesson({
 
   async function startSession() {
     setIsLoadingSession(true);
-    toast.loading("Creating session");
+    // toast.loading("Creating session");
     await updateToken();
     if (!avatar.current) {
       setDebug("Avatar API is not initialized");
@@ -496,7 +499,6 @@ function AvatarPracticeLesson({
     }
   };
 
-
   const sendChatFromIcon = (e) => {
     setUserTranscriptLoading(2);
     if (conversationsRef.current) {
@@ -515,80 +517,87 @@ function AvatarPracticeLesson({
         <div className="w-full flex flex-col gap-3 mt-5 relative justify-center items-center">
           {!data?.current?.sessionId && (
             <>
-              <div className="border-1 shadow-lg border-gray-300 flex justify-center flex-col items-center h-fit p-5 rounded-xl relative">
-                <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
-                  <Avatar
-                    isBordered
-                    radius="full"
-                    size="md"
-                    src={lesson.content.avatar.normal_thumbnail_small}
+              {isStartCall ? (
+                <div className="border-1 rounded-lg p-7 shadow-lg">
+                  <Configure
+                    startSession={startSession}
+                    cameraAllowed={cameraAllowed}
+                    isLoadingSession={isLoadingSession}
                   />
-                  <div className="flex flex-col pl-2">
-                    <p className="max-w-[300px] truncate text-sm font-semibold capitalize">{lesson.title}
-                    </p>
-
-                    {/* <p className="text-gray-800 text-sm w-[300px]">
-                    {lesson?.description}
-                  </p> */}
-                  </div>
-                  <div
-                    className="absolute right-4 top-4 cursor-pointer"
-                    onClick={() => {
-                      window.open(
-                        `/video/${randomSegment}/${lesson.id}`,
-                        "_blank"
-                      );
-                    }}
-                    title="Open in new tab"
-                  >
-                    <Image src={openIcon} width={20} height={20} />
-                    {/* <Icon
+                </div>
+              ) : (
+                <div className="border-1 shadow-lg border-gray-300 flex justify-center flex-col items-center h-fit p-5 rounded-xl relative">
+                  <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
+                    <Avatar
+                      isBordered
+                      radius="full"
+                      size="md"
+                      src={lesson.content.avatar.normal_thumbnail_small}
+                    />
+                    <div className="flex flex-col pl-2">
+                      <p className="max-w-[300px] truncate text-sm font-semibold capitalize">
+                        {lesson.title}
+                      </p>
+                    </div>
+                    <div
+                      className="absolute right-4 top-4 cursor-pointer"
+                      onClick={() => {
+                        window.open(
+                          `/video/${randomSegment}/${lesson.id}`,
+                          "_blank"
+                        );
+                      }}
+                      title="Open in new tab"
+                    >
+                      <Image src={openIcon} width={20} height={20} />
+                      {/* <Icon
                       icon="fluent-mdl2:open-in-new-tab"
                       className="w-4 h-4"
                     /> */}
+                    </div>
                   </div>
-                </div>
 
-                <div className="relative mt-4">
-                  <img
-                    src={thumbnail}
-                    alt="ai-avatar"
-                    className="object-cover w-[150px] h-[150px] md:rounded-full shadow-lg"
-                  />
-                  <Icon
-                    icon="fluent-emoji-flat:green-circle"
-                    className="w-6 h-6 bg-white border-2 border-white rounded-full absolute bottom-2 right-2"
-                  />
-                </div>
-             
-                <p className="mt-5 text-[#71717A] text-center text-sm capitalize w-[300px]">
-                  {lesson?.description}
-                </p>
-                <div className="flex mt-3">
-                  <div className="bg-gray-100 px-2 py-[2px] text-xs rounded-lg font-semibold">
-                    {" "}
-                    Live Training
+                  <div className="relative mt-4">
+                    <img
+                      src={thumbnail}
+                      alt="ai-avatar"
+                      className="object-cover w-[150px] h-[150px] md:rounded-full shadow-lg"
+                    />
+                    <Icon
+                      icon="fluent-emoji-flat:green-circle"
+                      className="w-6 h-6 bg-white border-2 border-white rounded-full absolute bottom-2 right-2"
+                    />
                   </div>
-                  <div className="ml-2 border border-gray-400 px-2 py-[2px] text-xs rounded-lg font-semibold">
-                    {" "}
-                    {lesson.content.voice.display_name.split("-")[1]}
-                  </div>
-                  {/* <div className="ml-2 border px-2 py-[2px] text-xs rounded-lg font-semibold bg-black text-white">
+
+                  <p className="mt-5 text-[#71717A] text-center text-sm capitalize w-[300px]">
+                    {lesson?.description}
+                  </p>
+                  <div className="flex mt-3">
+                    <div className="bg-gray-100 px-2 py-[2px] text-xs rounded-lg font-semibold">
+                      {" "}
+                      Live Training
+                    </div>
+                    <div className="ml-2 border border-gray-400 px-2 py-[2px] text-xs rounded-lg font-semibold">
+                      {" "}
+                      {lesson.content.voice.display_name.split("-")[1]}
+                    </div>
+                    {/* <div className="ml-2 border px-2 py-[2px] text-xs rounded-lg font-semibold bg-black text-white">
                 {" "}
                 Book rate : {randomNumber}%
 
               </div> */}
+                  </div>
+                  <Button
+                    className="py-6 start-gradient text-white text-lg border-none mt-5 w-[400px] cursor-pointer"
+                    onClick={() => {
+                      setIsStartCall(true);
+                    }}
+                  >
+                    <Icon icon="fluent:call-24-regular" className="w-6 h-6" />
+                    Start Call
+                  </Button>
                 </div>
-                <Button
-                  className="py-6 start-gradient text-white text-lg border-none mt-5 w-[400px] cursor-pointer"
-                  onClick={() => {
-                    onStartCallModalOpen();
-                  }}
-                >
-                  <Icon icon="fluent:call-24-regular" className="w-6 h-6" />
-                  Start Call
-                </Button>
-              </div>
+              )}
             </>
           )}
           <div className="h-fit pl-10 flex flex-col justify-center gap-3 items-center relative py-8">
@@ -643,7 +652,7 @@ function AvatarPracticeLesson({
                   <div className="flex gap-2  right-[27%] absolute bottom-[1rem]">
                     <div className="flex flex-col gap-2">
                       <div className="relative">
-                      <input
+                        <input
                           value={chat}
                           onChange={(e) => {
                             setChat(e.target.value);

@@ -126,6 +126,7 @@ function AvatarPracticeLesson({
   // const [cameraAllowed, setCameraAllowed] = useState(false);
   const cameraAllowed = useRef(false);
   const [scorecardAns, setScorecardAns] = useState([]);
+  const [windowType, setWindowType] = useState("");
 
   const { user } = useUser();
 
@@ -140,6 +141,16 @@ function AvatarPracticeLesson({
 
   const apiKey = heygen_API.apiKey;
   const SERVER_URL = heygen_API.serverUrl;
+
+  useEffect(() => {
+    if (window !== parent) {
+      // This page is inside an iframe
+      setWindowType("iframe");
+    } else {
+      // This page is not inside an iframe
+      setWindowType("");
+    }
+  }, []);
 
   const handleSubmit = () => {
     // setCameraAllowed(true);
@@ -391,12 +402,16 @@ function AvatarPracticeLesson({
     // console.log("gpt response 1 ", response.answers);
   };
   return (
-    <div className="w-full relative px-20">
-      <div className="h-[90vh] w-full flex  flex-col">
-        <div className="w-full flex flex-col gap-3 mt-5 relative justify-center items-center">
+    <div
+      className={` relative ${
+        windowType === "iframe" ? "px-0 bg-[#F3F6F6] w-[100%] h-fit rounded-lg" : "px-20 w-full"
+      } `}
+    >
+      <div className="h-fit w-full flex  flex-col">
+        <div className="w-full h-full flex flex-col gap-3 mt-5 relative justify-center items-center">
           {!data?.current?.sessionId && (
             <>
-              <div className="mt-20 border-1 shadow-lg border-gray-300 flex justify-center flex-col items-center h-fit p-5 rounded-xl relative">
+              <div className="bg-white border-1 shadow-lg border-gray-300 flex item justify-center flex-col items-center h-fit p-5 rounded-xl relative">
                 <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
                   <Avatar
                     isBordered
@@ -405,7 +420,7 @@ function AvatarPracticeLesson({
                     src={lesson.content.avatar.normal_thumbnail_small}
                   />
                   <div className="flex flex-col pl-2">
-                    <p className="max-w-[300px] truncate text-sm font-semibold capitalize">
+                    <p className="max-w-fit truncate text-sm font-semibold capitalize">
                       {lesson.title}
                     </p>
 
@@ -456,7 +471,7 @@ function AvatarPracticeLesson({
               </div>
             </>
           )}
-          <div className="h-fit pl-10 flex flex-col justify-center gap-3 items-center relative py-8">
+          <div className={`h-f  flex flex-col justify-center gap-3 items-center relative ${windowType==="iframe"? "py-0":"py-8 pl-10"}`}>
             {data?.current?.sessionId && (
               <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
                 <Avatar

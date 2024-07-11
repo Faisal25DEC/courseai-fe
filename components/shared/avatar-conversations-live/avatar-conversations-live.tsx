@@ -21,7 +21,7 @@ const AvatarConversationsLive = ({
   }, [conversationsRef.current.length, userTranscriptLoading, responseLoading]);
   console.log(userTranscriptLoading, "userTranscript");
   return (
-    <ScrollArea className="flex flex-col gap-4 h-[70vh] w-[320px] rounded-r-[20px] shadow-1">
+    <ScrollArea className="bg-white flex flex-col gap-4 h-[70vh] w-[320px] rounded-r-[20px] shadow-1">
       <div className="text-center border-b border-b-gray-200 mb-2">
         <p className="text-[13px] px-2 py-3 text-gray-700 font-medium">
           Live Transcript

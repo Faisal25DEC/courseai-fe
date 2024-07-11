@@ -329,6 +329,7 @@ function AvatarPracticeLesson({
       );
       // setData(res);
       data.current = res;
+      console.log("response----------> ", res);
       setStream(avatar.current.mediaStream);
       setIsPracticeList(false);
       toast.dismiss();
@@ -430,6 +431,16 @@ function AvatarPracticeLesson({
     setChat("");
   };
 
+  useEffect(() => {
+    if (data.current?.sessionId) {
+      setTimeout(() => {
+        const welcome_message =
+          "Hey welcome to the interactive video." + " " + lesson?.description;
+        const resp = repeat(data.current?.sessionId, welcome_message);
+      }, 2000);
+    }
+  }, [data.current?.sessionId]);
+
   return (
     <div className={`w-full relative px-20`}>
       <div className="h-[90vh] w-full flex  flex-col">
@@ -438,7 +449,11 @@ function AvatarPracticeLesson({
             <>
               <div className="mt-20 bg-white border-1 shadow-lg border-gray-300 flex item justify-center flex-col items-center h-fit p-5 rounded-xl relative">
                 {isStartCall ? (
-                  <Configure startSession={startSession} cameraAllowed={cameraAllowed} isLoadingSession={isLoadingSession}/>
+                  <Configure
+                    startSession={startSession}
+                    cameraAllowed={cameraAllowed}
+                    isLoadingSession={isLoadingSession}
+                  />
                 ) : (
                   <>
                     <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">

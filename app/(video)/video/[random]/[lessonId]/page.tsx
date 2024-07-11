@@ -38,7 +38,7 @@ const PreivewPractice = () => {
   }, [currentCourseId, lessonId, setActiveLesson]);
 
   return (
-    <div className="w-full h-full flex items-center justify-center px-20">
+    <div className="w-full h-full flex items-center justify-center">
       {lessonsArray[activeLesson]?.type === "avatar" && (
         <AvatarPracticeLesson
           lesson_id={lessonsArray[activeLesson].id}

@@ -129,6 +129,7 @@ function AvatarPracticeLesson({
   // const [cameraAllowed, setCameraAllowed] = useState(false);
   const cameraAllowed = useRef(false);
   const [scorecardAns, setScorecardAns] = useState([]);
+  const [chat, setChat] = useState("");
 
   const { user } = useUser();
 
@@ -234,7 +235,6 @@ function AvatarPracticeLesson({
       },
       body: JSON.stringify({ session_id, text }),
     });
-    taskInputRef.current.value = "";
     if (response.status === 500) {
       throw new Error("Server error");
     } else {
@@ -254,7 +254,7 @@ function AvatarPracticeLesson({
       return;
     }
     console.log(text);
-    const prompt = taskInputRef?.current?.value || text; // Using the same input for simplicity
+    const prompt = text; // Using the same input for simplicity
     if (prompt.trim() === "") {
       toast.error("Please provide a valid input");
       return;
@@ -481,6 +481,34 @@ function AvatarPracticeLesson({
     // setScorecardAns(response.answers);
     // console.log("gpt response 1 ", response.answers);
   };
+
+  const sendChat = (e) => {
+    if (e.key === "Enter") {
+      setUserTranscriptLoading(2);
+      if (conversationsRef.current) {
+        conversationsRef.current = [
+          ...conversationsRef.current,
+          { role: "user", content: chat },
+        ];
+      }
+      talkHandler(chat, false);
+      setChat("");
+    }
+  };
+
+
+  const sendChatFromIcon = (e) => {
+    setUserTranscriptLoading(2);
+    if (conversationsRef.current) {
+      conversationsRef.current = [
+        ...conversationsRef.current,
+        { role: "user", content: chat },
+      ];
+    }
+    talkHandler(chat, false);
+    setChat("");
+  };
+
   return (
     <div className="w-full relative">
       <div className="h-[90vh] w-full flex  flex-col">
@@ -612,19 +640,23 @@ function AvatarPracticeLesson({
                   </>
                 )}
                 {data?.current?.sessionId && (
-                  <div className="flex gap-2 items-end left-[50%] translate-x-[-50%] absolute bottom-[1rem]">
+                  <div className="flex gap-2  right-[27%] absolute bottom-[1rem]">
                     <div className="flex flex-col gap-2">
                       <div className="relative">
-                        <input
-                          placeholder="Write hidden your query and press enter to talk"
-                          className="text-gray-100 hidden px-2 glassmorphic-effect-1 placeholder:text-gray-300 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[200px] md:w-[350px] rounded-[20px] bg-transparent "
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              talkHandler();
-                            }
+                      <input
+                          value={chat}
+                          onChange={(e) => {
+                            setChat(e.target.value);
                           }}
-                          ref={taskInputRef}
+                          placeholder="Type a message here..."
+                          className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 text-sm pr-8 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[150px] md:w-[220px] rounded-[20px] bg-transparent "
+                          onKeyDown={sendChat}
                           type="text"
+                        />
+                        <Icon
+                          icon="lets-icons:send-hor"
+                          className="rounded-full w-6 h-6 absolute right-2 top-1.5 cursor-pointer text-white"
+                          onClick={sendChatFromIcon}
                         />
                       </div>
                     </div>

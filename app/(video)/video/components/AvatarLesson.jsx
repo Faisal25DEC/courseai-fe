@@ -434,7 +434,7 @@ function AvatarPracticeLesson({
       className={`w-full relative px-20`}
     >
       <div className="h-[90vh] w-full flex  flex-col">
-        <div className="w-full flex flex-col gap-3 mt-5 relative justify-center items-center">
+        <div className="w-full flex flex-col gap-3 relative justify-center items-center">
           {!data?.current?.sessionId && (
             <>
               <div className="mt-20 bg-white border-1 shadow-lg border-gray-300 flex item justify-center flex-col items-center h-fit p-5 rounded-xl relative">
@@ -498,7 +498,7 @@ function AvatarPracticeLesson({
             </>
           )}
           <div
-            className={`h-fit pl-10 flex flex-col justify-center gap-3 items-center relative py-8`}
+            className={`h-fit flex flex-col justify-center gap-3 items-center relative`}
           >
             {data?.current?.sessionId && (
               <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">

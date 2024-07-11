@@ -1,11 +1,6 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Spinner } from "@nextui-org/react";
-import React, {
-  useState,
-  useEffect,
-  ChangeEvent,
-  MutableRefObject,
-} from "react";
+import React, { useState, useEffect, ChangeEvent, MutableRefObject } from "react";
 
 interface MediaDeviceInfo {
   deviceId: string;
@@ -19,55 +14,70 @@ interface ConfigureProps {
   isLoadingSession: boolean;
 }
 
-function Configure({
-  startSession,
-  cameraAllowed,
-  isLoadingSession,
-}: ConfigureProps) {
+const Configure: React.FC<ConfigureProps> = ({ startSession, cameraAllowed, isLoadingSession }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>("off");
   const [selectedMicrophone, setSelectedMicrophone] = useState<string>("");
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
-    async function getMediaDevices() {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(
-        (device) => device.kind === "videoinput"
-      );
-      const audioDevices = devices.filter(
-        (device) => device.kind === "audioinput"
-      );
-
-      setCameras(videoDevices);
-      setMicrophones(audioDevices);
-
-      console.log("Video Devices:", videoDevices);
-      console.log("Audio Devices:", audioDevices);
-
-      if (audioDevices.length > 0) {
-        setSelectedMicrophone(audioDevices[0].deviceId);
-      } else {
-        setSelectedMicrophone(""); // No microphones available
+    async function getDevices() {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        setDevices(devices);
+      } catch (error) {
+        console.error("Error fetching media devices:", error);
       }
-
-      setSelectedCamera("off");
     }
 
-    getMediaDevices();
+    async function getStream() {
+      try {
+        const constraints = {
+          audio: true,
+          video: true,
+        };
+        const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+        handleStream(newStream);
+        await getDevices();
+      } catch (error) {
+        handleError(error);
+      }
+    }
+
+    getStream();
   }, []);
 
-  useEffect(() => {
-    if (selectedCamera && selectedMicrophone) {
-      getMediaStream(selectedCamera, selectedMicrophone);
+  const setDevices = (deviceInfos: MediaDeviceInfo[]) => {
+    const videoDevices = deviceInfos.filter(device => device.kind === 'videoinput');
+    const audioDevices = deviceInfos.filter(device => device.kind === 'audioinput');
+    setCameras(videoDevices);
+    setMicrophones(audioDevices);
+
+    if (audioDevices.length > 0) {
+      setSelectedMicrophone(audioDevices[0].deviceId);
+    } else {
+      setSelectedMicrophone(""); // No microphones available
     }
-  }, [selectedCamera, selectedMicrophone]);
+
+    setSelectedCamera("off");
+  };
+
+  const handleStream = (newStream: MediaStream) => {
+    setStream(newStream);
+    const videoElement = document.querySelector('video') as HTMLVideoElement;
+    if (videoElement) {
+      videoElement.srcObject = newStream;
+    }
+  };
+
+  const handleError = (error: any) => {
+    console.error("Error: ", error);
+  };
 
   const getMediaStream = async (cameraId: string, microphoneId: string) => {
-    if (cameraId === "off") {
-      cameraAllowed.current = false;
-      console.log("camera allowed ", false);
-      return;
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
     }
 
     const constraints = {
@@ -76,11 +86,12 @@ function Configure({
     };
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+      handleStream(newStream);
       cameraAllowed.current = true;
       console.log("camera allowed ", true);
     } catch (error) {
-      console.error("Error accessing media devices.", error);
+      handleError(error);
       cameraAllowed.current = false;
       console.log("camera allowed ", false);
     }
@@ -102,14 +113,14 @@ function Configure({
     <option key="off" value="off">
       Switch off
     </option>,
-    ...cameras.map((camera) => (
+    ...cameras.map(camera => (
       <option key={camera.deviceId} value={camera.deviceId}>
         {camera.label}
       </option>
     )),
   ];
 
-  const microphoneOptions = microphones.map((microphone) => (
+  const microphoneOptions = microphones.map(microphone => (
     <option key={microphone.deviceId} value={microphone.deviceId}>
       {microphone.label}
     </option>
@@ -171,9 +182,14 @@ function Configure({
             "Let's go"
           )}
         </Button>
+        <video autoPlay playsInline className="hidden" ref={video => {
+          if (video && stream) {
+            video.srcObject = stream;
+          }
+        }} />
       </div>
     </>
   );
-}
+};
 
 export default Configure;

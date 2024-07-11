@@ -744,3 +744,17 @@ li {
 .card-gradient {
   background: linear-gradient(to top, #111827, #2b465e); 
 }
+
+.custom-select {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: #d1d5db; /* Same as the border color to prevent the blue border */
+  box-shadow: none; /* Remove any shadow if present */
+}

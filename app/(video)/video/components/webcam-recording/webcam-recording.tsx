@@ -73,7 +73,7 @@ const WebcamRecordingComponent = ({
       audio
       muted
       audioConstraints={audioConstraints}
-      className="absolute bottom-[1rem] h-[120px] w-[210px] right-2 rounded-[20px] flex items-center justify-center"
+      className="absolute bottom-[1rem] h-[120px] w-fit right-2 rounded-[20px] flex items-center justify-center"
       screenshotFormat="image/jpeg"
       videoConstraints={videoConstraints}
       onUserMedia={startRecording}

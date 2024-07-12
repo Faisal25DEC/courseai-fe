@@ -494,7 +494,7 @@ function AvatarPracticeLesson({
           { role: "user", content: chat },
         ];
       }
-      talkHandler(chat, false);
+      talkHandler(chat, true);
       setChat("");
     }
   };
@@ -507,7 +507,7 @@ function AvatarPracticeLesson({
         { role: "user", content: chat },
       ];
     }
-    talkHandler(chat, false);
+    talkHandler(chat, true);
     setChat("");
   };
 

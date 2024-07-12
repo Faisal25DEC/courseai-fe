@@ -14,12 +14,15 @@ interface ConfigureProps {
   isLoadingSession: boolean;
 }
 
-const Configure: React.FC<ConfigureProps> = ({ startSession, cameraAllowed, isLoadingSession }) => {
+const Configure: React.FC<ConfigureProps> = ({
+  startSession,
+  cameraAllowed,
+  isLoadingSession,
+}) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>("off");
   const [selectedMicrophone, setSelectedMicrophone] = useState<string>("");
-  const [stream, setStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     async function getDevices() {
@@ -31,26 +34,12 @@ const Configure: React.FC<ConfigureProps> = ({ startSession, cameraAllowed, isLo
       }
     }
 
-    async function getStream() {
-      try {
-        const constraints = {
-          audio: true,
-          video: true,
-        };
-        const newStream = await navigator.mediaDevices.getUserMedia(constraints);
-        handleStream(newStream);
-        await getDevices();
-      } catch (error) {
-        handleError(error);
-      }
-    }
-
-    getStream();
+    getDevices();
   }, []);
 
   const setDevices = (deviceInfos: MediaDeviceInfo[]) => {
-    const videoDevices = deviceInfos.filter(device => device.kind === 'videoinput');
-    const audioDevices = deviceInfos.filter(device => device.kind === 'audioinput');
+    const videoDevices = deviceInfos.filter((device) => device.kind === "videoinput");
+    const audioDevices = deviceInfos.filter((device) => device.kind === "audioinput");
     setCameras(videoDevices);
     setMicrophones(audioDevices);
 
@@ -63,31 +52,24 @@ const Configure: React.FC<ConfigureProps> = ({ startSession, cameraAllowed, isLo
     setSelectedCamera("off");
   };
 
-  const handleStream = (newStream: MediaStream) => {
-    setStream(newStream);
-    const videoElement = document.querySelector('video') as HTMLVideoElement;
-    if (videoElement) {
-      videoElement.srcObject = newStream;
-    }
-  };
-
   const handleError = (error: any) => {
     console.error("Error: ", error);
   };
 
   const getMediaStream = async (cameraId: string, microphoneId: string) => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+    if (cameraId === "off") {
+      cameraAllowed.current = false;
+      console.log("camera allowed ", false);
+      return;
     }
 
     const constraints = {
-      video: cameraId !== "off" ? { deviceId: { exact: cameraId } } : false,
-      audio: { deviceId: { exact: microphoneId } },
+      video: { deviceId: { exact: cameraId } },
+      audio: microphoneId ? { deviceId: { exact: microphoneId } } : false,
     };
 
     try {
       const newStream = await navigator.mediaDevices.getUserMedia(constraints);
-      handleStream(newStream);
       cameraAllowed.current = true;
       console.log("camera allowed ", true);
     } catch (error) {
@@ -100,27 +82,32 @@ const Configure: React.FC<ConfigureProps> = ({ startSession, cameraAllowed, isLo
   const handleCameraChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const cameraId = event.target.value;
     setSelectedCamera(cameraId);
-    getMediaStream(cameraId, selectedMicrophone);
   };
 
   const handleMicrophoneChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const microphoneId = event.target.value;
     setSelectedMicrophone(microphoneId);
-    getMediaStream(selectedCamera, microphoneId);
+  };
+
+  const handleStartSession = () => {
+    if (selectedCamera !== "off") {
+      getMediaStream(selectedCamera, selectedMicrophone);
+    }
+    startSession();
   };
 
   const cameraOptions = [
     <option key="off" value="off">
       Switch off
     </option>,
-    ...cameras.map(camera => (
+    ...cameras.map((camera) => (
       <option key={camera.deviceId} value={camera.deviceId}>
         {camera.label}
       </option>
     )),
   ];
 
-  const microphoneOptions = microphones.map(microphone => (
+  const microphoneOptions = microphones.map((microphone) => (
     <option key={microphone.deviceId} value={microphone.deviceId}>
       {microphone.label}
     </option>
@@ -170,7 +157,7 @@ const Configure: React.FC<ConfigureProps> = ({ startSession, cameraAllowed, isLo
         <Button
           color="primary"
           className="start-gradient mt-8"
-          onClick={() => startSession()}
+          onClick={handleStartSession}
           disabled={selectedCamera === "" || selectedMicrophone === ""}
         >
           {isLoadingSession ? (
@@ -182,11 +169,6 @@ const Configure: React.FC<ConfigureProps> = ({ startSession, cameraAllowed, isLo
             "Let's go"
           )}
         </Button>
-        <video autoPlay playsInline className="hidden" ref={video => {
-          if (video && stream) {
-            video.srcObject = stream;
-          }
-        }} />
       </div>
     </>
   );

@@ -23,7 +23,7 @@ import { StringFormats } from "@/lib/StringFormats";
 
 import { typeColorObj } from "./constants";
 import Tag from "@/components/shared/tag/tag";
-import { Chip } from "@nextui-org/react";
+import { Chip, Progress } from "@nextui-org/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 const PreivewCourse = () => {
@@ -89,6 +89,8 @@ const PreivewCourse = () => {
     return lockedLessons;
   };
   const filteredLessons = getLockedLessons(lessonsArray);
+
+  const myCompletion = filteredLessons.map((ls) => ls.locked);
   return (
     <div className="w-full h-[100vh] overflow-hidden">
       <div className="flex h-full w-[100%]">
@@ -147,48 +149,63 @@ const PreivewCourse = () => {
             ))}
           </div>
         )}
-        <div className="overflow-auto w-full pr-5 py-2 border-1 rounded-lg bg-white mx-5 my-4 my-element">
-          {!showContent && (
-            <div className="flex justify-between items-center border-b-1 border-gray-200  w-full py-5 px-4">
-              <div className="flex">
-                <Icon
-                  icon="gridicons:menus"
-                  className="cursor-pointer text-gray-800 w-6 h-6"
-                  onClick={() => setshowContent(true)}
-                />
-                <h1 className="text-[15px] text-gray-800 font-semibold pl-2">
-                  Contents
-                </h1>
+        <div className="flex flex-col w-full px-4">
+          <div className="pt-5">
+            <h1 className="text-gray-500 text-[15px] font-semibold pb-2">
+              My completion
+            </h1>
+            <Progress
+              aria-label="Downloading..."
+              size="sm"
+              value={myCompletion.length}
+              color="success"
+              showValueLabel={true}
+              className="max-w-md"
+            />
+          </div>
+          <div className="overflow-auto w-full pr-5 py-2 border-1 rounded-lg bg-white my-4 my-element">
+            {!showContent && (
+              <div className="flex justify-between items-center border-b-1 border-gray-200  w-full py-5 px-4">
+                <div className="flex">
+                  <Icon
+                    icon="gridicons:menus"
+                    className="cursor-pointer text-gray-800 w-6 h-6"
+                    onClick={() => setshowContent(true)}
+                  />
+                  <h1 className="text-[15px] text-gray-800 font-semibold pl-2">
+                    Contents
+                  </h1>
+                </div>
               </div>
-            </div>
-          )}
-          {lessonsArray[activeLesson]?.type === "video" && (
-            <VideoLesson
-              video={lessonsArray[activeLesson].content}
-              lesson={filteredLessons[activeLesson]}
-            />
-          )}
-          {lessonsArray[activeLesson]?.type === "text" && (
-            <TextLesson
-              content={lessonsArray[activeLesson].content}
-              lesson_id={lessonsArray[activeLesson].id}
-              lesson={filteredLessons[activeLesson]}
-            />
-          )}
-          {lessonsArray[activeLesson]?.type === "avatar" && (
-            <AvatarLesson
-              lesson={filteredLessons[activeLesson]}
-              voice_id={lessonsArray[activeLesson].content?.voice_id}
-              avatar_id={lessonsArray[activeLesson].content?.avatar_id}
-              thumbnail={
-                lessonsArray[activeLesson].content?.avatar
-                  ?.normal_thumbnail_medium
-              }
-              avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
-              lesson_id={lessonsArray[activeLesson].id}
-              setIsPracticeList={setIsPracticeList}
-            />
-          )}
+            )}
+            {lessonsArray[activeLesson]?.type === "video" && (
+              <VideoLesson
+                video={lessonsArray[activeLesson].content}
+                lesson={filteredLessons[activeLesson]}
+              />
+            )}
+            {lessonsArray[activeLesson]?.type === "text" && (
+              <TextLesson
+                content={lessonsArray[activeLesson].content}
+                lesson_id={lessonsArray[activeLesson].id}
+                lesson={filteredLessons[activeLesson]}
+              />
+            )}
+            {lessonsArray[activeLesson]?.type === "avatar" && (
+              <AvatarLesson
+                lesson={filteredLessons[activeLesson]}
+                voice_id={lessonsArray[activeLesson].content?.voice_id}
+                avatar_id={lessonsArray[activeLesson].content?.avatar_id}
+                thumbnail={
+                  lessonsArray[activeLesson].content?.avatar
+                    ?.normal_thumbnail_medium
+                }
+                avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
+                lesson_id={lessonsArray[activeLesson].id}
+                setIsPracticeList={setIsPracticeList}
+              />
+            )}
+          </div>
         </div>
       </div>
       <LessonLockedModal />

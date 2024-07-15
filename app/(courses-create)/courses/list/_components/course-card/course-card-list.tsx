@@ -1,24 +1,45 @@
 import { admin } from "@/lib/constants";
+import { getUserAnalytics } from "@/services/lesson.service";
 import { courseIdAtom, currentUserRoleAtom } from "@/store/atoms";
+import { useUser } from "@clerk/nextjs";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { useRecoilState } from "recoil";
 
 function CourseListCard({ course }: { course: { id: string; title: string } }) {
+  const { user } = useUser();
   const router = useRouter();
   const [courseId, setCourseId] = useRecoilState(courseIdAtom);
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);
   const [videoOption, setVideoOption] = useState(false);
   const videoOptionRef = useRef<HTMLDivElement>(null);
+  const [userAnalytics, setUserAnalytics] = useState<any>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    getUserAnalytics(user?.id as string, course.id).then((analyticsRes) => {
+      if (analyticsRes) {
+        setUserAnalytics(analyticsRes);
+      } else {
+        console.log("No analytics data received.");
+      }
+    });
+    return () => {
+      setUserAnalytics(null);
+    };
+  }, [course]);
 
   const handleCourseClick = () => {
     setCourseId(course.id);
     if (currentUserRole === admin) {
       router.push(`/courses/create-lesson/${course.id}`);
     } else {
-      router.push(`/courses/${course.id}`);
+      if (userAnalytics?.course_status === "approved") {
+        router.push(`/courses/${course.id}`);
+      }
     }
   };
 
@@ -46,11 +67,26 @@ function CourseListCard({ course }: { course: { id: string; title: string } }) {
   return (
     <>
       <div
-        className="relative flex items-center justify-center md:justify-start border-b mx-2 cursor-pointer group transition-transform duration-300 ease-in-out hover:translate-x-2"
+        className={`${
+          currentUserRole === admin
+            ? ""
+            : userAnalytics?.course_status === "approved"
+            ? "opacity-1"
+            : "opacity-50 "
+        } relative flex items-center justify-center md:justify-start border-b mx-2 cursor-pointer group transition-transform duration-300 ease-in-out hover:translate-x-2`}
         onClick={handleCourseClick}
       >
         <div className="flex mask-image-list relative zoom-transition my-2 md:my-4">
-          <div className="mask-image-content text-gray-300 absolute"></div>
+          <div className="mask-image-content text-gray-300 absolute">
+            {/* {currentUserRole === admin
+              ? null
+              : userAnalytics?.course_status !== "approved" && (
+                  <Icon
+                    icon="mingcute:lock-fill"
+                    className="w-5 h-5 absolute right-4 top-4"
+                  />
+                )} */}
+          </div>
         </div>
 
         <div className="flex flex-col justify-between h-full relative">

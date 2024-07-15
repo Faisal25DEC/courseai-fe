@@ -34,23 +34,23 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
       toast.error("Admin has rejected the approval request.");
       toast.dismiss();
     }
-    return () => {
-      if (!user) return;
-      const duration = Date.now() - currenTimeRef.current;
-      console.log("duration", duration);
-      if (lesson.status === "approved") return;
-      updateLessonForUser({
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
+    // return () => {
+    //   if (!user) return;
+    //   const duration = Date.now() - currenTimeRef.current;
+    //   console.log("duration", duration);
+    //   if (lesson.status === "approved") return;
+    //   updateLessonForUser({
+    //     course_id: currentCourseId,
+    //     lesson_id: lesson.id,
 
-        user_id: user?.id as string,
-        data: {
-          duration: duration,
-        },
-      }).then(() => {
-        currenTimeRef.current = Date.now();
-      });
-    };
+    //     user_id: user?.id as string,
+    //     data: {
+    //       duration: duration,
+    //     },
+    //   }).then(() => {
+    //     currenTimeRef.current = Date.now();
+    //   });
+    // };
   }, []);
 
   useEffect(() => {
@@ -117,7 +117,6 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
       })
         .then(() => {
           approveLessonRequest({
-            lesson_id: lesson.id,
             course_id: currentCourseId,
             user_id: user?.id as string,
             status: "pending",
@@ -142,13 +141,13 @@ const VideoLesson = ({ video, lesson }: { video: any; lesson: any }) => {
           {StringFormats.capitalizeFirstLetterOfEachWord(lesson.title)}
         </h1>
         <div className=" top-2 right-2">
-          {lesson.status === "approved" ? (
+          {/* {lesson.status === "approved" ? (
             <Button variant={"outline"}>Completed</Button>
           ) : lesson.status === "approval-pending" ? (
             <Button>Approval Pending</Button>
           ) : (
             <Button onClick={markComplete}>Mark Complete</Button>
-          )}
+          )} */}
         </div>
       </div>
       {video?.playback_id && (

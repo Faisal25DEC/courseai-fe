@@ -42,50 +42,51 @@ const TextLesson = ({
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const currenTimeRef = React.useRef<number>(Date.now());
   const [isDocumentVisible, setIsDocumentVisible] = useState(!document.hidden);
-  useEffect(() => {
-    return () => {
-      if (!user) return;
-      const duration = Date.now() - currenTimeRef.current;
-      if (lesson.status === "approved") return;
-      updateLessonForUser({
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
+  // useEffect(() => {
+  //   return () => {
+  //     if (!user) return;
+  //     const duration = Date.now() - currenTimeRef.current;
+  //     if (lesson.status === "approved") return;
+  //     updateLessonForUser({
+  //       course_id: currentCourseId,
+  //       lesson_id: lesson.id,
 
-        user_id: user?.id as string,
-        data: {
-          duration: duration,
-        },
-      }).then(() => {
-        currenTimeRef.current = Date.now();
-      });
-    };
-  }, []);
-  useEffect(() => {
-    if (lesson.status === "rejected") {
-      toast.error("Admin has rejected the approval request.");
-      toast.dismiss();
-    }
-  }, [lesson]);
+  //       user_id: user?.id as string,
+  //       data: {
+  //         duration: duration,
+  //       },
+  //     }).then(() => {
+  //       currenTimeRef.current = Date.now();
+  //     });
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    setIsDocumentVisible(!document.hidden);
-  }, []);
+  // useEffect(() => {
+  //   if (lesson.status === "rejected") {
+  //     toast.error("Admin has rejected the approval request.");
+  //     toast.dismiss();
+  //   }
+  // }, [lesson]);
 
-  useEffect(() => {
-    if (!isDocumentVisible && user && lesson.status !== "approved") {
-      const duration = Date.now() - currenTimeRef.current;
-      updateLessonForUser({
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
-        user_id: user?.id as string,
-        data: {
-          duration: duration,
-        },
-      }).then(() => {
-        currenTimeRef.current = Date.now();
-      });
-    }
-  }, [isDocumentVisible, user, lesson.id]);
+  // useEffect(() => {
+  //   setIsDocumentVisible(!document.hidden);
+  // }, []);
+
+  // useEffect(() => {
+  //   if (!isDocumentVisible && user && lesson.status !== "approved") {
+  //     const duration = Date.now() - currenTimeRef.current;
+  //     updateLessonForUser({
+  //       course_id: currentCourseId,
+  //       lesson_id: lesson.id,
+  //       user_id: user?.id as string,
+  //       data: {
+  //         duration: duration,
+  //       },
+  //     }).then(() => {
+  //       currenTimeRef.current = Date.now();
+  //     });
+  //   }
+  // }, [isDocumentVisible, user, lesson.id]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -98,56 +99,7 @@ const TextLesson = ({
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
-  const markComplete = () => {
-    if (lesson.submission === "automatic") {
-      updateLessonForUser({
-        user_id: user?.id,
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
-        data: {
-          status: "approved",
-          duration: Date.now() - currenTimeRef.current,
-          completed_at: Date.now(),
-        },
-      })
-        .then(() => {
-          getUserAnalytics(user?.id as string, currentCourseId).then((res) => {
-            setUserAnalytics(res?.analytics);
-          });
-        })
-        .catch((err) => {
-          toast.error("Failed to mark lesson as complete");
-        });
-    } else {
-      updateLessonForUser({
-        user_id: user?.id,
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
-        data: {
-          status: "approval-pending",
-          duration: Date.now() - currenTimeRef.current,
-        },
-      })
-        .then(() => {
-          approveLessonRequest({
-            lesson_id: lesson.id,
-            course_id: currentCourseId,
-            user_id: user?.id as string,
-            status: "pending",
-          }).then(() => {
-            toast.success("Request sent for approval");
-            getUserAnalytics(user?.id as string, currentCourseId).then(
-              (res) => {
-                setUserAnalytics(res?.analytics);
-              }
-            );
-          });
-        })
-        .catch((err) => {
-          toast.error("Failed to send request for approval");
-        });
-    }
-  };
+
   return (
     <div className="py-4 h-full flex flex-col items-center overflow-auto relative">
       <div className="w-full flex flex-col gap-3 relative">
@@ -156,13 +108,13 @@ const TextLesson = ({
             {StringFormats.capitalizeFirstLetterOfEachWord(lesson?.title)}
           </h1>
           <div className="absolute top-2 right-2">
-            {lesson.status === "approved" ? (
+            {/* {lesson.status === "approved" ? (
               <Button variant={"outline"}>Completed</Button>
             ) : lesson.status === "approval-pending" ? (
               <Button>Approval Pending</Button>
             ) : (
               <Button onClick={markComplete}>Mark Complete</Button>
-            )}
+            )} */}
           </div>
         </div>
         <div className="flex flex-col gap-2 pl-[51px]">

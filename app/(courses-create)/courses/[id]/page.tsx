@@ -1,7 +1,11 @@
 "use client";
 import { colors, lessonTypeText, textFromBg } from "@/lib/constants";
 import { getVideoThumbnail } from "@/lib/MuxHelpers/MuxHelpers";
-import { getCourse, getUserAnalytics } from "@/services/lesson.service";
+import {
+  getCourse,
+  getUserAnalytics,
+  updateLessonForUser,
+} from "@/services/lesson.service";
 import {
   activeLessonAtom,
   courseIdAtom,
@@ -34,63 +38,127 @@ const PreivewCourse = () => {
   const [showContent, setshowContent] = useState(true);
 
   const { user } = useUser();
-  const { id } = useParams();
-  const {
-    isLessonLockedModalOpen,
-    onLessonLockedModalOpen,
-    onLessonLockedModalClose,
-  } = useLessonLockedModal();
+
+  const currenTimeRef = React.useRef<number>(Date.now());
+
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [userAnalytics, setUserAnalytics] =
     useRecoilState<any>(userAnalyticsAtom);
   useEffect(() => {
-    if (!user && userAnalytics === null) return;
-    getCourse(id as string)
-      .then((res) => {
-        getUserAnalytics(user?.id as string, currentCourseId).then(
-          (analyticsRes) => {
-            setUserAnalytics(analyticsRes?.analytics);
-          }
-        );
-        setLessonsArray(res.lessons);
-      })
-      .catch(() => {
-        toast.error("Failed to fetch course");
-      });
-  }, [user]);
+    getUserAnalytics(user?.id as string, currentCourseId).then(
+      (analyticsRes) => {
+        setUserAnalytics(analyticsRes?.analytics);
+      }
+    );
+
+    return()=>{
+      setLessonsArray([])
+    }
+  }, []);
 
   const checkIfLessonIsLocked = (idx: number) => {
     if (idx === 0) return false;
     for (let j = idx - 1; j >= 0; j--) {
       const lessonId = lessonsArray[j].id;
-
-      if (userAnalytics?.[lessonId] === null) return true;
-      if (userAnalytics?.[lessonId]?.status !== "approved") return true;
+      if (userAnalytics?.[lessonId] === null) {
+        console.log(`Lesson ${lessonId} is locked because analytics is null.`);
+        return true;
+      }
+      if (userAnalytics?.[lessonId]?.status !== "approved") {
+        console.log(
+          `Lesson ${lessonId} is locked because status is not approved.`
+        );
+        return true;
+      }
     }
+    console.log(`Lesson ${lessonsArray[idx].id} is not locked.`);
     return false;
   };
+
+  const areAllLessonsLocked = () => {
+    console.log(
+      "areAllLessonsLocked ",
+      !lessonsArray.every((lesson: any, idx: any) => checkIfLessonIsLocked(idx))
+    );
+    return !lessonsArray.every((lesson: any, idx: any) =>
+      checkIfLessonIsLocked(idx)
+    );
+  };
+
   const handleChangeLesson = (idx: number) => {
-    if (checkIfLessonIsLocked(idx)) {
-      onLessonLockedModalOpen();
-      return;
-    } else {
-      setActiveLesson(idx);
-    }
+    setActiveLesson(idx);
   };
   const getLockedLessons = (lessonsArray: any) => {
-    const lockedLessons = [];
-    for (let i = 0; i < lessonsArray.length; i++) {
-      lockedLessons.push({
-        ...lessonsArray[i],
-        status: userAnalytics?.[lessonsArray[i].id]?.status || "pending",
-        locked: checkIfLessonIsLocked(i),
-      });
-    }
+    const filteredLessonsArray = lessonsArray.filter(
+      (lesson: any) => lesson.is_practice_lesson === false
+    );
+
+    const lockedLessons = filteredLessonsArray.map(
+      (lesson: any, index: number) => ({
+        ...lesson,
+        status: userAnalytics?.[lesson.id]?.status || "pending",
+        locked: checkIfLessonIsLocked(index),
+      })
+    );
+
     return lockedLessons;
   };
+
   const filteredLessons = getLockedLessons(lessonsArray);
 
-  const myCompletion = filteredLessons.map((ls) => ls.locked);
+  const locked_lessons = filteredLessons.filter(
+    (ls: any) => ls.locked === false
+  );
+
+  const filteredLessonsArray = lessonsArray.filter(
+    (lesson: any) => lesson.is_practice_lesson === false
+  );
+
+  const myCompletion =
+    (locked_lessons.length / filteredLessonsArray.length) * 100;
+
+  console.log(locked_lessons);
+
+  const markComplete = (lesson: any) => {
+    currenTimeRef.current = Date.now();
+
+    updateLessonForUser({
+      user_id: user?.id,
+      course_id: currentCourseId,
+      lesson_id: lesson.id,
+      data: {
+        status: "approved",
+        duration: Date.now() - currenTimeRef.current,
+        completed_at: Date.now(),
+      },
+    })
+      .then(() => {
+        getUserAnalytics(user?.id as string, currentCourseId).then((res) => {
+          setUserAnalytics(res?.analytics);
+        });
+
+        if (areAllLessonsLocked()) {
+          updateLessonForUser({
+            user_id: user?.id,
+            course_id: currentCourseId,
+            lesson_id: lesson.id,
+            data: {
+              course_status: "approval-pending",
+            },
+          });
+        }
+      })
+      .catch((err) => {
+        toast.error("Failed to mark lesson as complete");
+      });
+  };
+
+  // useEffect(() => {
+  //   if (areAllLessonsLocked()) {
+  //     toast.success("All lessons are locked.");
+  //   }
+  // }, [lessonsArray, userAnalytics]);
+
   return (
     <div className="w-full h-[100vh] overflow-hidden">
       <div className="flex h-full w-[100%]">
@@ -109,44 +177,53 @@ const PreivewCourse = () => {
                 className="cursor-pointer w-7 h-7 text-white"
               />
             </div>
-            {filteredLessons.map((lesson: any, idx: any) => (
-              <div
-                onClick={() => handleChangeLesson(idx)}
-                key={lesson.id}
-                style={{ opacity: lesson.locked ? 0.5 : 1 }}
-                className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
-                  activeLesson === idx
-                    ? "bg-black border-l-5 border-l-white"
-                    : ""
-                }`}
-              >
-                <div className="flex h6-medium items-start gap-2 font-medium">
-                  <span className="text-gray-300">{idx + 1}.</span>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-col w-fit capitalize text-gray-300">
-                      {lesson.title?.slice(0, 30)}
-                      <p
-                        className={`${
-                          lesson.type === "avatar"
-                            ? "text-orange-200"
-                            : "text-blue-200"
-                        }  text-xs`}
-                      >
-                        {lessonTypeText[lesson.type]}
-                      </p>
+            {lessonsArray
+              .filter((ls: any) => ls.is_practice_lesson === false)
+              .map((lesson: any, idx: any) => (
+                <div
+                  onClick={() => handleChangeLesson(idx)}
+                  key={lesson.id}
+                  style={{ opacity: lesson.locked ? 0.5 : 1 }}
+                  className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
+                    activeLesson === idx
+                      ? "bg-black border-l-5 border-l-white"
+                      : ""
+                  }`}
+                >
+                  <div className="flex h6-medium items-start gap-2 font-medium">
+                    <span className="text-gray-300">{idx + 1}.</span>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-col w-fit capitalize text-gray-300">
+                        {lesson.title?.slice(0, 30)}
+                        <p
+                          className={`${
+                            lesson.type === "avatar"
+                              ? "text-orange-200"
+                              : "text-blue-200"
+                          }  text-xs`}
+                        >
+                          {lessonTypeText[lesson.type]}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  {lesson.locked ? (
-                    <Icon icon="ic:round-lock" className="w-5 h-5" />
-                  ) : (
-                    <Icon icon="uil:bookmark" className="w-5 h-5" />
-                  )}
+                  <div className="flex items-center gap-2">
+                    {filteredLessons[idx].status === "approved" ? (
+                      <Icon icon="mingcute:bookmark-fill" className="w-5 h-5" />
+                    ) : (
+                      <Icon
+                        icon="uil:bookmark"
+                        className="w-5 h-5"
+                        onClick={() => {
+                          markComplete(lesson);
+                        }}
+                      />
+                    )}
+                    {/* )} */}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
         <div className="flex flex-col w-full px-4">
@@ -157,7 +234,7 @@ const PreivewCourse = () => {
             <Progress
               aria-label="Downloading..."
               size="sm"
-              value={myCompletion.length}
+              value={myCompletion}
               color="success"
               showValueLabel={true}
               className="max-w-md"

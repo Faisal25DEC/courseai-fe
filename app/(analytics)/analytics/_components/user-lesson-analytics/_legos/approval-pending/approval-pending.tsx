@@ -1,11 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import { textColorBasedOnStatus } from "../../constants";
 import CustomPopover from "@/components/shared/custom-popover/custom-popover";
-import {
-  lessonStatuses,
-  lessonStatusText,
-} from "@/lib/constants";
+import { lessonStatuses, lessonStatusText } from "@/lib/constants";
 import {
   courseIdAtom,
   currentUserLessonAnalyticsAtom,
@@ -14,57 +11,92 @@ import {
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   approveLessonRequest,
+  getAllCourses,
   getUserAnalytics,
   updateLessonForUser,
 } from "@/services/lesson.service";
 import { toast } from "sonner";
 import { StringFormats } from "@/lib/StringFormats";
-const ApprovalPending = ({ lesson }: { lesson: any }) => {
+
+const ApprovalPending = ({ lesson }: any) => {
   const currentCourseId = useRecoilValue(courseIdAtom);
   const [isOpen, setIsOpen] = useState(false);
   const [currentUserLessonAnalytics, setCurrentUserLessonAnalytics] =
     useRecoilState(currentUserLessonAnalyticsAtom);
   const [userAnalytics, setUserAnalytics] =
     useRecoilState<any>(userAnalyticsAtom);
+  const [courses, setCourses] = useState<any>([]);
+
+  console.log("lesson ", lesson);
+
+  useEffect(() => {
+    const fetchCurrentCourse = async () => {
+      try {
+        const res = await getAllCourses();
+        setCourses(res);
+        console.log("all courses", res);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchCurrentCourse();
+  }, []);
+
+  const getNextCourseId = (currentCourseId: any) => {
+    const currentIndex = courses.findIndex(
+      (course: any) => course.id === currentCourseId
+    );
+    if (currentIndex !== -1 && currentIndex < courses.length - 1) {
+      return courses[currentIndex + 1].id;
+    }
+    return null;
+  };
+
   const markComplete = (status: string) => {
     setIsOpen(false);
+    const nextCourseId = getNextCourseId(currentCourseId);
     const dataObj: any = {
       status: status,
+      course_status: status,
     };
     if (status === "approved") {
       dataObj["completed_at"] = Date.now();
     }
-    updateLessonForUser({
-      user_id: currentUserLessonAnalytics?.user_id,
-      course_id: currentCourseId,
-      lesson_id: lesson.id,
-      data: dataObj,
-    })
-      .then(() => {
-        approveLessonRequest({
-          lesson_id: lesson.id,
-          course_id: currentCourseId,
-          user_id: currentUserLessonAnalytics?.user_id as string,
-          status: status,
-        }).then(() => {
-          const message =
-            status === "pending" ? "Request Rejected" : "Request Approved";
-          toast.success(message);
-          getUserAnalytics(
-            currentUserLessonAnalytics?.user_id as string,
-            currentCourseId
-          ).then((res) => {
-            setCurrentUserLessonAnalytics({
-              ...currentUserLessonAnalytics,
-              ...res,
+    if (nextCourseId) {
+      updateLessonForUser({
+        user_id: currentUserLessonAnalytics?.user_id,
+        course_id: nextCourseId,
+        lesson_id: lesson[0].id,
+        data: dataObj,
+      })
+        .then(() => {
+          approveLessonRequest({
+            course_id: nextCourseId,
+            user_id: currentUserLessonAnalytics?.user_id as string,
+            status: status,
+          }).then(() => {
+            const message =
+              status === "pending" ? "Request Rejected" : "Request Approved";
+            toast.success(message);
+            getUserAnalytics(
+              currentUserLessonAnalytics?.user_id as string,
+              nextCourseId
+            ).then((res) => {
+              setCurrentUserLessonAnalytics({
+                ...currentUserLessonAnalytics,
+                ...res,
+              });
             });
           });
+        })
+        .catch((err) => {
+          toast.error("Failed to send request for approval");
         });
-      })
-      .catch((err) => {
-        toast.error("Failed to send request for approval");
-      });
+    } else {
+      toast.error("No next course available");
+    }
   };
+
   return (
     <div
       onClick={(e) => {
@@ -75,7 +107,7 @@ const ApprovalPending = ({ lesson }: { lesson: any }) => {
         }
         setIsOpen(true);
       }}
-      className="flex items-center gap-1"
+      className="flex items-center gap-1 "
     >
       <CustomPopover
         className={"w-fit p-2 min-w-[100px] overflow-hidden"}

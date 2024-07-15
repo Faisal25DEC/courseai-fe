@@ -44,9 +44,9 @@ function CourseCard({
     if (currentUserRole === admin) {
       router.push(`/courses/create-lesson/${course.id}`);
     } else {
-      // if (userAnalytics?.course_status === "approved") {
+      if (userAnalytics?.course_status === "approved") {
         router.push(`/courses/${course.id}`);
-      // }
+      }
     }
   };
 

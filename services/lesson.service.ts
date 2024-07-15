@@ -82,7 +82,7 @@ export const updateLessonForUser = async ({
 }) => {
   try {
     const response = await axios.patch(
-      `${baseUrl}/users/${user_id}/analytics/${course_id}/lessons/${lesson_id}`,
+      `${baseUrl}/users/${user_id}/analytics/${course_id}/lessons/${lesson_id}?course_status=${data.course_status || null}`,
       data
     );
 
@@ -93,7 +93,6 @@ export const updateLessonForUser = async ({
 };
 
 export const approveLessonRequest = async (data: {
-  lesson_id: number;
   course_id: string;
   user_id: string;
   status: string;
@@ -123,7 +122,7 @@ export const getCourseAnalytics = async (courseId: string) => {
     const response = await axios.get(
       `${baseUrl}/courses/${courseId}/analytics`
     );
-
+    
     return response.data;
   } catch (error) {
     console.error("Error:", error);

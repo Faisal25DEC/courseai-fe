@@ -43,7 +43,6 @@ const ApprovalPending = ({ lesson }: { lesson: any }) => {
     })
       .then(() => {
         approveLessonRequest({
-          lesson_id: lesson.id,
           course_id: currentCourseId,
           user_id: currentUserLessonAnalytics?.user_id as string,
           status: status,

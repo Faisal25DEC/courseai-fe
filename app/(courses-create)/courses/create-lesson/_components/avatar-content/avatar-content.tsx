@@ -16,7 +16,8 @@ const AvatarContent = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchAvatarsAndVoices = async () => {
-    if (avatars.length > 0 && voices.length > 0) return;
+    // if (avatars.length > 0 && voices.length > 0) return;
+
     const { data: voicesData } = await axios.get(
       `${heygenBaseUrl}/v1/voice.list`,
       {
@@ -26,6 +27,7 @@ const AvatarContent = () => {
         },
       }
     );
+
     const { data: avatarsData } = await axios.get(
       `${heygenBaseUrl}/v1/avatar.list`,
       {
@@ -35,45 +37,54 @@ const AvatarContent = () => {
         },
       }
     );
-    const filteredAvatars = avatarsData.data.avatars
-      .map((item: any) => {
-        return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
-      })
-      .filter((avatar: any) => {
-        return avatarsArray.some(
-          (avatarItem: any) => avatarItem.id === avatar.id
-        );
-      });
-    console.log(filteredAvatars);
+
+    const specificAvatarIds = ["Anna_public_20240108", "josh_lite3_20230714",];
+
+    let allAvatars = avatarsData.data.avatars.map((item: any) => {
+      return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
+    });
+
+    allAvatars = allAvatars.filter((avatar: any) =>
+      specificAvatarIds.includes(avatar.id)
+    );
+
+    console.log("all avatar", allAvatars);
+
     const filteredVoices = voicesData.data.list.filter(
       (item: any) => item.language === "English"
     );
 
-    const maleAvatars = getFilteredVoiceAndAvatarObjects(
-      filteredAvatars,
-      "male",
-      5
-    );
-    const femaleAvatars = getFilteredVoiceAndAvatarObjects(
-      filteredAvatars,
-      "female",
-      5
-    );
-    const selectedAvatars = [...maleAvatars];
+    console.log("voices", filteredVoices);
 
-    const maleVoices = getFilteredVoiceAndAvatarObjects(
-      filteredVoices,
-      "male",
-      5
-    );
-    const femaleVoices = getFilteredVoiceAndAvatarObjects(
-      filteredVoices,
-      "female",
-      5
-    );
-    const selectedVoices = [...maleVoices];
+    // Separate avatars and voices by gender
+    const maleAvatars = allAvatars
+      .filter((avatar: any) => avatar.gender.toLowerCase() === "male")
+      .slice(0, 5);
+    const femaleAvatars = allAvatars
+      .filter((avatar: any) => avatar.gender.toLowerCase() === "female")
+      .slice(0, 5);
 
-    setAvatars(selectedAvatars || []);
+    const maleVoices = filteredVoices
+      .filter((voice: any) => voice.gender.toLowerCase() === "male")
+      .slice(0, 5);
+    const femaleVoices = filteredVoices
+      .filter((voice: any) => voice.gender.toLowerCase() === "female")
+      .slice(0, 5);
+
+    // Ensure a total of 7 avatars and voices
+    const selectedAvatars = [...maleAvatars, ...femaleAvatars].slice(0, 7);
+    const selectedVoices = [...maleVoices, ...femaleVoices].slice(0, 7);
+
+    // Map avatars to matching voices
+    const matchedAvatarsAndVoices = selectedAvatars.map((avatar, index) => {
+      const matchingVoice =
+        avatar.gender.toLowerCase() === "male"
+          ? maleVoices[index % maleVoices.length]
+          : femaleVoices[index % femaleVoices.length];
+      return { ...avatar, voice: matchingVoice };
+    });
+
+    setAvatars(matchedAvatarsAndVoices || []);
     setVoices(selectedVoices || []);
     setLoading(false);
   };
@@ -150,7 +161,7 @@ const AvatarContent = () => {
             <p className="label">Voices</p>
 
             <div className="flex flex-wrap items-center gap-4">
-              <AudioButtons />
+              <AudioButtons gender={currentLesson.content.avatar.gender} />
               <audio
                 className="hidden"
                 // src={voice}

@@ -21,24 +21,23 @@ const useTrackLessonDuration = ({
   const { user } = useUser();
   const currentCourseId = useRecoilValue(courseIdAtom);
 
-  useEffect(() => {
-    return () => {
-      if (!user) return;
-      const duration = Date.now() - currenTimeRef.current;
-      if (lesson.status === "approved") return;
-      updateLessonForUser({
-        course_id: currentCourseId,
-        lesson_id: lesson.id,
-
-        user_id: user?.id as string,
-        data: {
-          duration: duration,
-        },
-      }).then(() => {
-        currenTimeRef.current = Date.now();
-      });
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     if (!user) return;
+  //     const duration = Date.now() - currenTimeRef.current;
+  //     if (lesson.status === "approved") return;
+  //     updateLessonForUser({
+  //       course_id: currentCourseId,
+  //       lesson_id: lesson.id,
+  //       user_id: user?.id as string,
+  //       data: {
+  //         duration: duration,
+  //       },
+  //     }).then(() => {
+  //       currenTimeRef.current = Date.now();
+  //     });
+  //   };
+  // }, []);
   useEffect(() => {
     if (lesson.status === "rejected") {
       toast.error("Admin has rejected the approval request.");

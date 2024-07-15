@@ -39,7 +39,7 @@ const UserLessonAnalytics = () => {
     useRecoilState<any>(currentCourseAtom);
   const [currentCourseId, setCurrentCourseId] = useState<string>("");
   const [selectedTab, setSelectedTab] = useState("courses"); // New state to track selected tab
-  const [activeLesson, setactiveLesson] = useRecoilState(activeLessonAtom)
+  const [activeLesson, setactiveLesson] = useRecoilState(activeLessonAtom);
 
   useEffect(() => {
     const fetchCurrentCourse = async () => {
@@ -73,7 +73,7 @@ const UserLessonAnalytics = () => {
     // };
   }, [currentCourseId, setCurrentCourse, setLessonsArray]);
 
-  console.log("lessonsArray ", lessonsArray);
+  console.log("lessonsArray ", currentUserLessonAnalytics);
 
   const getUserLessonAnalyticsArray = (
     currentUserAnalytics: any,
@@ -93,6 +93,8 @@ const UserLessonAnalytics = () => {
     currentUserLessonAnalytics,
     lessonsArray
   );
+
+  console.log("lessonAnalyticsArray", currentUserLessonAnalytics);
 
   const getRecordingsCount = (lesson: any) => {
     if (lesson?.type !== "avatar") {
@@ -156,17 +158,16 @@ const UserLessonAnalytics = () => {
         <BreadcrumbItem>Analytics</BreadcrumbItem>
       </Breadcrumbs>
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        {!isCourseSelected  &&
-        <TabsList className="mx-4 mt-4">
-          <TabsTrigger value="courses">Courses</TabsTrigger>
-          <TabsTrigger value="practice-lessons">Practice Lessons</TabsTrigger>
-        </TabsList>
-}
+        {!isCourseSelected && (
+          <TabsList className="mx-4 mt-4">
+            <TabsTrigger value="courses">Courses</TabsTrigger>
+            <TabsTrigger value="practice-lessons">Practice Lessons</TabsTrigger>
+          </TabsList>
+        )}
         <TabsContent value="courses">
           {!isCourseSelected && (
             <div>
               <h1 className="px-5 py-5 font-semibold text-sm">Choose Course</h1>
-              
               {courses.map((cr: any) => {
                 return (
                   <div
@@ -186,6 +187,15 @@ const UserLessonAnalytics = () => {
           )}
           {isCourseSelected && (
             <div className="h-[70vh] overflow-y-scroll rounded-[20px]">
+              {currentUserLessonAnalytics?.course_status ===
+                "approval-pending" && (
+                <div className="flex items-center gap-2 absolute right-14 top-8">
+                  <p className="text-sm font-semibold text-gray-600">
+                    Course status:
+                  </p>
+                  <ApprovalPending lesson={lessonAnalyticsArray} />
+                </div>
+              )}
               <div className="flex justify-between items-center py-4 px-6 text-sm font-normal">
                 {headings.map((heading) => {
                   return (
@@ -201,7 +211,7 @@ const UserLessonAnalytics = () => {
                   return (
                     <div
                       onClick={() => {
-                        setactiveLesson(lesson.id)
+                        setactiveLesson(lesson.id);
                         viewRecordings(lesson);
                       }}
                       key={lesson.id}
@@ -218,9 +228,6 @@ const UserLessonAnalytics = () => {
                             textColorBasedOnStatus[lesson.status || "pending"]
                           } text-[13px]`}
                         >
-                          {lesson?.status === approvalPending && (
-                            <ApprovalPending lesson={lesson} />
-                          )}
                           {lesson?.status !== approvalPending &&
                             (StringFormats.capitalizeFirstLetterOfEachWord(
                               lessonStatusText[lesson?.status]
@@ -279,7 +286,7 @@ const UserLessonAnalytics = () => {
                 return (
                   <div
                     onClick={() => {
-                      setactiveLesson(lesson.id)
+                      setactiveLesson(lesson.id);
                       viewRecordings(lesson);
                     }}
                     key={lesson.id}
@@ -296,13 +303,11 @@ const UserLessonAnalytics = () => {
                           textColorBasedOnStatus[lesson.status || "pending"]
                         } text-[13px]`}
                       >
-                        {lesson?.status === approvalPending && (
-                          <ApprovalPending lesson={lesson} />
-                        )}
                         {lesson?.status !== approvalPending &&
                           (StringFormats.capitalizeFirstLetterOfEachWord(
                             lessonStatusText[lesson?.status]
-                          ) || "Incomplete")}
+                          ) ||
+                            "Incomplete")}
                       </p>
                     </div>
                     <div className="flex-1">

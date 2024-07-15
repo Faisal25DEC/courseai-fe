@@ -102,7 +102,8 @@ const PracticeCard = ({
 
   useEffect(() => {
     // #TODO: temp fix until practice table is separated from course
-    if (index === 9) setActiveLesson(index);
+    // if (index === 0) setActiveLesson(index);
+    setActiveLesson(index)
 
     console.log("active lesson in practice ", activeLesson, index);
   }, []);

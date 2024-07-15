@@ -119,7 +119,7 @@ function PreviewCard({
                 <div className="flex flex-col gap-2 w-full">
                   <div className="capitalize text-gray-300">
                     <span
-                      className="block overflow-wrap break-words whitespace-normal w-[80%]"
+                      className="block overflow-wrap break-words whitespace-normal w-full pr-5"
                       style={{
                         wordWrap: "break-word",
                         overflowWrap: "break-word",
@@ -138,7 +138,6 @@ function PreviewCard({
                     </p>
                   </div>
                 </div>
-              
               </div>
               <div>
                 <CustomPopover
@@ -179,7 +178,7 @@ function PreviewCard({
                     );
                   })}
                 </CustomPopover>
-                </div>
+              </div>
             </div>
           </div>
         )}

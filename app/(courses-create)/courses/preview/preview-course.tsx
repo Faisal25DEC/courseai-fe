@@ -74,7 +74,7 @@ const PreivewCourse = () => {
                     <div className="flex flex-col gap-2">
                       <div className="capitalize text-gray-300">
                         <span
-                          className="block overflow-wrap break-words whitespace-normal w-[80%]"
+                          className="block overflow-wrap break-words whitespace-normal w-full pr-5"
                           style={{
                             wordWrap: "break-word",
                             overflowWrap: "break-word",

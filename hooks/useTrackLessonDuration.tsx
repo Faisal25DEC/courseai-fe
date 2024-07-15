@@ -63,7 +63,7 @@ const useTrackLessonDuration = ({
         currenTimeRef.current = Date.now();
       });
     }
-  }, [isDocumentVisible, user, lesson.id]);
+  }, [isDocumentVisible, user, lesson]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

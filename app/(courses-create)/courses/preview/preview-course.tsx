@@ -28,9 +28,13 @@ const PreivewCourse = () => {
 
   useEffect(() => {
     getCourse(currentCourseId).then((res) => {
-      setLessonsArray(res.lessons);
+      const practiceLessons = res.lessons.filter(
+        (lesson: any) => lesson.is_practice_lesson !== true
+      );
+      setLessonsArray(practiceLessons);
     });
-  }, []);
+  }, [currentCourseId,lessonsArray]);
+
   const handleChangeLesson = (idx: number) => {
     setActiveLesson(idx);
   };
@@ -52,41 +56,54 @@ const PreivewCourse = () => {
                 className="cursor-pointer w-7 h-7 text-white"
               />
             </div>
-            {lessonsArray.map((lesson: any, idx: any) => (
-              <div
-                onClick={() => handleChangeLesson(idx)}
-                key={lesson.id}
-                style={{ opacity: lesson.locked ? 0.5 : 1 }}
-                className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
-                  activeLesson === idx
-                    ? "bg-black border-l-5 border-l-white"
-                    : ""
-                }`}
-              >
-                <div className="flex h6-medium items-start gap-2 font-medium">
-                  <span className="text-gray-300">{idx + 1}.</span>
-                  <div className="flex flex-col gap-2">
-                    <div className="capitalize text-gray-300">
-                      {lesson.title?.slice(0, 30)}
-
-                      <p
-                        className={`${
-                          lesson.type === "avatar"
-                            ? "text-orange-200"
-                            : "text-blue-200"
-                        }  text-xs`}
-                      >
-                        {lessonTypeText[lesson.type]}
-                      </p>
+            {lessonsArray
+              .filter((lesson: any) => lesson.is_practice_lesson !== true)
+              .map((lesson: any, idx: any) => (
+                <div
+                  onClick={() => handleChangeLesson(idx)}
+                  key={lesson.id}
+                  style={{ opacity: lesson.locked ? 0.5 : 1 }}
+                  className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
+                    activeLesson === idx
+                      ? "bg-black border-l-5 border-l-white"
+                      : ""
+                  }`}
+                >
+                  <div className="flex h6-medium items-start gap-2 font-medium">
+                    <span className="text-gray-300">{idx + 1}.</span>
+                    <div className="flex flex-col gap-2">
+                      <div className="capitalize text-gray-300">
+                        <span
+                          className="block overflow-wrap break-words whitespace-normal w-[80%]"
+                          style={{
+                            wordWrap: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
+                          {lesson.title}
+                        </span>
+                        <p
+                          className={`${
+                            lesson.type === "avatar"
+                              ? "text-orange-200"
+                              : "text-blue-200"
+                          }  text-xs`}
+                        >
+                          {lessonTypeText[lesson.type]}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         )}
-        <div className={`${showContent? "w-[70%]":"w-[100%]"} pr-5 py-2 border-1 rounded-lg bg-white my-element m-2 overflow-y-scroll`}>
-        {!showContent && (
+        <div
+          className={`${
+            showContent ? "w-[70%]" : "w-[100%]"
+          } pr-5 py-2 border-1 rounded-lg bg-white my-element m-2 overflow-y-scroll`}
+        >
+          {!showContent && (
             <div className="flex justify-between items-center border-b-1 border-gray-200  w-full py-5 px-4">
               <div className="flex">
                 <Icon

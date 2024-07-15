@@ -137,7 +137,7 @@ const PracticeCard = ({
                         isBordered
                         radius="full"
                         size="md"
-                        src={lesson.content.avatar.normal_thumbnail_small}
+                        src={lesson?.content?.avatar?.normal_thumbnail_small}
                       />
                       <Icon
                         icon="fluent-emoji-flat:green-circle"
@@ -159,7 +159,7 @@ const PracticeCard = ({
                         </div>
                         <div className="ml-2 border px-2 py-[2px] text-xs rounded-lg font-semibold">
                           {" "}
-                          {lesson.content.voice.display_name.split("-")[1]}
+                          {lesson?.content?.voice?.display_name.split("-")[1]}
                         </div>
                       </div>
                       <div className="mt-2 border px-2 py-[2px] text-xs rounded-lg font-semibold bg-black text-white">

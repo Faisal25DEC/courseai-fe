@@ -12,8 +12,10 @@ import { courseIdAtom, currentUserRoleAtom } from "@/store/atoms";
 
 function CourseCard({
   course,
+  index,
 }: {
   course: { id: string; title: string; lessons: any[] };
+  index: number;
 }) {
   const { user } = useUser();
   const router = useRouter();
@@ -44,7 +46,7 @@ function CourseCard({
     if (currentUserRole === admin) {
       router.push(`/courses/create-lesson/${course.id}`);
     } else {
-      if (userAnalytics?.course_status === "approved") {
+      if (index === 0 || userAnalytics?.course_status === "approved") {
         router.push(`/courses/${course.id}`);
       }
     }
@@ -83,7 +85,7 @@ function CourseCard({
         className={`${
           currentUserRole === admin
             ? ""
-            : userAnalytics?.course_status === "approved"
+            : index === 0 || userAnalytics?.course_status === "approved"
             ? "opacity-1"
             : "opacity-50 "
         } relative flex justify-center md:justify-start`}
@@ -115,12 +117,13 @@ function CourseCard({
               </p>
               {currentUserRole === admin
                 ? null
-                : userAnalytics?.course_status !== "approved" && (
+                : index === 0 ||
+                  (userAnalytics?.course_status !== "approved" && (
                     <Icon
                       icon="mingcute:lock-fill"
                       className="w-5 h-5 absolute right-4 top-4"
                     />
-                  )}
+                  ))}
             </div>
           </div>
         </div>

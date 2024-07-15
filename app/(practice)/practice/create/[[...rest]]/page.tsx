@@ -313,7 +313,7 @@ const CreateCourse = () => {
                           width={250}
                           height={250}
                         />
-                        <p className="text-sm mt-10 text-center">
+                        <p className="text-sm mt-10 text-center text-white px-10">
                           It looks like there are no lessons available.
                         </p>
                       </div>

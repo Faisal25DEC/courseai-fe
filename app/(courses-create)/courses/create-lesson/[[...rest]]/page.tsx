@@ -313,7 +313,7 @@ const CreateCourse = () => {
                 {(provided) => (
                   <>
                     <div
-                      className="w-[100%] pb-20 h-full my-element overflow-auto flex flex-col"
+                      className="w-[100%] pb-40 h-full my-element overflow-auto flex flex-col"
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
@@ -334,7 +334,7 @@ const CreateCourse = () => {
                           ))
                       ) : (
                         <div className="flex flex-col h-[60vh] justify-center items-center">
-                          <p className="text-sm mt-10 text-center">
+                          <p className="text-sm mt-10 text-center text-white px-10">
                             It looks like there are no lessons available. Please{" "}
                             <span
                               className="text-blue-500 cursor-pointer"

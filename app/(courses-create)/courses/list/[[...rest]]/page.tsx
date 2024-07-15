@@ -136,13 +136,13 @@ const CreateCourse = () => {
         {selectedTab === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {courses.map((cr, ind) => (
-              <CourseCard key={ind} course={cr} />
+              <CourseCard key={ind} course={cr} index={ind}/>
             ))}
           </div>
         ) : (
           <div className="flex flex-col gap-4">
             {courses.map((cr, ind) => (
-              <CourseListCard key={ind} course={cr} />
+              <CourseListCard key={ind} course={cr} index={ind}/>
             ))}
           </div>
         )}

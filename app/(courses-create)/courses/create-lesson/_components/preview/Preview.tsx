@@ -31,7 +31,7 @@ const PreivewLesson = () => {
       const practiceLessons = res.lessons.filter((lesson:any) => lesson.is_practice_lesson !== true);
       setLessonsArray(practiceLessons);
     });
-  }, [currentCourseId]);
+  }, [currentCourseId,lessonsArray]);
 
   const handleChangeLesson = (idx: number) => {
     setActiveLesson(idx);

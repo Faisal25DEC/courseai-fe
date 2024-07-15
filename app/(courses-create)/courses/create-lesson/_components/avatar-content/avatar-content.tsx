@@ -38,7 +38,7 @@ const AvatarContent = () => {
       }
     );
 
-    const specificAvatarIds = ["Anna_public_20240108", "josh_lite3_20230714",];
+    const specificAvatarIds = ["josh_lite3_20230714",];
 
     let allAvatars = avatarsData.data.avatars.map((item: any) => {
       return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
@@ -127,12 +127,7 @@ const AvatarContent = () => {
   };
   return (
     <div className="px-8 flex flex-col gap-8 my-2 overflow-y-scroll h-[calc(80vh-200px)]">
-      {loading ? (
-        <div className="flex items-center justify-center h-full w-full">
-          <Spinner />
-        </div>
-      ) : (
-        <>
+   
           <div className="label-container">
             <p className="label">Avatars</p>
 
@@ -161,7 +156,7 @@ const AvatarContent = () => {
             <p className="label">Voices</p>
 
             <div className="flex flex-wrap items-center gap-4">
-              <AudioButtons gender={currentLesson.content.avatar.gender} />
+              <AudioButtons gender={currentLesson.content?.avatar.gender} />
               <audio
                 className="hidden"
                 // src={voice}
@@ -180,8 +175,7 @@ const AvatarContent = () => {
               placeholder="Write Your Prompt Here..."
             />
           </div>
-        </>
-      )}
+      
     </div>
   );
 };

@@ -8,7 +8,13 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { useRecoilState } from "recoil";
 
-function CourseListCard({ course }: { course: { id: string; title: string } }) {
+function CourseListCard({
+  course,
+  index,
+}: {
+  course: { id: string; title: string };
+  index: number;
+}) {
   const { user } = useUser();
   const router = useRouter();
   const [courseId, setCourseId] = useRecoilState(courseIdAtom);
@@ -37,7 +43,7 @@ function CourseListCard({ course }: { course: { id: string; title: string } }) {
     if (currentUserRole === admin) {
       router.push(`/courses/create-lesson/${course.id}`);
     } else {
-      if (userAnalytics?.course_status === "approved") {
+      if (index === 0 || userAnalytics?.course_status === "approved") {
         router.push(`/courses/${course.id}`);
       }
     }
@@ -70,7 +76,7 @@ function CourseListCard({ course }: { course: { id: string; title: string } }) {
         className={`${
           currentUserRole === admin
             ? ""
-            : userAnalytics?.course_status === "approved"
+            : index === 0 || userAnalytics?.course_status === "approved"
             ? "opacity-1"
             : "opacity-50 "
         } relative flex items-center justify-center md:justify-start border-b mx-2 cursor-pointer group transition-transform duration-300 ease-in-out hover:translate-x-2`}

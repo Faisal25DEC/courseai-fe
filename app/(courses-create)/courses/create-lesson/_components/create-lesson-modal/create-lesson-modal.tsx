@@ -23,10 +23,10 @@ import {
 import { Icon } from "@iconify/react";
 import CreateContent from "../create-content/create-content";
 import { Textarea } from "@/components/ui/textarea";
-import Submissions from "../submissions/submissions";
 import axios from "axios";
 import { baseUrl } from "@/lib/config";
 import { getMaxId } from "@/lib/ArrayHelpers/ArrayHelpers";
+
 const CreateLessonModal = () => {
   const currentCourseId = useRecoilValue(courseIdAtom);
   const [lessonModalType, setLessonModalType] =
@@ -34,7 +34,6 @@ const CreateLessonModal = () => {
   const [currentCourse, setCurrentCourse] =
     useRecoilState<any>(currentCourseAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
-
   const [currentLesson, setCurrentLesson] = useRecoilState(lessonAtom);
   const [courseName, setCourseName] = useRecoilState(courseNameAtom);
   const [lessonCreateSteps, setLessonCreateSteps] = useRecoilState(
@@ -71,15 +70,19 @@ const CreateLessonModal = () => {
 
   const handleSubmit = async () => {
     try {
+      const lessonData = {
+        ...currentLesson,
+        is_practice_lesson: false,
+        scorecard_questions: questions,
+        submission_status: currentLesson.submission_status || "pending",
+        submission: "automatic",
+      };
+
       if (lessonModalType?.type === "edit") {
-        const { id, scorecard_questions, ...currentLessonWithoutId } = currentLesson;
+        const { id, ...currentLessonWithoutId } = lessonData;
         const res1 = await axios.patch(
           `${baseUrl}/courses/${currentCourseId}/lessons/${currentLesson.id}`,
-          {
-            scorecard_questions: questions,
-            ...currentLessonWithoutId,
-            submission_status: currentLesson.submission_status || "pending",
-          }
+          currentLessonWithoutId
         );
         const res = await axios.get(`${baseUrl}/courses/${currentCourseId}`);
         setCurrentCourse(res.data);
@@ -87,14 +90,13 @@ const CreateLessonModal = () => {
         onCreateLessonModalClose();
         return;
       }
-      const { id, scorecard_questions, ...currentLessonWithoutId } = currentLesson;
+
+      const { id, ...currentLessonWithoutId } = lessonData;
       const res1 = await axios.post(
         `${baseUrl}/courses/${currentCourseId}/lessons`,
         {
           id: getMaxId(lessonsArray) + 1,
-          scorecard_questions: questions,
           ...currentLessonWithoutId,
-          submission_status: "pending",
         }
       );
       const res = await axios.get(`${baseUrl}/courses/${currentCourseId}`);
@@ -105,26 +107,18 @@ const CreateLessonModal = () => {
       console.log(error);
     }
   };
-  
 
   useEffect(() => {
     console.log(currentLesson.type);
-    setCurrentLesson({ ...currentLesson, content: null });
+    setCurrentLesson({
+      ...currentLesson,
+      content: null,
+      is_practice_lesson: false,
+    });
 
     if (lessonModalType?.type === "edit") {
       setQuestions(currentLesson.scorecard_questions);
     }
-    // return () => {
-    //   setCurrentLesson({
-    //     title: "",
-    //     description: "",
-    //     type: "",
-    //     content: null,
-    //     submission: "",
-    //     submission_status: "",
-    //   });
-    //   setLessonCreateSteps(1);
-    // };
 
     return () => {
       setQuestions([]);
@@ -144,14 +138,14 @@ const CreateLessonModal = () => {
 
   return (
     <Modal
-      className="h-[85vh] "
+      className="h-[85vh]"
       showIcon
       isOpen={isCreateLessonModalOpen}
       onClose={onCreateLessonModalClose}
     >
       <div className="relative flex flex-col gap-6 overflow-hidden rounded-[20px]">
-        <div className=" text-xl bg-gray-100 ">
-          <h1 className=" px-8 h-[80px] flex items-center">Create Lesson</h1>
+        <div className="text-xl bg-gray-100">
+          <h1 className="px-8 h-[80px] flex items-center">Create Lesson</h1>
           <hr className="bg-white" />
         </div>
         {lessonCreateSteps === 1 && (
@@ -196,7 +190,7 @@ const CreateLessonModal = () => {
                         }`}
                       >
                         {currentLesson.type === button.value && (
-                          <div className="bg-blue-500  w-[6px] h-[6px] rounded-full"></div>
+                          <div className="bg-blue-500 w-[6px] h-[6px] rounded-full"></div>
                         )}
                       </div>
                     </div>
@@ -204,33 +198,34 @@ const CreateLessonModal = () => {
                 ))}
               </div>
             </div>
-            <Submissions />
-            <div className="label-container">
-              <label className="label">Add Scorecard Questions</label>
-              <div className="flex gap-2">
-                <Input
-                  value={newQuestion}
-                  onChange={(e) => setNewQuestion(e.target.value)}
-                  placeholder="Enter question"
-                />
-                <Button onClick={handleAddQuestion}>Add</Button>
+            {currentLesson.type === "avatar" && (
+              <div className="label-container">
+                <label className="label">Add Scorecard Questions</label>
+                <div className="flex gap-2">
+                  <Input
+                    value={newQuestion}
+                    onChange={(e) => setNewQuestion(e.target.value)}
+                    placeholder="Enter question"
+                  />
+                  <Button onClick={handleAddQuestion}>Add</Button>
+                </div>
+                <ul className="text-sm mb-2">
+                  {questions.map((question: any, index: any) => (
+                    <li
+                      className="flex my-2 font-semibold capitalize"
+                      key={index}
+                    >
+                      {index + 1}. {question}
+                      <Icon
+                        icon="fluent:delete-16-regular"
+                        className="text-red-400 w-5 h-5 font-bold ml-5 cursor-pointer"
+                        onClick={() => handleDeleteQuestion(index)}
+                      />
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="text-sm mb-2">
-                {questions.map((question: any, index: any) => (
-                  <li
-                    className="flex my-2 font-semibold capitalize"
-                    key={index}
-                  >
-                    {index + 1}. {question}
-                    <Icon
-                      icon="fluent:delete-16-regular"
-                      className="text-red-400 w-5 h-5 font-bold ml-5 cursor-pointer"
-                      onClick={() => handleDeleteQuestion(index)}
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
+            )}
           </div>
         )}
         {lessonCreateSteps === 1 && (
@@ -248,8 +243,7 @@ const CreateLessonModal = () => {
               disabled={
                 !currentLesson.title ||
                 !currentLesson.type ||
-                !currentLesson.description ||
-                !currentLesson.submission
+                !currentLesson.description
               }
               className="w-[60%]"
             >
@@ -280,24 +274,7 @@ const CreateLessonModal = () => {
             </Button>
           </div>
         )}
-        {/* {lessonCreateSteps === 3 && (
-          <div className="bg-gray-100 px-4 absolute bottom-0 h-[80px] flex items-center gap-2 justify-center left-0 w-full">
-            <Button
-              variant={"outline"}
-              onClick={() => decrementStep(1)}
-              disabled={!currentLesson.title || !currentLesson.type}
-              className="w-[50%]"
-            >
-              Back
-            </Button>
-            <Button onClick={() => handleSubmit()} className="w-[50%]">
-              {lessonModalType?.type === "edit" ? "Update" : "Create"} Lesson
-            </Button>
-          </div>
-        )} */}
-
         {lessonCreateSteps === 2 && <CreateContent />}
-
         <div
           onClick={onCreateLessonModalClose}
           className="absolute cursor-pointer transition-all duration-300 ease-in top-[15px] hover:bg-slate-200 right-[15px] p-[3px] rounded-full "

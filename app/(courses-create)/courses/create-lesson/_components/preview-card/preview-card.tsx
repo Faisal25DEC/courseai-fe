@@ -22,6 +22,7 @@ import { typeColorObj } from "../../../[id]/constants";
 import Tag from "@/components/shared/tag/tag";
 import CreateLessonModal from "../create-lesson-modal/create-lesson-modal";
 import { Chip } from "@nextui-org/react";
+
 function PreviewCard({
   lesson,
   index,
@@ -65,9 +66,8 @@ function PreviewCard({
 
         onCreateLessonModalOpen();
       },
-      icon: EditIcon2,
+      icon: <Icon icon="ic:baseline-edit" />,
     },
-
     {
       title: "Delete",
       onClick: async () => {
@@ -80,10 +80,9 @@ function PreviewCard({
           });
         });
       },
-      icon: TrashIcon2,
+      icon: <Icon icon="fluent:delete-16-filled" />,
     },
   ];
-  const lastItem = popoverContent[popoverContent.length - 1];
 
   useEffect(() => {
     if (index === 0) {
@@ -103,38 +102,84 @@ function PreviewCard({
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             ref={provided.innerRef}
-            className={` ${
-              snapshot.draggingOver ? "shadow-sm bg-gray-50" : ""
-            }`}
+            className={`${snapshot.draggingOver ? "shadow-sm bg-gray-50" : ""}`}
           >
             <div
               onClick={() => setActiveLesson(index)}
               key={lesson.id}
               style={{ opacity: lesson.locked ? 0.5 : 1 }}
-              className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
+              className={`flex cursor-pointer items-start relative justify-between transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
                 activeLesson === index
                   ? "bg-black border-l-5 border-l-white"
                   : ""
               }`}
             >
-              <div className="flex h6-medium items-start gap-2 font-medium">
+              <div className="flex h6-medium items-start gap-2 font-medium relative">
                 <span className="text-gray-300">{index + 1}.</span>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 w-full">
                   <div className="capitalize text-gray-300">
-                    {lesson.title?.slice(0, 30)}
-
+                    <span
+                      className="block overflow-wrap break-words whitespace-normal w-[80%]"
+                      style={{
+                        wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                      }}
+                    >
+                      {lesson.title}
+                    </span>
                     <p
                       className={`${
                         lesson.type === "avatar"
                           ? "text-orange-200"
                           : "text-blue-200"
-                      }  text-xs`}
+                      } text-xs`}
                     >
                       {lessonTypeText[lesson.type]}
                     </p>
                   </div>
                 </div>
+              
               </div>
+              <div>
+                <CustomPopover
+                  className={"w-fit p-0 ml-12 mt-4 absolute right-4"}
+                  align="end"
+                  open={isPopoverOpen}
+                  onOpenChange={setIsPopoverOpen}
+                  trigger={
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        isPopoverOpen ? onPopoverClose() : onPopoverOpen();
+                      }}
+                    >
+                      <Icon
+                        className="w-5 text-white h-5 absolute top-5 right-4"
+                        icon="pepicons-pencil:dots-y"
+                      />
+                    </div>
+                  }
+                >
+                  {popoverContent.map((item: any, idx: number) => {
+                    return (
+                      <div
+                        key={idx}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          item.onClick();
+                          onPopoverClose();
+                        }}
+                        className="text-gray-500 hover:text-gray-700  cursor-pointer flex py-[8px] px-[12px] gap-[6px] w-[100%] items-center hover:bg-gray-100 rounded-md transition-all font-medium duration-200 ease-in"
+                      >
+                        <div>{item.icon}</div>
+                        <p className="text-[14px] cursor-pointer">
+                          {item.title}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </CustomPopover>
+                </div>
             </div>
           </div>
         )}

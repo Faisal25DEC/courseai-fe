@@ -51,9 +51,9 @@ const PreivewCourse = () => {
       }
     );
 
-    return()=>{
-      setLessonsArray([])
-    }
+    return () => {
+      setLessonsArray([]);
+    };
   }, []);
 
   const checkIfLessonIsLocked = (idx: number) => {
@@ -107,7 +107,7 @@ const PreivewCourse = () => {
   const filteredLessons = getLockedLessons(lessonsArray);
 
   const locked_lessons = filteredLessons.filter(
-    (ls: any) => ls.locked === false
+    (ls: any) => ls.locked === false && ls.is_practice_lesson === false
   );
 
   const filteredLessonsArray = lessonsArray.filter(
@@ -115,9 +115,9 @@ const PreivewCourse = () => {
   );
 
   const myCompletion =
-    (locked_lessons.length / filteredLessonsArray.length) * 100;
+    ((locked_lessons.length - 1) / filteredLessonsArray.length) * 100;
 
-  console.log(locked_lessons);
+  console.log("myCompletion", myCompletion, locked_lessons);
 
   const markComplete = (lesson: any) => {
     currenTimeRef.current = Date.now();

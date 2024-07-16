@@ -163,18 +163,18 @@ const PreivewCourse = () => {
     <div className="w-full h-[100vh] overflow-hidden">
       <div className="flex h-full w-[100%]">
         {showContent && (
-          <div className="w-[40%] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col bg-gray-800 my-element">
-            <div className="flex justify-between items-center border-b-1 border-gray-600  w-full py-5 px-4">
+          <div className="w-[40%] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col my-element bg-white">
+            <div className="flex justify-between items-center border-b-1 border-gray-200  w-full py-5 px-4">
               <div className="flex ">
-                <Icon icon="gridicons:menus" className="text-white w-6 h-6" />
-                <h1 className="text-[15px] text-gray-300 font-semibold pl-2">
+                <Icon icon="gridicons:menus" className="text-gray-800 w-6 h-6" />
+                <h1 className="text-[15px] text-gray-800 font-semibold pl-2">
                   Contents
                 </h1>
               </div>
               <Icon
                 onClick={() => setshowContent(false)}
                 icon="carbon:close-outline"
-                className="cursor-pointer w-7 h-7 text-white"
+                className="cursor-pointer w-7 h-7 text-gray-800"
               />
             </div>
             {lessonsArray
@@ -184,37 +184,50 @@ const PreivewCourse = () => {
                   onClick={() => handleChangeLesson(idx)}
                   key={lesson.id}
                   style={{ opacity: lesson.locked ? 0.5 : 1 }}
-                  className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
+                  className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-200 ${
                     activeLesson === idx
-                      ? "bg-black border-l-5 border-l-white"
-                      : ""
+                    ? `bg-gray-100 border-l-5 ${
+                        lesson.type === "avatar"
+                          ? "border-l-orange-400"
+                          : "border-l-blue-400"
+                      }`
+                    : ""
                   }`}
                 >
                   <div className="flex h6-medium items-start gap-2 font-medium">
-                    <span className="text-gray-300">{idx + 1}.</span>
+                    <span className="text-gray-800">{idx + 1}.</span>
                     <div className="flex flex-col gap-2">
-                      <div className="flex flex-col w-fit capitalize text-gray-300">
-                        {lesson.title?.slice(0, 30)}
-                        <p
-                          className={`${
-                            lesson.type === "avatar"
-                              ? "text-orange-200"
-                              : "text-blue-200"
-                          }  text-xs`}
-                        >
-                          {lessonTypeText[lesson.type]}
-                        </p>
+                      <div className="flex flex-col w-fit capitalize text-gray-800">
+                      <span
+                        className="block overflow-wrap break-words whitespace-normal w-full pr-5 font-semibold text-gray-700"
+                        style={{
+                          wordWrap: "break-word",
+                          overflowWrap: "break-word",
+                        }}
+                      >
+                        {lesson.title}
+                      </span>
+
+                      <p
+                        className={`${
+                          lesson.type === "avatar"
+                            ? "text-orange-400"
+                            : "text-blue-400"
+                        } text-xs`}
+                      >
+                        {lessonTypeText[lesson.type]}
+                      </p>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {filteredLessons[idx].status === "approved" ? (
-                      <Icon icon="mingcute:bookmark-fill" className="w-5 h-5" />
+                      <Icon icon="mingcute:bookmark-fill" className="w-5 h-5 text-gray-800" />
                     ) : (
                       <Icon
                         icon="uil:bookmark"
-                        className="w-5 h-5"
+                        className="w-5 h-5 text-gray-800"
                         onClick={() => {
                           markComplete(lesson);
                         }}

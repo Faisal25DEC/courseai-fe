@@ -159,7 +159,7 @@ function PreviewCard({
                         }}
                       >
                         <Icon
-                          className="w-5 text-white h-5 absolute top-5 right-4"
+                          className="w-5 text-gray-800 h-5 absolute top-5 right-4"
                           icon="pepicons-pencil:dots-y"
                         />
                       </div>

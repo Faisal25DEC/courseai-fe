@@ -34,9 +34,9 @@ export default function Home() {
       if (currentUserRole === admin) {
         redirect("/courses/list");
       }
-      if (currentUserRole === member) {
-        redirect(`courses/list`);
-      }
+      // if (currentUserRole === member) {
+      //   redirect(`courses/list`);
+      // }
     }
   }, [currentUserRole]);
   return (

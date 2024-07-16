@@ -1,16 +1,31 @@
-// models/User.ts
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
+interface IVerified {
+  org_id: string;
+  is_verified: boolean;
+}
+
 interface IUser extends Document {
-  _id: string; 
+  _id: string;
   first_name: string;
   last_name: string;
   image_url: string;
   email_addresses: string[];
   created_at: number;
   updated_at: number;
-  is_verified: boolean;
+  verified?: IVerified; // Make this field optional
 }
+
+const VerifiedSchema: Schema<IVerified> = new Schema({
+  org_id: {
+    type: String,
+    required: true,
+  },
+  is_verified: {
+    type: Boolean,
+    required: true,
+  },
+});
 
 const UserSchema: Schema<IUser> = new Schema({
   _id: {
@@ -41,9 +56,9 @@ const UserSchema: Schema<IUser> = new Schema({
     type: Number,
     required: true,
   },
-  is_verified: {
-    type: Boolean,
-    required: true,
+  verified: {
+    type: VerifiedSchema,
+    required: false, // Make it optional
   },
 });
 

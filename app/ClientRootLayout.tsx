@@ -7,15 +7,21 @@ import { fetchOnboardingQuestions } from "@/services/onboarding.service";
 import { useRecoilState } from "recoil";
 import { currentUserRoleAtom, onBoardingQuestionsAtom } from "@/store/atoms";
 import { admin, member } from "@/lib/constants";
+import { getUserById } from "@/services/user.service";
 
 const ClientRootLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
   const { organization, isLoaded } = useOrganization();
-  const shouldShowSidebar = !pathname.startsWith("/video");
 
-  const [currentUserRole, setCurrentUserRole] = useRecoilState(currentUserRoleAtom);
+  const shouldShowSidebar = !(
+    pathname.startsWith("/onboarding-flow") ||
+    pathname.startsWith("/video") 
+  );
+  
+  const [currentUserRole, setCurrentUserRole] =
+    useRecoilState(currentUserRoleAtom);
   const [questions, setQuestions] = useRecoilState(onBoardingQuestionsAtom);
   const [isOnBoarding, setIsOnBoarding] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -26,71 +32,41 @@ const ClientRootLayout = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (!isClient || !isLoaded || !organization || hasFetched) return;
-
-    const fetchAdminId = async () => {
+    const checkUserVerification = async () => {
       try {
-        const membershipsResponse = await organization.getMemberships();
-        const memberships = membershipsResponse.data;
-
-        const admin = memberships.find((member) => member.role === "org:admin");
-        if (admin) {
-          await fetchQuestions(admin.publicUserData.userId as string);
-        } else if (currentUserRole === member) {
+        const userData = await getUserById(user?.id as any);
+        console.log("user data ", userData);
+        if (userData.data.verified) {
           router.push("/courses/list");
+          setIsOnBoarding(true);
+        } else {
+          if (currentUserRole !== admin) {
+            setIsOnBoarding(false);
+            router.push("/onboarding-flow");
+          } else {
+            setIsOnBoarding(true);
+            router.push("/courses/list");
+          }
         }
       } catch (error) {
-        if (currentUserRole === member) {
-          router.push("/courses/list");
-        }
-      } finally {
-        setHasFetched(true);
+        console.error("Error checking user verification:", error);
+        setIsOnBoarding(true);
       }
     };
 
-    fetchAdminId();
-  }, [isClient, isLoaded, organization, router, currentUserRole, hasFetched]);
-
-  const fetchQuestions = async (id: string) => {
-    try {
-      const data = await fetchOnboardingQuestions(id);
-      setQuestions(data.data.questions);
-      setIsOnBoarding(true);
-      if (currentUserRole === member && pathname !== "/onboarding-flow") {
-        router.push("/onboarding-flow");
-      }
-    } catch (error) {
-      setIsOnBoarding(false);
-      if (currentUserRole === member && pathname !== "/courses/list") {
-        router.push("/courses/list");
-      }
+    if (currentUserRole === member && user?.id) {
+      checkUserVerification();
     }
-  };
-
-  // useEffect(() => {
-  //   if (isClient && currentUserRole === admin && pathname !== "/courses/list") {
-  //     router.push("/courses/list");
-  //   }
-  // }, [isClient, currentUserRole, router, pathname]);
+  }, [user, router]);
 
   if (!isClient) {
-    return <div>Loading...</div>; // Render a consistent placeholder on the server
-  }
-
-  if (isOnBoarding && currentUserRole === member && pathname !== "/onboarding-flow") {
-    router.push("/onboarding-flow");
-    return <div>Redirecting...</div>; // Render a consistent placeholder while redirecting
-  }
-
-  if (!isOnBoarding && currentUserRole === member && pathname !== "/courses/list") {
-    router.push("/courses/list");
-    return <div>Redirecting...</div>; // Render a consistent placeholder while redirecting
+    return <div></div>;
   }
 
   return (
     <div className="flex">
       <SignedIn>
-        {questions.length > 0 && shouldShowSidebar && (
+        {shouldShowSidebar && (
           <div className="fixed top-0 left-0 h-full w-fit z-10">
             <Sidebar />
           </div>

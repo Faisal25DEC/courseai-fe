@@ -34,13 +34,18 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(
-  req: Request,
-  { params }: { params: { user_id: string } }
-) {
+export async function GET(req: Request) {
   await connectToDatabase();
 
-  const { user_id } = params;
+  const { searchParams } = new URL(req.url);
+  const user_id = searchParams.get("user_id");
+
+  if (!user_id) {
+    return NextResponse.json(
+      { success: false, error: "User ID is required" },
+      { status: 400 }
+    );
+  }
 
   try {
     const answers = await OnboardingAnswer.findOne({ user_id });

@@ -44,11 +44,12 @@ const AvatarContent = () => {
       return { avatar_id: item.avatar_id, ...item.avatar_states[0] };
     });
 
+    console.log("all avatar", allAvatars);
+
     allAvatars = allAvatars.filter((avatar: any) =>
       specificAvatarIds.includes(avatar.id)
     );
 
-    console.log("all avatar", allAvatars);
 
     const filteredVoices = voicesData.data.list.filter(
       (item: any) => item.language === "English"

@@ -24,7 +24,9 @@ export const fetchOnboardingQuestions = async (user_id: string) => {
 
 export async function fetchOnboardingAnswers(user_id: string) {
   try {
-    const response = await fetch(`/api/save-onboarding-answers/${user_id}`);
+    const response = await fetch(
+      `/api/save-onboarding-answers?user_id=${user_id}`
+    );
     const data = await response.json();
 
     if (!response.ok) {

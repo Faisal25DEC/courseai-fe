@@ -265,7 +265,7 @@ const Page = () => {
               <option value="upload">Upload</option>
             </select>
             <Button onClick={addQuestion} color="primary" className="w-fit">
-              Add Question
+            <Icon icon="ic:twotone-plus" className="text-white w-5 h-5"/> Add Question
             </Button>
           </div>
 
@@ -296,7 +296,7 @@ const Page = () => {
             <div className="w-[80%] m-auto mt-8 mb-8">
               <Button
                 onClick={handleSubmit}
-                className="bg-green-500 text-white"
+                className="bg-gray-800 text-white"
               >
                 {isSaveQuestion ? (
                   <>

@@ -67,14 +67,14 @@ const AvatarContent = () => {
 
     const maleVoices = filteredVoices
       .filter((voice: any) => voice.gender.toLowerCase() === "male")
-      .slice(0, 5);
+      
     const femaleVoices = filteredVoices
       .filter((voice: any) => voice.gender.toLowerCase() === "female")
-      .slice(0, 5);
+   
 
     // Ensure a total of 7 avatars and voices
     const selectedAvatars = [...maleAvatars, ...femaleAvatars].slice(0, 7);
-    const selectedVoices = [...maleVoices, ...femaleVoices].slice(0, 7);
+    const selectedVoices = [...maleVoices, ...femaleVoices];
 
     // Map avatars to matching voices
     const matchedAvatarsAndVoices = selectedAvatars.map((avatar, index) => {

@@ -4,7 +4,11 @@ import { UserButton } from "@clerk/nextjs";
 import { Icon } from "@iconify/react";
 import React, { useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { courseIdAtom, currentUserRoleAtom, selectedSidebarKeyAtom } from "@/store/atoms";
+import {
+  courseIdAtom,
+  currentUserRoleAtom,
+  selectedSidebarKeyAtom,
+} from "@/store/atoms";
 import { admin } from "@/lib/constants";
 import Link from "next/link";
 import useSetOrganization from "@/hooks/useSetOrganization";
@@ -29,6 +33,8 @@ const Sidebar = () => {
       setSelectedKey("analytics");
     } else if (pathname.includes("/settings")) {
       setSelectedKey("settings");
+    } else if (pathname.includes("/onboarding")) {
+      setSelectedKey("onboarding");
     }
   }, [pathname, setSelectedKey]);
 
@@ -64,7 +70,12 @@ const Sidebar = () => {
             } ${
               selectedKey === "courses" ? "" : "hover:bg-gray-200"
             } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
-            onClick={() => handleNavigation("courses", currentUserRole === admin ? "/courses/list" : `/courses/list`)}
+            onClick={() =>
+              handleNavigation(
+                "courses",
+                currentUserRole === admin ? "/courses/list" : `/courses/list`
+              )
+            }
           >
             <Icon icon="hugeicons:course" className="w-5 h-5" />
             <span>Courses</span>
@@ -75,7 +86,14 @@ const Sidebar = () => {
             } ${
               selectedKey === "practice" ? "" : "hover:bg-gray-200"
             } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
-            onClick={() => handleNavigation("practice", currentUserRole === admin ? "/practice/create" : `/practice/create`)}
+            onClick={() =>
+              handleNavigation(
+                "practice",
+                currentUserRole === admin
+                  ? "/practice/create"
+                  : `/practice/create`
+              )
+            }
           >
             <Icon icon="hugeicons:bot" className="w-5 h-5" />
             <span>Practice</span>
@@ -86,7 +104,14 @@ const Sidebar = () => {
             } ${
               selectedKey === "analytics" ? "" : "hover:bg-gray-200"
             } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
-            onClick={() => handleNavigation("analytics", currentUserRole === admin ? "/analytics" : `/analytics/${currentCourseId}`)}
+            onClick={() =>
+              handleNavigation(
+                "analytics",
+                currentUserRole === admin
+                  ? "/analytics"
+                  : `/analytics/${currentCourseId}`
+              )
+            }
           >
             <Icon icon="solar:chart-outline" className="w-5 h-5" />
             <span>Analytics</span>
@@ -102,6 +127,19 @@ const Sidebar = () => {
             >
               <Icon icon="solar:settings-outline" className="w-5 h-5" />
               <span>Settings</span>
+            </li>
+          )}
+          {currentUserRole === admin && (
+            <li
+              className={`${
+                selectedKey === "onboarding" ? "bg-gray-800 text-white" : ""
+              } ${
+                selectedKey === "onboarding" ? "" : "hover:bg-gray-200"
+              } flex items-center gap-4 p-2 cursor-pointer font-normal text-[14px] rounded-lg mb-2`}
+              onClick={() => handleNavigation("onboarding", "/onboarding")}
+            >
+              <Icon icon="fluent-mdl2:onboarding" className="w-5 h-5" />
+              <span>On boarding</span>
             </li>
           )}
         </ul>

@@ -16,7 +16,7 @@ import VideoLesson from "./_components/video-lesson/video-lesson";
 import TextLesson from "./_components/text-lesson/text-lesson";
 import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
 import { typeColorObj } from "../[id]/constants";
-import { Chip } from "@nextui-org/react";
+import { Chip, Tooltip } from "@nextui-org/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 const PreivewCourse = () => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
@@ -39,21 +39,21 @@ const PreivewCourse = () => {
     setActiveLesson(idx);
   };
   return (
-    <div className="w-full h-[92vh] overflow-hidden border-1 bg-gray-100">
+    <div className="w-full h-[92vh] overflow-hidden border-1">
       <div className="flex h-full w-[100%]">
         {showContent && (
-          <div className="w-[30%] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col bg-gray-800 text-white my-element">
+          <div className="w-[30%] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col text-white my-element">
             <div className="flex justify-between items-center border-b-1 border-gray-600  w-full py-5 px-4">
               <div className="flex ">
-                <Icon icon="gridicons:menus" className="text-white w-6 h-6" />
-                <h1 className="text-[15px] text-gray-300 font-semibold pl-2">
+                <Icon icon="gridicons:menus" className="text-gray-800 w-6 h-6" />
+                <h1 className="text-[15px] text-gray-800 font-semibold pl-2">
                   Contents
                 </h1>
               </div>
               <Icon
                 onClick={() => setshowContent(false)}
                 icon="carbon:close-outline"
-                className="cursor-pointer w-7 h-7 text-white"
+                className="cursor-pointer w-7 h-7 text-gray-800"
               />
             </div>
             {lessonsArray
@@ -63,18 +63,22 @@ const PreivewCourse = () => {
                   onClick={() => handleChangeLesson(idx)}
                   key={lesson.id}
                   style={{ opacity: lesson.locked ? 0.5 : 1 }}
-                  className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-600 ${
+                  className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-200 ${
                     activeLesson === idx
-                      ? "bg-black border-l-5 border-l-white"
-                      : ""
+                    ? `bg-gray-100 border-l-5 ${
+                        lesson.type === "avatar"
+                          ? "border-l-orange-400"
+                          : "border-l-blue-400"
+                      }`
+                    : ""
                   }`}
                 >
                   <div className="flex h6-medium items-start gap-2 font-medium">
-                    <span className="text-gray-300">{idx + 1}.</span>
+                    <span className="text-gray-800">{idx + 1}.</span>
                     <div className="flex flex-col gap-2">
-                      <div className="capitalize text-gray-300">
+                      <div className="capitalize text-gray-800">
                         <span
-                          className="block overflow-wrap break-words whitespace-normal w-full pr-5"
+                          className="block overflow-wrap break-words whitespace-normal w-full pr-5 font-semibold"
                           style={{
                             wordWrap: "break-word",
                             overflowWrap: "break-word",
@@ -85,8 +89,8 @@ const PreivewCourse = () => {
                         <p
                           className={`${
                             lesson.type === "avatar"
-                              ? "text-orange-200"
-                              : "text-blue-200"
+                              ? "text-orange-400"
+                              : "text-blue-400"
                           }  text-xs`}
                         >
                           {lessonTypeText[lesson.type]}

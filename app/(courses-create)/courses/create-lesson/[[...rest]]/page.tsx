@@ -294,12 +294,12 @@ const CreateCourse = () => {
         </div>
         {/* <hr /> */}
         {isPageView === "edit" && (
-          <div className="overflow-hidden w-[100%] h-[92vh] flex flex-row justify-center border-t bg-gray-100">
-            <div className="relative w-[30%] border-r bg-gray-800">
-              <div className="flex justify-between items-center border-b-1 border-gray-600  w-full py-5 px-4">
+          <div className="overflow-hidden w-[100%] h-[92vh] flex flex-row justify-center border-t">
+            <div className="relative w-[30%] border-r">
+              <div className="flex justify-between items-center border-b-1 border-gray-500  w-full py-5 px-4">
                 <div className="flex ">
-                  <Icon icon="gridicons:menus" className="text-white w-6 h-6" />
-                  <h1 className="text-[15px] text-gray-300 font-semibold pl-2">
+                  <Icon icon="gridicons:menus" className="text-gray-800 w-6 h-6" />
+                  <h1 className="text-[15px] text-gray-800 font-semibold pl-2">
                     Contents
                   </h1>
                 </div>
@@ -352,11 +352,10 @@ const CreateCourse = () => {
                 )}
               </StrictModeDroppable>
               {currentUserRole === admin && (
-                <div className="absolute left-0 right-0 bottom-0 h-[80px] flex p-4 bg-gray-800 shadow-[0px_-1px_0px_rgba(17,_24,_39,_0.08)]">
+                <div className="absolute left-0 right-0 bottom-0 h-[80px] flex p-4 bg-white shadow-[0px_-1px_0px_rgba(17,_24,_39,_0.08)]">
                   <Button
                     color="primary"
-                    variant="bordered"
-                    className="bg-white cursor-pointer w-full font-semibold border-1 border-gray-300 hover:bg-gray-100 mt-2"
+                    className="bg-gray-800 cursor-pointer w-full font-semibold border-1 mt-2"
                     size={"sm"}
                     onClick={() => onCreateLessonModalOpen()}
                   >

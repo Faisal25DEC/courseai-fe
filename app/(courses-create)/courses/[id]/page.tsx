@@ -34,6 +34,7 @@ const PreivewCourse = () => {
   const currentCourseId = useRecoilValue(courseIdAtom);
 
   const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
+  
   const [isPracticeList, setIsPracticeList] = useState(true);
   const [showContent, setshowContent] = useState(true);
 
@@ -51,9 +52,9 @@ const PreivewCourse = () => {
       }
     );
 
-    return () => {
-      setLessonsArray([]);
-    };
+    return()=>{
+      setLessonsArray([])
+    }
   }, []);
 
   const checkIfLessonIsLocked = (idx: number) => {

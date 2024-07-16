@@ -5,11 +5,16 @@ import { useRecoilState } from "recoil";
 
 const useFetchLessons = (id: string) => {
   const [lessonsArray, setLessonsArray] = useRecoilState(lessonsArrayAtom);
+
   useEffect(() => {
-    getCourse(id).then((res) => {
-      setLessonsArray(res.lessons);
-    });
-  }, []);
+    if (id) {
+      console.log("Fetching lessons for course id:", id);
+      getCourse(id).then((res) => {
+        setLessonsArray(res.lessons);
+      });
+    }
+  }, [id]);
+
   return [lessonsArray, setLessonsArray] as any;
 };
 

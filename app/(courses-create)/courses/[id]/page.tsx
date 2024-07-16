@@ -223,7 +223,7 @@ const PreivewCourse = () => {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {filteredLessons[idx].status === "approved" ? (
+                    {filteredLessons[idx]?.status === "approved" ? (
                       <Icon icon="mingcute:bookmark-fill" className="w-5 h-5 text-gray-800" />
                     ) : (
                       <Icon

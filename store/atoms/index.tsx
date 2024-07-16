@@ -201,3 +201,8 @@ export const onBoardingQuestionsAtom = atom({
   key: "onBoardingQuestionsAtom",
   default: [],
 });
+
+export const playingAudioIndexAtom = atom({
+  key: 'playingAudioIndex',
+  default: null,
+});

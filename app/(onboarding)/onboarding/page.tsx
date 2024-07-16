@@ -233,7 +233,7 @@ const Page = () => {
       </div>
       {activeButton === "create" && (
         <>
-          <div className="w-[50%] m-auto flex flex-col gap-4 pt-10">
+          <div className="w-[80%] m-auto flex flex-col gap-4 pt-10">
             <Input
               type="text"
               value={heading}
@@ -269,7 +269,7 @@ const Page = () => {
             </Button>
           </div>
 
-          <div className="w-[50%] m-auto flex flex-col gap-4 mt-8">
+          <div className="w-[80%] m-auto flex flex-col gap-4 mt-8">
             {questions.map((q, index) => (
               <div
                 key={index}
@@ -293,7 +293,7 @@ const Page = () => {
           </div>
 
           {questions.length > 0 && (
-            <div className="w-[50%] m-auto mt-8 mb-8">
+            <div className="w-[80%] m-auto mt-8 mb-8">
               <Button
                 onClick={handleSubmit}
                 className="bg-green-500 text-white"
@@ -326,7 +326,7 @@ const Page = () => {
                   fetchAnswers(user.publicUserData.userId);
                 }}
                 key={user.userId}
-                className="p-4 w-[50%] shadow-1 cursor-pointer flex justify-between items-center rounded-md"
+                className="p-4 w-[80%] shadow-1 cursor-pointer flex justify-between items-center rounded-md"
               >
                 <div className="w-[100%] flex items-center gap-2">
                   <div className="relative">
@@ -341,7 +341,7 @@ const Page = () => {
                     {user.publicUserData.lastName}
                   </div>
                 </div>
-                <div className="w-[25%]">
+                <div>
                   <p className="text-[12px]">
                     {user.publicUserData.identifier}
                   </p>
@@ -352,7 +352,7 @@ const Page = () => {
         </div>
       )}
       {activeButton === "view" && selectedUserId !== null && (
-        <div className="w-[50%] m-auto flex flex-col gap-4 mt-8">
+        <div className="w-[80%] m-auto flex flex-col gap-4 mt-8">
           {answers.map((answer, index) => {
             const questionText = getQuestionText(answer.question_id);
             const question = questions.find(

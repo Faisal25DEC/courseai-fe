@@ -197,4 +197,7 @@ export const selectedSidebarKeyAtom = atom({
   default: "courses",
 });
 
-
+export const onBoardingQuestionsAtom = atom({
+  key: "onBoardingQuestionsAtom",
+  default: [],
+});

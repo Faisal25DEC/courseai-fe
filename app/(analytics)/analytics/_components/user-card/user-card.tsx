@@ -17,6 +17,7 @@ import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { Icon } from "@iconify/react";
 import { getCourseProgress } from "../../utils";
+import { Skeleton } from "@nextui-org/react";
 
 const UserCard = ({
   user,
@@ -48,15 +49,15 @@ const UserCard = ({
   const [userAnalytics, setUserAnalytics] = useState<any>(null);
   const fetchUserAnalytics = async () => {
     try {
-      const res = await getUserAnalytics(user.id, currentCourseId);
+      const res = await getUserAnalytics(user?.id, currentCourseId);
       setUserAnalytics(res);
     } catch (error) {
       console.error(error);
     }
   };
   useEffect(() => {
-    fetchUserAnalytics();
-  }, [currentUserLessonAnalytics]);
+    if (user) fetchUserAnalytics();
+  }, [currentUserLessonAnalytics, user]);
   useEffect(() => {
     document.addEventListener("visibilitychange", fetchUserAnalytics);
     return () => {
@@ -115,16 +116,24 @@ const UserCard = ({
   return (
     <div
       onClick={() => onUserCardClick(user)}
-      key={user.id}
+      key={user?.id}
       className="p-4 shadow-1 cursor-pointer flex justify-between items-center rounded-md"
     >
       <div className="w-[25%] flex items-center gap-2">
         <div className="relative">
-          <img
-            src={user.imageUrl}
-            alt="avatar"
-            className="w-[40px] h-[40px] rounded-full object-cover"
-          />
+          {user?.imageUrl ? (
+            <img
+              src={user?.imageUrl}
+              alt="avatar"
+              className="w-[40px] h-[40px] rounded-full object-cover"
+            />
+          ) : (
+            <div className="max-w-[300px] w-full flex items-center gap-3">
+              <div>
+                <Skeleton className="flex rounded-full w-12 h-12" />
+              </div>
+            </div>
+          )}
           {pendingApprovals > 0 && (
             <PopoverHover
               className={""}
@@ -137,15 +146,15 @@ const UserCard = ({
           )}
         </div>
         <div className="text-gray-700 font-medium">
-          {user.firstName} {user.lastName}
+          {user?.firstName} {user?.lastName}
         </div>
       </div>
       <div className="w-[25%]">
-        <p className="text-[12px]">{user.emailAddresses[0].emailAddress}</p>
+        <p className="text-[12px]">{user?.emailAddresses?.[0]?.emailAddress}</p>
       </div>
       <div className="w-[25%]">
         <p className="text-[12px]">
-          {FormatDate.getDateInDDMMYYYY(user.enrolled_at)}
+          {FormatDate.getDateInDDMMYYYY(user?.enrolled_at)}
         </p>
       </div>
       <div className="w-[25%] flex gap-2 items-center">

@@ -242,10 +242,28 @@ function AvatarPracticeLesson({
       throw new Error("Server error");
     } else {
       const data = await response.json();
+      console.log("stream data ", data);
+      const words = text.split(" ");
+      const duration = data.data.duration_ms;
+      const interval = duration / words.length;
+  
       conversationsRef.current = [
         ...conversationsRef.current,
-        { role: "assistant", content: text },
+        { role: "assistant", content: "", isStreaming: true },
       ];
+  
+      for (let i = 0; i < words.length; i++) {
+        setTimeout(() => {
+          conversationsRef.current[conversationsRef.current.length - 1].content += ` ${words[i]}`;
+          setConversations([...conversationsRef.current]);
+        }, interval * i);
+      }
+  
+      setTimeout(() => {
+        conversationsRef.current[conversationsRef.current.length - 1].isStreaming = false;
+        setConversations([...conversationsRef.current]);
+      }, duration);
+  
       setUserTranscriptLoading(0);
       return data.data;
     }

@@ -5,11 +5,12 @@ import {
   analyticsTabValueAtom,
   currentAvatarConversationAtom,
   currentCourseAtom,
+  currentOrganizationIdAtom,
   currentUserLessonAnalyticsAtom,
   lessonsArrayAtom,
 } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { textColorBasedOnStatus } from "./constants";
 import ApprovalPending from "./_legos/approval-pending/approval-pending";
 import {
@@ -20,11 +21,40 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getAllCourses } from "@/services/lesson.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+import {
+  BreadcrumbItem,
+  Breadcrumbs,
+  Button,
+  Spinner,
+} from "@nextui-org/react";
 import axios from "axios";
 import { baseUrl } from "@/lib/config";
+import {
+  fetchOnboardingAnswers,
+  fetchOnboardingQuestions,
+} from "@/services/onboarding.service";
+import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
+import { updateUserVerifiedStatus } from "@/services/user.service";
+import { handleImageOpenInNewTab } from "@/utils/helpers";
+
+interface Question {
+  id: string;
+  heading: string;
+  question: string;
+  type: string;
+  description: string;
+}
+
+interface Answer {
+  question_id: string;
+  answer: any;
+}
 
 const UserLessonAnalytics = () => {
+  const { user } = useUser();
+  const currentOrgId = useRecoilValue(currentOrganizationIdAtom);
+
   const [currentAvatarConversation, setCurrentAvatarConversation] =
     useRecoilState(currentAvatarConversationAtom);
   const [tabValue, setTabValue] = useRecoilState(analyticsTabValueAtom);
@@ -40,6 +70,43 @@ const UserLessonAnalytics = () => {
   const [currentCourseId, setCurrentCourseId] = useState<string>("");
   const [selectedTab, setSelectedTab] = useState("courses"); // New state to track selected tab
   const [activeLesson, setactiveLesson] = useRecoilState(activeLessonAtom);
+  const [answers, setAnswers] = useState<Answer[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [isVerified, setIsVerified] = useState(false);
+
+  const fetchAnswers = async (userId: string) => {
+    try {
+      const data = await fetchOnboardingAnswers(userId);
+      setAnswers(data.data.answers);
+    } catch (error) {
+      // toast.error("No answers found for the user");
+      console.error(error);
+    }
+  };
+
+  const fetchQuestions = async () => {
+    if (user) {
+      try {
+        const data = await fetchOnboardingQuestions(user?.id);
+        console.log("fetch questions ", data);
+        setQuestions(data.data.questions);
+      } catch (error) {
+        // toast.error("Failed to fetch questions");
+        console.error(error);
+      }
+    }
+  };
+
+  // useEffect(() => {
+  //   fetchQuestions();
+  //   if (user) {
+  //     fetchAnswers(user?.id);
+  //   }
+  //   return () => {
+  //     setQuestions([]);
+  //     setAnswers([]);
+  //   };
+  // }, [currentUserLessonAnalytics]);
 
   useEffect(() => {
     const fetchCurrentCourse = async () => {
@@ -121,6 +188,33 @@ const UserLessonAnalytics = () => {
     return "text-blue-600 underline font-light";
   };
 
+  const getQuestionText = (questionId: string) => {
+    const question = questions.find((q: any) => q._id === questionId);
+    return question ? question.question : "Question not found";
+  };
+
+  const verifyUser = async (
+    userId: string,
+    orgId: string,
+    isVerified: boolean
+  ) => {
+    setIsVerified(true);
+    try {
+      const response = await updateUserVerifiedStatus(
+        userId,
+        orgId,
+        isVerified
+      );
+      toast.success("User verified");
+      setIsVerified(false);
+    } catch (error) {
+      toast.error("Error updating user verified status");
+      setIsVerified(false);
+    } finally {
+      setIsVerified(false);
+    }
+  };
+
   const headings = [
     "Lesson",
     "Status",
@@ -162,6 +256,7 @@ const UserLessonAnalytics = () => {
           <TabsList className="mx-4 mt-4">
             <TabsTrigger value="courses">Courses</TabsTrigger>
             <TabsTrigger value="practice-lessons">Practice Lessons</TabsTrigger>
+            {/* <TabsTrigger value="onboarding">Onboarding</TabsTrigger> */}
           </TabsList>
         )}
         <TabsContent value="courses">
@@ -341,6 +436,75 @@ const UserLessonAnalytics = () => {
                   </div>
                 );
               })}
+          </div>
+        </TabsContent>
+        <TabsContent value="onboarding">
+          <div className="w-[80%] m-auto flex flex-col gap-4 mt-8">
+            {answers.map((answer, index) => {
+              const questionText = getQuestionText(answer.question_id);
+              const question = questions.find(
+                (q: any) => q._id === answer.question_id
+              );
+
+              return (
+                <div
+                  key={index}
+                  className="shadow-sm flex flex-col p-2 border border-gray-300 rounded-lg"
+                >
+                  <p className="font-semibold text-sm text-gray-800">
+                    {index + 1}: {questionText}
+                  </p>
+                  {question &&
+                  question.type === "upload" &&
+                  Array.isArray(answer.answer) ? (
+                    <div className="flex flex-wrap gap-5 mt-2">
+                      {answer.answer.map((imageUrl, imgIndex) => (
+                        <img
+                          key={imgIndex}
+                          src={imageUrl}
+                          alt={`Answer Image ${imgIndex + 1}`}
+                          className="w-[220px] h-[200px] object-cover border-1 p-2 rounded-md cursor-pointer"
+                          onClick={() => handleImageOpenInNewTab(imageUrl)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-700">{answer.answer}</p>
+                  )}
+                </div>
+              );
+            })}
+
+            <div className="flex w-full justify-end gap-4 mt-5">
+              <Button
+                color="secondary"
+                // onClick={() => setSelectedUserId(null)}
+                className="mb-4 w-fit"
+              >
+                Back to Users
+              </Button>
+              <Button
+                color="primary"
+                onClick={() =>
+                  verifyUser(
+                    currentUserLessonAnalytics?.user_id,
+                    currentOrgId,
+                    true
+                  )
+                }
+                className="mb-4 w-fit"
+              >
+                {isVerified ? (
+                  <>
+                    {" "}
+                    <Spinner size="sm" color="white" className="" />
+                    Verifying...{" "}
+                  </>
+                ) : (
+                  "Verify User"
+                )}
+              </Button>
+            </div>
           </div>
         </TabsContent>
       </Tabs>

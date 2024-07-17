@@ -6,7 +6,7 @@ import {
   getUserAnalytics,
 } from "@/services/lesson.service";
 import { userAnalyticsAtom } from "@/store/atoms";
-import { useUser } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
@@ -29,17 +29,48 @@ const CoordinatorAnalytics = () => {
   const { user } = useUser();
   const [userAnalytics, setUserAnalytics] =
     useRecoilState<any>(userAnalyticsAtom);
+  const { organization, isLoaded } = useOrganization();
+  console.log("user---------------> ", user);
+  // useEffect(() => {
+  //   if (!id) return;
+  //   if (!user && userAnalytics === null) return;
+  //   getEnrolledUsersInACourseWithAnalytics(id as string).then((res) => {
+  //     if (!res) return;
+  //     // Log the entire response as an array of objects
+  //     console.warn("current enrolled users:", res);
+
+  //     // Log each user object separately
+  //     res.forEach((userRes: any, index: number) => {
+  //       console.warn(`User ${index + 1}:`, userRes);
+  //     });
+
+  //     const currentEnrolledUser = res.find(
+  //       (userRes: any) => userRes.id === user?.id
+  //     );
+
+  //     setCurrentUserAnalytics(currentEnrolledUser);
+  //   });
+  // }, [user, id]);
 
   useEffect(() => {
-    if (!id) return;
-    if (!user && userAnalytics === null) return;
-    getEnrolledUsersInACourseWithAnalytics(id as string).then((res) => {
-      if (!res) return;
-      const currentEnrolledUser = res.find(
-        (userRes: any) => userRes.id === user?.id
-      );
-      setCurrentUserAnalytics(currentEnrolledUser);
-    });
+
+    const fetchAnalytics = async () => {
+      if (user) {
+        try {
+          const analytics = await getUserAnalytics(user?.id, id as string);
+          setCurrentUserAnalytics(analytics);
+
+          console.log("analytics------------> ", analytics);
+        } catch (error) {
+          toast.error("Failed to fetch organization members");
+          console.error(error);
+        }
+      }
+    };
+
+    if (user?.id) {
+      fetchAnalytics();
+    }
   }, [user, id]);
   const headings = ["Name", "Email", "Enrolled At", "Progress"];
 
@@ -68,7 +99,7 @@ const CoordinatorAnalytics = () => {
           ))}
         </div>
         <div className="flex flex-col gap-4">
-          {user?.id && <UserCard user={currentUserAnalytics} key={user?.id} />}
+          {user?.id && <UserCard user={user} key={user?.id} />}
         </div>
       </div>
       <Modal

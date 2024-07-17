@@ -114,6 +114,8 @@ const UserCard = ({
     // },
   ];
 
+  console.log("le user ",user)
+
   return (
     <div
       onClick={() => onUserCardClick(user)}

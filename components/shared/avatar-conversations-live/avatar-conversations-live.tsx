@@ -2,7 +2,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { responseLoadingAtom, userTranscriptLoadingAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, Input } from "@nextui-org/react";
 import React, { useEffect, useRef, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
@@ -11,40 +10,59 @@ const AvatarConversationsLive = ({
   chat,
   setChat,
   talkHandler,
-}: {
-  conversationsRef: any;
-  chat: any;
-  setChat: any;
-  talkHandler: any;
-}) => {
+}: any) => {
   const { user } = useUser();
-  const scrollAreaRef = useRef<any>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const responseLoading = useRecoilValue(responseLoadingAtom);
   const [userTranscriptLoading, setUserTranscriptLoading] = useRecoilState(
     userTranscriptLoadingAtom
   );
 
-  useEffect(() => {
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+
+  const scrollToBottom = () => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
+  };
+  useEffect(() => {
+    if (!isUserScrolling) {
+      scrollToBottom();
+    }
   }, [conversationsRef.current.length, userTranscriptLoading, responseLoading]);
 
-  console.log(userTranscriptLoading, "userTranscript");
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const isStreaming = conversationsRef.current.some(
+        (item: any) => item.isStreaming
+      );
+      if (isStreaming && !isUserScrolling) {
+        scrollToBottom();
+      }
+    }, 100);
 
+    return () => clearInterval(interval);
+  }, [conversationsRef]);
 
+  const handleScroll = () => {
+    if (scrollAreaRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
+      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10; 
 
-  const sendChatFromIcon = (e: any) => {
-    setUserTranscriptLoading(2);
-    if (conversationsRef.current) {
-      conversationsRef.current = [
-        ...conversationsRef.current,
-        { role: "user", content: chat },
-      ];
+      setIsUserScrolling(!isAtBottom);
     }
-    talkHandler(chat, false);
-    setChat("");
   };
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
+      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10; 
+
+      if (isAtBottom) {
+        setIsUserScrolling(false);
+      }
+    }
+  }, [conversationsRef.current.length]);
 
   return (
     <div className="bg-white flex flex-col h-[70vh] w-[320px] rounded-r-[20px] shadow-1">
@@ -63,16 +81,18 @@ const AvatarConversationsLive = ({
       <div
         ref={scrollAreaRef}
         className="h-[70vh] flex flex-col gap-2 overflow-auto"
+        onScroll={handleScroll}
+
       >
         {conversationsRef.current.length > 0 &&
-          conversationsRef.current.map((item: any) => (
+          conversationsRef.current.map((item: any, index: any) => (
             <div
               className={`${
                 item.role === "user"
                   ? "justify-end self-end justify-self-end flex-row-reverse"
                   : ""
               }  flex gap-2 px-4 py-2 items-start`}
-              key={item.content}
+              key={index}
             >
               <div
                 className={`w-4 h-4 ${
@@ -107,7 +127,7 @@ const AvatarConversationsLive = ({
                     : "bg-[#5475f5] text-white rounded-tr-[17px] rounded-b-[17px]"
                 }`}
               >
-                {item.content}
+                {item.isStreaming ? `${item.content} ...` : item.content}
               </p>
             </div>
           ))}

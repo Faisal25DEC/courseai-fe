@@ -42,13 +42,16 @@ import {
   NewSessionData,
   StreamingAvatarApi,
 } from "@heygen/streaming-avatar";
+
+import { evaluateScorecard } from "@/services/gpt.service";
+import openIcon from "../../../../../../public/images/open.png";
+import Image from "next/image";
+import { generateRandomSegment } from "@/utils/helpers";
+import Configure from "@/app/(video)/video/components/Configure";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
 );
-
-import { evaluateScorecard } from "@/services/gpt.service";
-import Configure from "./Configure";
 
 function AvatarPracticeLesson({
   avatar_id,
@@ -101,7 +104,6 @@ function AvatarPracticeLesson({
   const submitButtonRef = useRef(null);
   const [conversations, setConversations] = useState([]);
   const conversationsRef = useRef([]);
-  const [chat, setChat] = useState("");
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [knowledgeBase, setKnowledgeBase] = useState(""); // [knowledgeBase, setKnowledgeBase
   const { isOpen, onClose, onOpen } = useDisclosure();
@@ -128,7 +130,7 @@ function AvatarPracticeLesson({
   // const [cameraAllowed, setCameraAllowed] = useState(false);
   const cameraAllowed = useRef(false);
   const [scorecardAns, setScorecardAns] = useState([]);
-  const [windowType, setWindowType] = useState("");
+  const [chat, setChat] = useState("");
   const [isStartCall, setIsStartCall] = useState(false);
 
   const { user } = useUser();
@@ -145,15 +147,7 @@ function AvatarPracticeLesson({
   const apiKey = heygen_API.apiKey;
   const SERVER_URL = heygen_API.serverUrl;
 
-  useEffect(() => {
-    if (window !== parent) {
-      // This page is inside an iframe
-      setWindowType("iframe");
-    } else {
-      // This page is not inside an iframe
-      setWindowType("");
-    }
-  }, []);
+  const randomSegment = generateRandomSegment();
 
   const handleSubmit = () => {
     // setCameraAllowed(true);
@@ -198,6 +192,7 @@ function AvatarPracticeLesson({
     return () => {
       const duration = Date.now() - currenTimeRef.current;
       conversationsRef.current = [];
+      setIsStartCall(false);
     };
   }, [activeLesson]);
 
@@ -247,14 +242,33 @@ function AvatarPracticeLesson({
       throw new Error("Server error");
     } else {
       const data = await response.json();
+      console.log("stream data ", data);
+      const words = text.split(" ");
+      const duration = data.data.duration_ms;
+      const interval = duration / words.length;
+  
       conversationsRef.current = [
         ...conversationsRef.current,
-        { role: "assistant", content: text },
+        { role: "assistant", content: "", isStreaming: true },
       ];
+  
+      for (let i = 0; i < words.length; i++) {
+        setTimeout(() => {
+          conversationsRef.current[conversationsRef.current.length - 1].content += ` ${words[i]}`;
+          setConversations([...conversationsRef.current]);
+        }, interval * i);
+      }
+  
+      setTimeout(() => {
+        conversationsRef.current[conversationsRef.current.length - 1].isStreaming = false;
+        setConversations([...conversationsRef.current]);
+      }, duration);
+  
       setUserTranscriptLoading(0);
       return data.data;
     }
   }
+  
 
   async function talkHandler(text, newPrompt) {
     if (!data.current) {
@@ -288,9 +302,95 @@ function AvatarPracticeLesson({
     }
   }
 
+  const handleStopAndUpload = async () => {
+    if (!recorderRef.current) {
+      endSession();
+      return;
+    }
+    if (submitButtonRef.current) {
+      submitButtonRef.current.disabled = true;
+    }
+    recorderRef.current.stopRecording(async () => {
+      const blob = recorderRef.current.getBlob();
+      const formData = new FormData();
+      const fileName = uuidv4() + ".mp4";
+      formData.append("file", blob, fileName);
+      const conversation = conversationsRef.current || [];
+      formData.append("conversation", new Blob([JSON.stringify(conversation)]));
+      try {
+        endSession();
+        const response = await axios.post(
+          `${baseUrl}/users/${user?.id}/analytics/${currentCourseId}/lessons/${lesson_id}/recordings`,
+          formData,
+          {
+            maxContentLength: Infinity,
+          }
+        );
+        toast.success("Recording submitted successfully");
+      } catch (error) {
+        toast.error("Failed to submit recording");
+      }
+    });
+  };
+  const markComplete = async () => {
+    if (lesson?.status === "approved" || markCompleteCalledRef.current) return;
+    console.log("markComplete");
+    markCompleteCalledRef.current = true;
+    const score = await evaluate();
+    console.log("get score ", score);
+    if (score) {
+      if (lesson.submission === "automatic") {
+        updateLessonForUser({
+          user_id: user?.id,
+          course_id: currentCourseId,
+          lesson_id: lesson.id,
+          data: {
+            status: "approved",
+            duration: Date.now() - currenTimeRef.current,
+            completed_at: Date.now(),
+            scorecard: score,
+          },
+        })
+          .then(() => {
+            getUserAnalytics(user?.id, currentCourseId).then((res) => {
+              setUserAnalytics(res?.analytics);
+            });
+          })
+          .catch((err) => {
+            toast.error("Failed to mark lesson as complete");
+          });
+      } else {
+        updateLessonForUser({
+          user_id: user?.id,
+          course_id: currentCourseId,
+          lesson_id: lesson.id,
+          data: {
+            status: "approval-pending",
+            duration: Date.now() - currenTimeRef.current,
+            scorecard: score,
+          },
+        })
+          .then(() => {
+            approveLessonRequest({
+              lesson_id: lesson.id,
+              course_id: currentCourseId,
+              user_id: user?.id,
+              status: "pending",
+            }).then(() => {
+              toast.success("Request sent for approval");
+              getUserAnalytics(user?.id, currentCourseId).then((res) => {
+                setUserAnalytics(res?.analytics);
+              });
+            });
+          })
+          .catch((err) => {
+            toast.error("Failed to send request for approval");
+          });
+      }
+    }
+  };
   const handleEnd = () => {
-    conversationsRef.current = [];
-    endSession();
+    onEndCallModalOpen();
     setIsPracticeList(true);
   };
 
@@ -329,7 +429,6 @@ function AvatarPracticeLesson({
       );
       // setData(res);
       data.current = res;
-      console.log("response----------> ", res);
       setStream(avatar.current.mediaStream);
       setIsPracticeList(false);
       toast.dismiss();
@@ -442,85 +541,95 @@ function AvatarPracticeLesson({
   }, [data.current?.sessionId]);
 
   return (
-    <div className={`w-full relative px-20`}>
+    <div className="w-full relative">
       <div className="h-[90vh] w-full flex  flex-col">
-        <div className="w-full flex flex-col gap-3 relative justify-center items-center">
+        <div className="w-full flex flex-col gap-3 mt-5 relative justify-center items-center">
           {!data?.current?.sessionId && (
             <>
-              <div className="mt-20 bg-white border-1 shadow-lg border-gray-300 flex item justify-center flex-col items-center h-fit p-5 rounded-xl relative">
-                {isStartCall ? (
+              {isStartCall ? (
+                <div className="border-1 rounded-lg p-7 shadow-lg">
                   <Configure
                     startSession={startSession}
                     cameraAllowed={cameraAllowed}
                     isLoadingSession={isLoadingSession}
                   />
-                ) : (
-                  <>
-                    <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
-                      <Avatar
-                        isBordered
-                        radius="full"
-                        size="md"
-                        src={lesson.content.avatar.normal_thumbnail_small}
-                      />
-                      <div className="flex flex-col pl-2">
-                        <p className="max-w-fit truncate text-sm font-semibold capitalize">
-                          {lesson.title}
-                        </p>
+                </div>
+              ) : (
+                <div className="border-1 shadow-lg border-gray-300 flex justify-center flex-col items-center h-fit p-5 rounded-xl relative">
+                  <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
+                    <Avatar
+                      isBordered
+                      radius="full"
+                      size="md"
+                      src={lesson.content.avatar.normal_thumbnail_small}
+                    />
+                    <div className="flex flex-col pl-2">
+                      <p className="max-w-[300px] truncate text-sm font-semibold capitalize">
+                        {lesson.title}
+                      </p>
+                    </div>
+                    <div
+                      className="absolute right-4 top-4 cursor-pointer"
+                      onClick={() => {
+                        window.open(
+                          `/video/${randomSegment}/${lesson.id}`,
+                          "_blank"
+                        );
+                      }}
+                      title="Open in new tab"
+                    >
+                      <Image src={openIcon} width={20} height={20} />
+                      {/* <Icon
+                      icon="fluent-mdl2:open-in-new-tab"
+                      className="w-4 h-4"
+                    /> */}
+                    </div>
+                  </div>
 
-                        {/* <p className="text-gray-800 text-sm w-[300px]">
+                  <div className="relative mt-4">
+                    <img
+                      src={thumbnail}
+                      alt="ai-avatar"
+                      className="object-cover w-[150px] h-[150px] md:rounded-full shadow-lg"
+                    />
+                    <Icon
+                      icon="fluent-emoji-flat:green-circle"
+                      className="w-6 h-6 bg-white border-2 border-white rounded-full absolute bottom-2 right-2"
+                    />
+                  </div>
+
+                  <p className="mt-5 text-[#71717A] text-center text-sm capitalize w-[300px]">
                     {lesson?.description}
-                  </p> */}
-                      </div>
+                  </p>
+                  <div className="flex mt-3">
+                    <div className="bg-gray-100 px-2 py-[2px] text-xs rounded-lg font-semibold">
+                      {" "}
+                      Live Training
                     </div>
-
-                    <div className="relative mt-4">
-                      <img
-                        src={thumbnail}
-                        alt="ai-avatar"
-                        className="object-cover w-[150px] h-[150px] md:rounded-full shadow-lg"
-                      />
-                      <Icon
-                        icon="fluent-emoji-flat:green-circle"
-                        className="w-6 h-6 bg-white border-2 border-white rounded-full absolute bottom-2 right-2"
-                      />
+                    <div className="ml-2 border border-gray-400 px-2 py-[2px] text-xs rounded-lg font-semibold">
+                      {" "}
+                      {lesson.content.voice.display_name.split("-")[1]}
                     </div>
-                    <p className="mt-5 text-[#71717A] text-center text-sm capitalize w-[300px]">
-                      {lesson?.description}
-                    </p>
-                    <div className="flex mt-3">
-                      <div className="bg-gray-100 px-2 py-[2px] text-xs rounded-lg font-semibold">
-                        {" "}
-                        Live Training
-                      </div>
-                      <div className="ml-2 border border-gray-400 px-2 py-[2px] text-xs rounded-lg font-semibold">
-                        {" "}
-                        {lesson.content.voice.display_name.split("-")[1]}
-                      </div>
-                      {/* <div className="ml-2 border px-2 py-[2px] text-xs rounded-lg font-semibold bg-black text-white">
+                    {/* <div className="ml-2 border px-2 py-[2px] text-xs rounded-lg font-semibold bg-black text-white">
                 {" "}
                 Book rate : {randomNumber}%
 
               </div> */}
-                    </div>
-                    <Button
-                      className="py-6 start-gradient text-white text-lg border-none mt-5 w-[400px] cursor-pointer"
-                      onClick={() => {
-                        setIsStartCall(true);
-                        // onStartCallModalOpen();
-                      }}
-                    >
-                      <Icon icon="fluent:call-24-regular" className="w-6 h-6" />
-                      Start Call
-                    </Button>
-                  </>
-                )}
-              </div>
+                  </div>
+                  <Button
+                    className="py-6 start-gradient text-white text-lg border-none mt-5 w-[400px] cursor-pointer"
+                    onClick={() => {
+                      setIsStartCall(true);
+                    }}
+                  >
+                    <Icon icon="fluent:call-24-regular" className="w-6 h-6" />
+                    Start Call
+                  </Button>
+                </div>
+              )}
             </>
           )}
-          <div
-            className={`h-fit flex flex-col justify-center gap-3 items-center relative`}
-          >
+          <div className="h-fit pl-10 flex flex-col justify-center gap-3 items-center relative py-8">
             {data?.current?.sessionId && (
               <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
                 <Avatar
@@ -556,22 +665,14 @@ function AvatarPracticeLesson({
                     <WebCamRecording
                       recorderRef={recorderRef}
                       mediaElementRef={mediaStream}
+                      handleStopAndUpload={handleStopAndUpload}
                     />
                   )
                 ) : (
                   <>
                     {data?.current?.sessionId && (
                       <div className="shadow-lg border border-gray-300 bg-gray-700 absolute bottom-[1rem] h-[120px] w-[180px] right-5 rounded-[20px] flex items-center justify-center">
-                        {user ? (
-                          <UserButton className="w-40 h-40" />
-                        ) : (
-                          <div className="rounded-full p-2">
-                            <Icon
-                              icon="fa-solid:user-alt"
-                              className="text-white w-6 h-6 "
-                            />
-                          </div>
-                        )}
+                        <UserButton className="w-40 h-40" />
                       </div>
                     )}
                   </>
@@ -586,7 +687,7 @@ function AvatarPracticeLesson({
                             setChat(e.target.value);
                           }}
                           placeholder="Type a message here..."
-                          className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 text-sm pr-8 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[150px] md:w-[280px] rounded-[20px] bg-transparent "
+                          className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 text-sm pr-8 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[150px] md:w-[220px] rounded-[20px] bg-transparent "
                           onKeyDown={sendChat}
                           type="text"
                         />
@@ -626,12 +727,7 @@ function AvatarPracticeLesson({
                 )}
               </div>
               {data?.current?.sessionId && (
-                <AvatarConversationsLive
-                  chat={chat}
-                  setChat={setChat}
-                  conversationsRef={conversationsRef}
-                  talkHandler={talkHandler}
-                />
+                <AvatarConversationsLive conversationsRef={conversationsRef} />
               )}
             </div>
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
@@ -641,7 +737,22 @@ function AvatarPracticeLesson({
         return <div key={item.content}>{item.content}</div>;
       })} */}
       </div>
-
+      {/* <InfoModal
+        handleClick={() => {
+          createNewSession().then(() => {});
+        }}
+      /> */}
+      <EndCallModal
+        handleSubmit={() => {
+          console.log("ended session");
+          markComplete();
+          handleStopAndUpload();
+        }}
+        handleRetry={() => {
+          conversationsRef.current = [];
+          endSession();
+        }}
+      />
       <StartCallModal handleSubmit={handleSubmit} handleRetry={handleRetry} />
     </div>
   );

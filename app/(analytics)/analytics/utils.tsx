@@ -12,12 +12,19 @@ export const getCourseProgress = (userAnalytics: any, lessonsArray: any) => {
 };
 export const getTotalTime = (analytics: any) => {
   let totalTime = 0;
-  Object.keys(analytics?.analytics).forEach((key) => {
-    totalTime += analytics?.analytics[key]?.duration;
-  });
+
+  if (analytics && analytics.analytics) {
+    Object.keys(analytics.analytics).forEach((key) => {
+      if (analytics.analytics[key]?.duration) {
+        totalTime += analytics.analytics[key].duration;
+      }
+    });
+  }
+
   console.log(analytics?.analytics, totalTime, "totalTime");
   return totalTime;
 };
+
 
 export const getAverageTraningTime = (
   enrolledUsers: any,

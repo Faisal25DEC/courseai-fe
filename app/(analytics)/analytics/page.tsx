@@ -35,7 +35,7 @@ import {
 const Page = () => {
   const currentCourseId = useRecoilValue(courseIdAtom);
   const [courses, setCourses] = useState([]);
-  
+
   useEffect(() => {
     const fetchCurrentCourse = async () => {
       try {
@@ -176,15 +176,16 @@ const Page = () => {
           ))}
         </div>
         <div className="flex flex-col gap-4">
-          {enrolledUsers.map((user: any) => {
-            return (
-              <UserCard
-                user={user}
-                key={user?.id}
-                fetchEnrolledUsers={fetchEnrolledUsers}
-              />
-            );
-          })}
+          {enrolledUsers &&
+            enrolledUsers.map((user: any) => {
+              return (
+                <UserCard
+                  user={user}
+                  key={user?.id}
+                  fetchEnrolledUsers={fetchEnrolledUsers}
+                />
+              );
+            })}
         </div>
       </div>
       <Modal

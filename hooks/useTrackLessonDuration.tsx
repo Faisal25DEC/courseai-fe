@@ -39,7 +39,7 @@ const useTrackLessonDuration = ({
   //   };
   // }, []);
   useEffect(() => {
-    if (lesson.status === "rejected") {
+    if (lesson?.status === "rejected") {
       toast.error("Admin has rejected the approval request.");
       toast.dismiss();
     }
@@ -50,11 +50,11 @@ const useTrackLessonDuration = ({
   }, []);
 
   useEffect(() => {
-    if (!isDocumentVisible && user && lesson.status !== "approved") {
+    if (!isDocumentVisible && user && lesson?.status !== "approved") {
       const duration = Date.now() - currenTimeRef.current;
       updateLessonForUser({
         course_id: currentCourseId,
-        lesson_id: lesson.id,
+        lesson_id: lesson?.id,
         user_id: user?.id as string,
         data: {
           duration: duration,

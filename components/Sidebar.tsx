@@ -126,7 +126,7 @@ const Sidebar = () => {
               onClick={() => handleNavigation("settings", "/settings")}
             >
               <Icon icon="solar:settings-outline" className="w-5 h-5" />
-              <span>Settings</span>
+              <span>Org Settings</span>
             </li>
           )}
           {currentUserRole === admin && (
@@ -139,7 +139,7 @@ const Sidebar = () => {
               onClick={() => handleNavigation("onboarding", "/onboarding")}
             >
               <Icon icon="fluent-mdl2:onboarding" className="w-5 h-5" />
-              <span>On boarding</span>
+              <span>Onboarding</span>
             </li>
           )}
         </ul>

@@ -89,7 +89,8 @@ const Page = () => {
 
       if (response.ok) {
         toast.success("Question saved successfully");
-        setQuestions([...questions, newQuestion]);
+        fetchQuestions();
+        // setQuestions([...questions, newQuestion]);
         setHeading("");
         setQuestionText("");
         setQuestionType("");
@@ -125,6 +126,7 @@ const Page = () => {
     onConfirmOpen();
   };
 
+  console.log("question to delete ", questionToDelete)
   return (
     <>
       <div className=" flex flex-col h-[100vh] overflow-auto gap-2 h-full w-[100%] mx-auto">

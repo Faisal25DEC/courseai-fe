@@ -79,7 +79,7 @@ const UserLessonAnalytics = () => {
       const data = await fetchOnboardingAnswers(userId);
       setAnswers(data.data.answers);
     } catch (error) {
-      // toast.error("No answers found for the user");
+      toast.error("No answers found for the user");
       console.error(error);
     }
   };
@@ -97,16 +97,16 @@ const UserLessonAnalytics = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchQuestions();
-  //   if (user) {
-  //     fetchAnswers(user?.id);
-  //   }
-  //   return () => {
-  //     setQuestions([]);
-  //     setAnswers([]);
-  //   };
-  // }, [currentUserLessonAnalytics]);
+  useEffect(() => {
+    fetchQuestions();
+    if (user) {
+      fetchAnswers(currentUserLessonAnalytics?.user_id);
+    }
+    return () => {
+      setQuestions([]);
+      setAnswers([]);
+    };
+  }, [currentUserLessonAnalytics]);
 
   useEffect(() => {
     const fetchCurrentCourse = async () => {
@@ -256,7 +256,7 @@ const UserLessonAnalytics = () => {
           <TabsList className="mx-4 mt-4">
             <TabsTrigger value="courses">Courses</TabsTrigger>
             <TabsTrigger value="practice-lessons">Practice Lessons</TabsTrigger>
-            {/* <TabsTrigger value="onboarding">Onboarding</TabsTrigger> */}
+            <TabsTrigger value="onboarding">Onboarding</TabsTrigger>
           </TabsList>
         )}
         <TabsContent value="courses">
@@ -439,72 +439,71 @@ const UserLessonAnalytics = () => {
           </div>
         </TabsContent>
         <TabsContent value="onboarding">
-          <div className="w-[80%] m-auto flex flex-col gap-4 mt-8">
-            {answers.map((answer, index) => {
-              const questionText = getQuestionText(answer.question_id);
-              const question = questions.find(
-                (q: any) => q._id === answer.question_id
-              );
+          <div className="px-5 w-full m-auto flex flex-col gap-4 mt-8">
+            {answers.length > 0 ? (
+              <>
+                {answers?.map((answer, index) => {
+                  const questionText = getQuestionText(answer.question_id);
+                  const question = questions.find(
+                    (q: any) => q._id === answer.question_id
+                  );
 
-              return (
-                <div
-                  key={index}
-                  className="shadow-sm flex flex-col p-2 border border-gray-300 rounded-lg"
-                >
-                  <p className="font-semibold text-sm text-gray-800">
-                    {index + 1}: {questionText}
-                  </p>
-                  {question &&
-                  question.type === "upload" &&
-                  Array.isArray(answer.answer) ? (
-                    <div className="flex flex-wrap gap-5 mt-2">
-                      {answer.answer.map((imageUrl, imgIndex) => (
-                        <img
-                          key={imgIndex}
-                          src={imageUrl}
-                          alt={`Answer Image ${imgIndex + 1}`}
-                          className="w-[220px] h-[200px] object-cover border-1 p-2 rounded-md cursor-pointer"
-                          onClick={() => handleImageOpenInNewTab(imageUrl)}
-                        />
-                      ))}
+                  return (
+                    <div
+                      key={index}
+                      className="shadow-sm flex flex-col p-2 border border-gray-300 rounded-lg"
+                    >
+                      <p className="font-semibold text-sm text-gray-800">
+                        {index + 1}: {questionText}
+                      </p>
+                      {question &&
+                      question.type === "upload" &&
+                      Array.isArray(answer.answer) ? (
+                        <div className="flex flex-wrap gap-5 mt-2">
+                          {answer.answer.map((imageUrl, imgIndex) => (
+                            <img
+                              key={imgIndex}
+                              src={imageUrl}
+                              alt={`Answer Image ${imgIndex + 1}`}
+                              className="w-[220px] h-[200px] object-cover border-1 p-2 rounded-md cursor-pointer"
+                              onClick={() => handleImageOpenInNewTab(imageUrl)}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-700">{answer.answer}</p>
+                      )}
                     </div>
-                  ) : (
-                    <p className="text-sm text-gray-700">{answer.answer}</p>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
 
-            <div className="flex w-full justify-end gap-4 mt-5">
-              <Button
-                color="secondary"
-                // onClick={() => setSelectedUserId(null)}
-                className="mb-4 w-fit"
-              >
-                Back to Users
-              </Button>
-              <Button
-                color="primary"
-                onClick={() =>
-                  verifyUser(
-                    currentUserLessonAnalytics?.user_id,
-                    currentOrgId,
-                    true
-                  )
-                }
-                className="mb-4 w-fit"
-              >
-                {isVerified ? (
-                  <>
-                    {" "}
-                    <Spinner size="sm" color="white" className="" />
-                    Verifying...{" "}
-                  </>
-                ) : (
-                  "Verify User"
-                )}
-              </Button>
-            </div>
+                <div className="flex w-full justify-end gap-4 mt-5">
+                  <Button
+                    color="primary"
+                    onClick={() =>
+                      verifyUser(
+                        currentUserLessonAnalytics?.user_id,
+                        currentOrgId,
+                        true
+                      )
+                    }
+                    className="mb-4 w-fit"
+                  >
+                    {isVerified ? (
+                      <>
+                        {" "}
+                        <Spinner size="sm" color="white" className="" />
+                        Verifying...{" "}
+                      </>
+                    ) : (
+                      "Verify User"
+                    )}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-center">No data available</p>
+            )}
           </div>
         </TabsContent>
       </Tabs>

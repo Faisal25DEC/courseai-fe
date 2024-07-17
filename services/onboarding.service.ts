@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const fetchOnboardingQuestions = async (user_id: string) => {
   try {
     const response = await fetch(`/api/onboarding?user_id=${user_id}`, {
@@ -39,3 +41,15 @@ export async function fetchOnboardingAnswers(user_id: string) {
     throw error;
   }
 }
+
+export const deleteOnboardingQuestion = async (user_id: any, question_id: any) => {
+  try {
+    const response = await axios.delete('/api/onboarding', {
+      data: { user_id, question_id },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to delete question:', error);
+    throw error;
+  }
+};

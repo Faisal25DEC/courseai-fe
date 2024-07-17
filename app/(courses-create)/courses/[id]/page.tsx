@@ -8,12 +8,11 @@ import {
 } from "@/services/lesson.service";
 import {
   activeLessonAtom,
-  courseIdAtom,
   lessonsArrayAtom,
   userAnalyticsAtom,
 } from "@/store/atoms";
 import React, { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import VideoLesson from "./_components/video-lesson/video-lesson";
 import TextLesson from "./_components/text-lesson/text-lesson";
 import AvatarLesson from "./_components/avatar-lesson/avatar-lesson";
@@ -31,10 +30,11 @@ import { Chip, Progress } from "@nextui-org/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 
 const PreivewCourse = () => {
-  const currentCourseId = useRecoilValue(courseIdAtom);
+  const { id } = useParams();
+  const courseId = Array.isArray(id) ? id[0] : id;
 
-  const [lessonsArray, setLessonsArray] = useFetchLessons(currentCourseId);
-  
+  const [lessonsArray, setLessonsArray] = useFetchLessons(courseId);
+
   const [isPracticeList, setIsPracticeList] = useState(true);
   const [showContent, setshowContent] = useState(true);
 
@@ -45,16 +45,15 @@ const PreivewCourse = () => {
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
   const [userAnalytics, setUserAnalytics] =
     useRecoilState<any>(userAnalyticsAtom);
-  useEffect(() => {
-    getUserAnalytics(user?.id as string, currentCourseId).then(
-      (analyticsRes) => {
-        setUserAnalytics(analyticsRes?.analytics);
-      }
-    );
 
-    return()=>{
-      setLessonsArray([])
-    }
+  useEffect(() => {
+    getUserAnalytics(user?.id as string, courseId).then((analyticsRes) => {
+      setUserAnalytics(analyticsRes?.analytics);
+    });
+
+    return () => {
+      setLessonsArray([]);
+    };
   }, []);
 
   const checkIfLessonIsLocked = (idx: number) => {
@@ -89,6 +88,7 @@ const PreivewCourse = () => {
   const handleChangeLesson = (idx: number) => {
     setActiveLesson(idx);
   };
+
   const getLockedLessons = (lessonsArray: any) => {
     const filteredLessonsArray = lessonsArray.filter(
       (lesson: any) => lesson.is_practice_lesson === false
@@ -125,7 +125,7 @@ const PreivewCourse = () => {
 
     updateLessonForUser({
       user_id: user?.id,
-      course_id: currentCourseId,
+      course_id: courseId,
       lesson_id: lesson.id,
       data: {
         status: "approved",
@@ -134,14 +134,14 @@ const PreivewCourse = () => {
       },
     })
       .then(() => {
-        getUserAnalytics(user?.id as string, currentCourseId).then((res) => {
+        getUserAnalytics(user?.id as string, courseId).then((res) => {
           setUserAnalytics(res?.analytics);
         });
 
         if (areAllLessonsLocked()) {
           updateLessonForUser({
             user_id: user?.id,
-            course_id: currentCourseId,
+            course_id: courseId,
             lesson_id: lesson.id,
             data: {
               course_status: "approval-pending",
@@ -167,7 +167,10 @@ const PreivewCourse = () => {
           <div className="w-[40%] border-r-[1px] h-full overflow-auto border-r-gray-200 flex flex-col my-element bg-white">
             <div className="flex justify-between items-center border-b-1 border-gray-200  w-full py-5 px-4">
               <div className="flex ">
-                <Icon icon="gridicons:menus" className="text-gray-800 w-6 h-6" />
+                <Icon
+                  icon="gridicons:menus"
+                  className="text-gray-800 w-6 h-6"
+                />
                 <h1 className="text-[15px] text-gray-800 font-semibold pl-2">
                   Contents
                 </h1>
@@ -187,44 +190,47 @@ const PreivewCourse = () => {
                   style={{ opacity: lesson.locked ? 0.5 : 1 }}
                   className={`flex cursor-pointer items-start relative justify-between cursor-pointer duration-200 transition-all ease-linear px-4 py-4 text-white border-b-1 border-gray-200 ${
                     activeLesson === idx
-                    ? `bg-gray-100 border-l-5 ${
-                        lesson.type === "avatar"
-                          ? "border-l-orange-400"
-                          : "border-l-blue-400"
-                      }`
-                    : ""
+                      ? `bg-gray-100 border-l-5 ${
+                          lesson.type === "avatar"
+                            ? "border-l-orange-400"
+                            : "border-l-blue-400"
+                        }`
+                      : ""
                   }`}
                 >
                   <div className="flex h6-medium items-start gap-2 font-medium">
                     <span className="text-gray-800">{idx + 1}.</span>
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-col w-fit capitalize text-gray-800">
-                      <span
-                        className="block overflow-wrap break-words whitespace-normal w-full pr-5 font-semibold text-gray-700"
-                        style={{
-                          wordWrap: "break-word",
-                          overflowWrap: "break-word",
-                        }}
-                      >
-                        {lesson.title}
-                      </span>
+                        <span
+                          className="block overflow-wrap break-words whitespace-normal w-full pr-5 font-semibold text-gray-700"
+                          style={{
+                            wordWrap: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
+                          {lesson.title}
+                        </span>
 
-                      <p
-                        className={`${
-                          lesson.type === "avatar"
-                            ? "text-orange-400"
-                            : "text-blue-400"
-                        } text-xs`}
-                      >
-                        {lessonTypeText[lesson.type]}
-                      </p>
+                        <p
+                          className={`${
+                            lesson.type === "avatar"
+                              ? "text-orange-400"
+                              : "text-blue-400"
+                          } text-xs`}
+                        >
+                          {lessonTypeText[lesson.type]}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     {filteredLessons[idx]?.status === "approved" ? (
-                      <Icon icon="mingcute:bookmark-fill" className="w-5 h-5 text-gray-800" />
+                      <Icon
+                        icon="mingcute:bookmark-fill"
+                        className="w-5 h-5 text-gray-800"
+                      />
                     ) : (
                       <Icon
                         icon="uil:bookmark"

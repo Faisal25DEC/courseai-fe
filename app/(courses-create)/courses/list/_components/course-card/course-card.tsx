@@ -24,7 +24,6 @@ function CourseCard({
     useRecoilState(currentUserRoleAtom);
   const [videoOption, setVideoOption] = useState(false);
   const videoOptionRef = useRef<HTMLDivElement>(null);
-  const [lessonsArray, setLessonsArray] = useFetchLessons(course.id);
   const [userAnalytics, setUserAnalytics] = useState<any>(null);
 
   useEffect(() => {

@@ -29,6 +29,7 @@ const CoordinatorAnalytics = () => {
   const { user } = useUser();
   const [userAnalytics, setUserAnalytics] =
     useRecoilState<any>(userAnalyticsAtom);
+
   useEffect(() => {
     if (!id) return;
     if (!user && userAnalytics === null) return;
@@ -67,7 +68,7 @@ const CoordinatorAnalytics = () => {
           ))}
         </div>
         <div className="flex flex-col gap-4">
-          <UserCard user={currentUserAnalytics} key={user?.id} />
+          {user?.id && <UserCard user={currentUserAnalytics} key={user?.id} />}
         </div>
       </div>
       <Modal

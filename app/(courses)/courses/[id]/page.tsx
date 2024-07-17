@@ -28,6 +28,7 @@ import { typeColorObj } from "./constants";
 import Tag from "@/components/shared/tag/tag";
 import { Chip, Progress } from "@nextui-org/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import withAuth from "@/components/hoc/withAuth";
 
 const PreivewCourse = () => {
   const { id } = useParams();
@@ -310,4 +311,5 @@ const PreivewCourse = () => {
   );
 };
 
-export default PreivewCourse;
+
+export default withAuth(PreivewCourse) ;

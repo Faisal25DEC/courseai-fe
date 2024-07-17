@@ -21,7 +21,6 @@ const withAuth = <P extends WithAuthProps>(
 
     useEffect(() => {
       const checkUserVerification = async () => {
-        console.log("roleeeee ", currentUserRole);
         try {
           const userData = await getUserById(user?.id as any);
           if (userData.data.verified) {
@@ -30,8 +29,10 @@ const withAuth = <P extends WithAuthProps>(
             }
           } else {
             if (currentUserRole === admin && pathname !== "/courses/list") {
+              router.refresh()
               router.push("/courses/list");
             } else if (pathname !== "/onboarding-flow") {
+              router.refresh()
               router.push("/onboarding-flow");
             }
           }
@@ -45,6 +46,7 @@ const withAuth = <P extends WithAuthProps>(
       if (currentUserRole === member && user?.id) {
         checkUserVerification();
       } else {
+        router.refresh()
         router.push("/courses/list");
         // router.push("/onboarding-flow");
       }

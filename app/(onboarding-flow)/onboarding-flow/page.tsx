@@ -6,9 +6,12 @@ import { useRecoilState } from "recoil";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { fetchOnboardingQuestions } from "@/services/onboarding.service";
+import withAuth from "@/components/hoc/withAuth";
 
 function Page() {
-  const [questions, setQuestions] = useRecoilState<any>(onBoardingQuestionsAtom);
+  const [questions, setQuestions] = useRecoilState<any>(
+    onBoardingQuestionsAtom
+  );
   const [answers, setAnswers] = useState<
     { question_id: string; answer: any }[]
   >([]);
@@ -222,7 +225,10 @@ function Page() {
         </h1>
         {questions?.length > 0 && (
           <div className="flex flex-col gap-4">
-            <div key={questions[currentQuestionIndex]._id} className="flex flex-col">
+            <div
+              key={questions[currentQuestionIndex]._id}
+              className="flex flex-col"
+            >
               {questions[currentQuestionIndex].heading && (
                 <h3 className="text-sm font-semibold">
                   {questions[currentQuestionIndex].heading}
@@ -266,4 +272,4 @@ function Page() {
   );
 }
 
-export default Page;
+export default withAuth(Page);

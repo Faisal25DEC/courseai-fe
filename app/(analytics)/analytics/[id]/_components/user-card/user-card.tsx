@@ -54,8 +54,9 @@ const UserCard = ({
     }
   };
   useEffect(() => {
-    if (!user) return;
-    fetchUserAnalytics();
+    if (user) {
+      fetchUserAnalytics();
+    }
   }, [currentUserLessonAnalytics, user]);
   useEffect(() => {
     document.addEventListener("visibilitychange", fetchUserAnalytics);

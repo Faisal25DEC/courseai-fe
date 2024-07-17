@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { currentUserRoleAtom, onBoardingQuestionsAtom } from "@/store/atoms";
 import { admin, member } from "@/lib/constants";
-import withAuth from "@/components/hoc/withAuth";
 
 const ClientRootLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -14,7 +13,8 @@ const ClientRootLayout = ({ children }: { children: React.ReactNode }) => {
   const { organization, isLoaded } = useOrganization();
 
   const shouldShowSidebar = !(
-    pathname.startsWith("/onboarding-flow") || pathname.startsWith("/video")
+    pathname.startsWith("/onboarding-flow") ||
+    pathname.startsWith("/video") 
   );
 
   const [currentUserRole, setCurrentUserRole] =
@@ -49,4 +49,4 @@ const ClientRootLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default withAuth(ClientRootLayout);
+export default ClientRootLayout;

@@ -27,6 +27,8 @@ const Configure: React.FC<ConfigureProps> = ({
   useEffect(() => {
     async function getDevices() {
       try {
+        // Request permission to access media devices
+        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         const devices = await navigator.mediaDevices.enumerateDevices();
         setDevices(devices);
       } catch (error) {
@@ -57,21 +59,21 @@ const Configure: React.FC<ConfigureProps> = ({
   };
 
   const getMediaStream = async (cameraId: string, microphoneId: string) => {
-    if (cameraId === "off") {
+    if (cameraId === "off" && !microphoneId) {
       cameraAllowed.current = false;
       console.log("camera allowed ", false);
       return;
     }
 
     const constraints = {
-      video: { deviceId: { exact: cameraId } },
+      video: cameraId !== "off" ? { deviceId: { exact: cameraId } } : false,
       audio: microphoneId ? { deviceId: { exact: microphoneId } } : false,
     };
 
     try {
       const newStream = await navigator.mediaDevices.getUserMedia(constraints);
-      cameraAllowed.current = true;
-      console.log("camera allowed ", true);
+      cameraAllowed.current = cameraId !== "off";
+      console.log("camera allowed ", cameraId !== "off");
     } catch (error) {
       handleError(error);
       cameraAllowed.current = false;
@@ -89,10 +91,8 @@ const Configure: React.FC<ConfigureProps> = ({
     setSelectedMicrophone(microphoneId);
   };
 
-  const handleStartSession = () => {
-    if (selectedCamera !== "off") {
-      getMediaStream(selectedCamera, selectedMicrophone);
-    }
+  const handleStartSession = async () => {
+    await getMediaStream(selectedCamera, selectedMicrophone);
     startSession();
   };
 

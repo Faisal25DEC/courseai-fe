@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { baseUrl } from "@/lib/config";
 import { getMaxId } from "@/lib/ArrayHelpers/ArrayHelpers";
-import CreateContent from "@/app/(courses-create)/courses/create-lesson/_components/create-content/create-content";
+import CreateContent from "@/app/(courses)/courses/create-lesson/_components/create-content/create-content";
 import useCreateLessonModal from "@/hooks/useCreateLessonModal";
 
 const CreatePracticeLessonModal = () => {

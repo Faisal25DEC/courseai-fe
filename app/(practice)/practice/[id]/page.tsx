@@ -18,9 +18,9 @@ import useFetchLessons from "@/hooks/useFetchLesson";
 import { StringFormats } from "@/lib/StringFormats";
 
 import Tag from "@/components/shared/tag/tag";
-import LessonLockedModal from "@/app/(courses-create)/courses/[id]/_components/lesson-locked-modal/lesson-locked-modal";
-import { typeColorObj } from "@/app/(courses-create)/courses/[id]/constants";
-import AvatarLesson from "@/app/(courses-create)/courses/[id]/_components/avatar-lesson/avatar-lesson";
+import LessonLockedModal from "@/app/(courses)/courses/[id]/_components/lesson-locked-modal/lesson-locked-modal";
+import { typeColorObj } from "@/app/(courses)/courses/[id]/constants";
+import AvatarLesson from "@/app/(courses)/courses/[id]/_components/avatar-lesson/avatar-lesson";
 import Image from "next/image";
 import NoDataFound from "../../../../public/images/not-found.webp";
 

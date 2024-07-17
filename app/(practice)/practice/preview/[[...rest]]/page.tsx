@@ -14,8 +14,8 @@ import Tag from "@/components/shared/tag/tag";
 
 import { StringFormats } from "@/lib/StringFormats";
 import { Icon } from "@iconify/react";
-import { typeColorObj } from "@/app/(courses-create)/courses/[id]/constants";
-import AvatarLesson from "@/app/(courses-create)/courses/[id]/_components/avatar-lesson/avatar-lesson";
+import { typeColorObj } from "@/app/(courses)/courses/[id]/constants";
+import AvatarLesson from "@/app/(courses)/courses/[id]/_components/avatar-lesson/avatar-lesson";
 const PreivewCourse = () => {
   const currentCourseId = useRecoilValue(courseIdAtom);
 

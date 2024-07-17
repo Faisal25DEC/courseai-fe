@@ -5,47 +5,63 @@ import Modal from "@/components/shared/modal";
 import useNoOrganizationModal from "@/hooks/useNoOrganizationModal";
 import useSetOrganization from "@/hooks/useSetOrganization";
 import { admin, member } from "@/lib/constants";
-import { courseIdAtom, currentUserRoleAtom } from "@/store/atoms";
-import {
-  useAuth,
-  useOrganization,
-  useOrganizationList,
-  useUser,
-} from "@clerk/nextjs";
-import Image from "next/image";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { currentUserRoleAtom } from "@/store/atoms";
+import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
+import { getUserById } from "@/services/user.service";
+import { useUser } from "@clerk/nextjs";
+import withAuth from "@/components/hoc/withAuth";
 
-export default function Home() {
-  const currentCourseId = useRecoilValue(courseIdAtom);
-
-  const [currentUserRole, setCurrentUserRole] =
-    useRecoilState(currentUserRoleAtom);
-  const {
-    isNoOrganizationModalOpen,
-    onNoOrganizationModalClose,
-    onNoOrganizationModalOpen,
-  } = useNoOrganizationModal();
+function Home() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user } = useUser();
+  const [currentUserRole, setCurrentUserRole] = useRecoilState(currentUserRoleAtom);
+  const { isNoOrganizationModalOpen } = useNoOrganizationModal();
+  const [isLoading, setIsLoading] = useState(true);
 
   useSetOrganization();
-  useEffect(() => {
-    if (currentUserRole) {
-      if (currentUserRole === admin) {
-        redirect("/courses/list");
-      }
-      // if (currentUserRole === member) {
-      //   redirect(`courses/list`);
-      // }
-    }
-  }, [currentUserRole]);
+
+  // useEffect(() => {
+  //   const checkUserVerification = async () => {
+  //     try {
+  //       const userData = await getUserById(user?.id as any);
+  //       if (userData.data.verified) {
+  //         if (currentUserRole === admin && pathname !== "/courses/list") {
+  //           router.push("/courses/list");
+  //         }
+  //       } else {
+  //         if (currentUserRole === admin && pathname !== "/courses/list") {
+  //           router.push("/courses/list");
+  //         } else if (pathname !== "/onboarding-flow") {
+  //           router.push("/onboarding-flow");
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error checking user verification:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   if (user?.id) {
+  //     checkUserVerification();
+  //   } else {
+  //     setIsLoading(false);
+  //   }
+  // }, [user, router, currentUserRole, pathname]);
+
+  // if (isLoading) {
+  //   return (
+  //     <main className="flex min-h-screen flex-col gap-6 items-center mx-auto w-[90%]">
+  //       <h1 className="text-[36px] text-gray-700">Loading...</h1>
+  //     </main>
+  //   );
+  // }
+
   return (
     <main className="flex min-h-screen flex-col gap-6 items-center mx-auto w-[90%]">
-      {/* <h1 className="text-[36px] text-gray-700">Under Construction</h1> */}
-      {/* <img
-        src="https://t4.ftcdn.net/jpg/00/89/02/67/360_F_89026793_eyw5a7WCQE0y1RHsizu41uhj7YStgvAA.jpg"
-        className="w-[400px] h-[400px] object-cover"
-      /> */}
       {currentUserRole === admin && <CreateLessonLoader />}
       {currentUserRole === member && <LessonLoader />}
       <Modal
@@ -65,3 +81,5 @@ export default function Home() {
     </main>
   );
 }
+
+export default withAuth(Home)

@@ -44,7 +44,7 @@ import {
 } from "@heygen/streaming-avatar";
 
 import { evaluateScorecard } from "@/services/gpt.service";
-import openIcon from "../../../../../../public/images/open.png";
+import openIcon from "../../../../public/images/open.png";
 import Image from "next/image";
 import { generateRandomSegment } from "@/utils/helpers";
 import Configure from "@/app/(video)/video/components/Configure";

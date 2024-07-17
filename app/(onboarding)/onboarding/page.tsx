@@ -41,6 +41,8 @@ const Page = () => {
   const [description, setDescription] = useState<string>("");
   const [isSaveQuestion, setisSaveQuestion] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onOpenChange: onConfirmOpenChange } = useDisclosure();
+  const [questionToDelete, setQuestionToDelete] = useState<string | null>(null);
 
   const fetchQuestions = async () => {
     if (user) {
@@ -102,22 +104,31 @@ const Page = () => {
     }
   };
 
-  const deleteQuestion = async (question_id: any) => {
-    try {
-      await deleteOnboardingQuestion(user?.id, question_id);
-      setQuestions(
-        questions.filter((question: any) => question._id !== question_id)
-      );
-      toast.success("Question deleted successfully");
-    } catch (error) {
-      toast.error("Failed to delete question");
+  const handleDeleteQuestion = async () => {
+    if (questionToDelete) {
+      try {
+        await deleteOnboardingQuestion(user?.id, questionToDelete);
+        setQuestions(
+          questions.filter((question:any) => question._id !== questionToDelete)
+        );
+        toast.success("Question deleted successfully");
+        setQuestionToDelete(null);
+        onConfirmOpenChange();
+      } catch (error) {
+        toast.error("Failed to delete question");
+      }
     }
+  };
+
+  const confirmDeleteQuestion = (question_id: string) => {
+    setQuestionToDelete(question_id);
+    onConfirmOpen();
   };
 
   return (
     <>
       <div className=" flex flex-col h-[100vh] overflow-auto gap-2 h-full w-[100%] mx-auto">
-        <div className=" flex w-[90%]  m-auto justify-between items-center pt-10">
+        <div className="px-14 py-8 border-b-1 flex w-[100%]  m-auto justify-between items-center ">
           <div>
             <h1 className="font-normal text-gray-600 text-2xl ">
               Create Onboarding Questions
@@ -132,7 +143,7 @@ const Page = () => {
               Question
             </Button>
           </div>
-          {questions.map((q: any, index) => (
+          {questions.map((q:any, index) => (
             <div
               key={index}
               className="flex justify-between items-center p-2 border border-gray-300 rounded-lg"
@@ -146,11 +157,11 @@ const Page = () => {
                 <p className="text-gray-500 text-sm pr-5">{q.description}</p>
               </div>
               <div>
-              <Icon
-                icon="fluent:delete-16-filled"
-                className="w-5 h-5 text-gray-600 cursor-pointer"
-                onClick={() => deleteQuestion(q._id)}
-              />
+                <Icon
+                  icon="fluent:delete-16-filled"
+                  className="w-5 h-5 text-gray-600 cursor-pointer"
+                  onClick={() => confirmDeleteQuestion(q._id)}
+                />
               </div>
             </div>
           ))}
@@ -212,6 +223,32 @@ const Page = () => {
                   ) : (
                     "Save Question"
                   )}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isConfirmOpen} onOpenChange={onConfirmOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex text-md flex-col gap-1">
+                Confirm Delete
+              </ModalHeader>
+              <ModalBody>
+                <p className="text-sm">Are you sure you want to delete this question?</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  color="danger"
+                  onClick={handleDeleteQuestion}
+                >
+                  Delete
                 </Button>
               </ModalFooter>
             </>

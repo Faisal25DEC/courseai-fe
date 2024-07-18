@@ -334,7 +334,7 @@ const CreateCourse = () => {
                           ))
                       ) : (
                         <div className="flex flex-col h-[60vh] justify-center items-center">
-                          <p className="text-sm mt-10 text-center text-white px-10">
+                          <p className="text-sm mt-10 text-center text-gray-800 px-10">
                             It looks like there are no lessons available. Please{" "}
                             <span
                               className="text-blue-500 cursor-pointer"

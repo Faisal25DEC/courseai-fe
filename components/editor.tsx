@@ -4,7 +4,7 @@ import "@blocknote/core/fonts/inter.css";
 import { EmbedTab, useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
-import { FileService } from "@/services/file.service";
+import { FileService, uploadFile } from "@/services/file.service";
 import { useEffect } from "react";
 import { activeLessonAtom } from "@/store/atoms";
 import { useRecoilValue } from "recoil";
@@ -19,7 +19,7 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
   const activeLesson = useRecoilValue(activeLessonAtom);
   const handleUpload = async (file: File) => {
     try {
-      const res = await FileService.uploadImage(file);
+      const res = await uploadFile(file);
       return res.url;
     } catch (err) {
       console.log(err);
@@ -48,6 +48,8 @@ const Editor = ({ onChange, initialContent, editable }: EditorProps) => {
     console.log(markdown);
     onChange(markdown);
   };
+
+  console.log("initialContent", initialContent)
 
   return (
     <div>

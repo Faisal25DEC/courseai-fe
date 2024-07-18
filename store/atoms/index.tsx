@@ -206,3 +206,14 @@ export const playingAudioIndexAtom = atom({
   key: 'playingAudioIndex',
   default: null,
 });
+
+export const selectedCameraAtom = atom({
+  key: 'selectedCameraAtom',
+  default: "off",
+});
+
+export const selectedMicrophoneAtom = atom({
+  key: 'selectedMicrophoneAtom',
+  default: "",
+});
+

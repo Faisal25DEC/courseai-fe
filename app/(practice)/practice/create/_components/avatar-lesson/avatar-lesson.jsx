@@ -138,6 +138,7 @@ function AvatarPracticeLesson({
   const [randomNumber, setRandomNumber] = useState(0);
   const [sessionActive, setSessionActive] = useState(false);
   const markCompleteCalledRef = useRef(false);
+  const promptCount = useRef(0);
 
   const heygen_API = {
     apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
@@ -246,24 +247,28 @@ function AvatarPracticeLesson({
       const words = text.split(" ");
       const duration = data.data.duration_ms;
       const interval = duration / words.length;
-  
+
       conversationsRef.current = [
         ...conversationsRef.current,
         { role: "assistant", content: "", isStreaming: true },
       ];
-  
+
       for (let i = 0; i < words.length; i++) {
         setTimeout(() => {
-          conversationsRef.current[conversationsRef.current.length - 1].content += ` ${words[i]}`;
+          conversationsRef.current[
+            conversationsRef.current.length - 1
+          ].content += ` ${words[i]}`;
           setConversations([...conversationsRef.current]);
         }, interval * i);
       }
-  
+
       setTimeout(() => {
-        conversationsRef.current[conversationsRef.current.length - 1].isStreaming = false;
+        conversationsRef.current[
+          conversationsRef.current.length - 1
+        ].isStreaming = false;
         setConversations([...conversationsRef.current]);
       }, duration);
-  
+
       setUserTranscriptLoading(0);
       return data.data;
     }
@@ -512,7 +517,13 @@ function AvatarPracticeLesson({
           { role: "user", content: chat },
         ];
       }
-      talkHandler(chat, true);
+      if (promptCount.current === 0) {
+        talkHandler(chat, true).then(() => {
+          promptCount.current++;
+        });
+      } else {
+        talkHandler(chat, false);
+      }
       setChat("");
     }
   };
@@ -525,7 +536,13 @@ function AvatarPracticeLesson({
         { role: "user", content: chat },
       ];
     }
-    talkHandler(chat, true);
+    if (promptCount.current === 0) {
+      talkHandler(chat, true).then(() => {
+        promptCount.current++;
+      });
+    } else {
+      talkHandler(chat, false);
+    }
     setChat("");
   };
 
@@ -704,6 +721,7 @@ function AvatarPracticeLesson({
                       sessionInfo={data}
                       repeat={repeat}
                       talkHandler={talkHandler}
+                      promptCount={promptCount}
                     />
                     <div
                       onClick={handleEnd}

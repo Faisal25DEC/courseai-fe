@@ -11,6 +11,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import {
   activeLessonAtom,
   courseIdAtom,
+  selectedCameraAtom,
   userAnalyticsAtom,
   userTranscriptLoadingAtom,
 } from "@/store/atoms";
@@ -48,6 +49,7 @@ import openIcon from "../../../../public/images/open.png";
 import Image from "next/image";
 import { generateRandomSegment } from "@/utils/helpers";
 import Configure from "@/app/(video)/video/components/Configure";
+import CameraAllow from "@/components/shared/camera-allow/camera-allow";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
@@ -138,6 +140,9 @@ function AvatarPracticeLesson({
   const [randomNumber, setRandomNumber] = useState(0);
   const [sessionActive, setSessionActive] = useState(false);
   const markCompleteCalledRef = useRef(false);
+  const [selectedCamera, setSelectedCamera] =
+    useRecoilState(selectedCameraAtom);
+  const promptCount = useRef(0);
 
   const heygen_API = {
     apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
@@ -246,29 +251,32 @@ function AvatarPracticeLesson({
       const words = text.split(" ");
       const duration = data.data.duration_ms;
       const interval = duration / words.length;
-  
+
       conversationsRef.current = [
         ...conversationsRef.current,
         { role: "assistant", content: "", isStreaming: true },
       ];
-  
+
       for (let i = 0; i < words.length; i++) {
         setTimeout(() => {
-          conversationsRef.current[conversationsRef.current.length - 1].content += ` ${words[i]}`;
+          conversationsRef.current[
+            conversationsRef.current.length - 1
+          ].content += ` ${words[i]}`;
           setConversations([...conversationsRef.current]);
         }, interval * i);
       }
-  
+
       setTimeout(() => {
-        conversationsRef.current[conversationsRef.current.length - 1].isStreaming = false;
+        conversationsRef.current[
+          conversationsRef.current.length - 1
+        ].isStreaming = false;
         setConversations([...conversationsRef.current]);
       }, duration);
-  
+
       setUserTranscriptLoading(0);
       return data.data;
     }
   }
-  
 
   async function talkHandler(text, newPrompt) {
     if (!data.current) {
@@ -513,7 +521,13 @@ function AvatarPracticeLesson({
           { role: "user", content: chat },
         ];
       }
-      talkHandler(chat, true);
+      if (promptCount.current === 0) {
+        talkHandler(chat, true).then(() => {
+          promptCount.current++;
+        });
+      } else {
+        talkHandler(chat, false);
+      }
       setChat("");
     }
   };
@@ -526,7 +540,13 @@ function AvatarPracticeLesson({
         { role: "user", content: chat },
       ];
     }
-    talkHandler(chat, true);
+    if (promptCount.current === 0) {
+      talkHandler(chat, true).then(() => {
+        promptCount.current++;
+      });
+    } else {
+      talkHandler(chat, false);
+    }
     setChat("");
   };
 
@@ -660,7 +680,7 @@ function AvatarPracticeLesson({
                   }}
                 />
 
-                {cameraAllowed.current ? (
+                {selectedCamera !== "off" ? (
                   data?.current?.sessionId && (
                     <WebCamRecording
                       recorderRef={recorderRef}
@@ -672,7 +692,11 @@ function AvatarPracticeLesson({
                   <>
                     {data?.current?.sessionId && (
                       <div className="shadow-lg border border-gray-300 bg-gray-700 absolute bottom-[1rem] h-[120px] w-[180px] right-5 rounded-[20px] flex items-center justify-center">
-                        <UserButton className="w-40 h-40" />
+                        {user ? (
+                          <UserButton className="w-40 h-40" />
+                        ) : (
+                          <Icon icon="fa-solid:user-alt" className="w-6 h-6" />
+                        )}
                       </div>
                     )}
                   </>
@@ -705,7 +729,12 @@ function AvatarPracticeLesson({
                       sessionInfo={data}
                       repeat={repeat}
                       talkHandler={talkHandler}
+                      promptCount={promptCount}
                     />
+                    {/* <CameraAllow
+                    
+                    /> */}
+
                     <div
                       onClick={handleEnd}
                       className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[10px]"

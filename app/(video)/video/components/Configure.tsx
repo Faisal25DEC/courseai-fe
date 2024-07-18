@@ -1,6 +1,13 @@
+import { selectedCameraAtom, selectedMicrophoneAtom } from "@/store/atoms";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button, Spinner } from "@nextui-org/react";
-import React, { useState, useEffect, ChangeEvent, MutableRefObject } from "react";
+import React, {
+  useState,
+  useEffect,
+  ChangeEvent,
+  MutableRefObject,
+} from "react";
+import { useRecoilState } from "recoil";
 
 interface MediaDeviceInfo {
   deviceId: string;
@@ -21,8 +28,13 @@ const Configure: React.FC<ConfigureProps> = ({
 }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
-  const [selectedCamera, setSelectedCamera] = useState<string>("off");
-  const [selectedMicrophone, setSelectedMicrophone] = useState<string>("");
+  
+  const [selectedCamera, setSelectedCamera] =
+    useRecoilState<string>(selectedCameraAtom);
+
+  const [selectedMicrophone, setSelectedMicrophone] = useRecoilState<string>(
+    selectedMicrophoneAtom
+  );
 
   useEffect(() => {
     async function getDevices() {
@@ -40,8 +52,12 @@ const Configure: React.FC<ConfigureProps> = ({
   }, []);
 
   const setDevices = (deviceInfos: MediaDeviceInfo[]) => {
-    const videoDevices = deviceInfos.filter((device) => device.kind === "videoinput");
-    const audioDevices = deviceInfos.filter((device) => device.kind === "audioinput");
+    const videoDevices = deviceInfos.filter(
+      (device) => device.kind === "videoinput"
+    );
+    const audioDevices = deviceInfos.filter(
+      (device) => device.kind === "audioinput"
+    );
     setCameras(videoDevices);
     setMicrophones(audioDevices);
 

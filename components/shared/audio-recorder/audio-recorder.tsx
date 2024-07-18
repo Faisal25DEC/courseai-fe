@@ -15,11 +15,13 @@ const AudioRecorderComp = ({
   sessionInfo,
   repeat,
   conversationsRef,
+  promptCount
 }: {
   talkHandler: any;
   sessionInfo: any;
   repeat: any;
   conversationsRef?: any;
+  promptCount:any
 }) => {
   const [isCanceling, setIsCanceling] = useState(false);
   const [responseLoading, setResponseLoading] =
@@ -27,7 +29,6 @@ const AudioRecorderComp = ({
   const [userTranscriptLoading, setUserTranscriptLoading] = useRecoilState(
     userTranscriptLoadingAtom
   );
-  const promptCount = useRef(0);
   const [microphoneState, setMicrophoneState] = useState("mute");
   const [loading, setLoading] = useState(false);
   const microphoneToggle = () => {};

@@ -58,16 +58,17 @@ const CreateCourse = () => {
   const [courses, setCourses] = useState([]);
   const [selectedTab, setSelectedTab] = useState("grid");
 
+  const fetchCurrentCourse = async () => {
+    try {
+      const res = await getAllCourses();
+      setCourses(res);
+      console.log("all courses", res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchCurrentCourse = async () => {
-      try {
-        const res = await getAllCourses();
-        setCourses(res);
-        console.log("all courses", res);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchCurrentCourse();
   }, []);
 
@@ -136,13 +137,13 @@ const CreateCourse = () => {
         {selectedTab === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {courses.map((cr, ind) => (
-              <CourseCard key={ind} course={cr} index={ind}/>
+              <CourseCard key={ind} course={cr} index={ind} fetchCurrentCourse={fetchCurrentCourse} />
             ))}
           </div>
         ) : (
           <div className="flex flex-col gap-4">
             {courses.map((cr, ind) => (
-              <CourseListCard key={ind} course={cr} index={ind}/>
+              <CourseListCard key={ind} course={cr} index={ind} fetchCurrentCourse={fetchCurrentCourse}/>
             ))}
           </div>
         )}

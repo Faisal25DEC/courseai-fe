@@ -79,7 +79,7 @@ const UserLessonAnalytics = () => {
       const data = await fetchOnboardingAnswers(userId);
       setAnswers(data.data.answers);
     } catch (error) {
-      toast.error("No answers found for the user");
+      // toast.error("No answers found for the user");
       console.error(error);
     }
   };

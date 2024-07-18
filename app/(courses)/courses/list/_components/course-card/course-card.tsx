@@ -1,21 +1,38 @@
-import useCreateCourseModal from "@/hooks/useCreateCourseModal";
-import useFetchLessons from "@/hooks/useFetchLesson";
-import { admin } from "@/lib/constants";
-import { getUserAnalytics } from "@/services/lesson.service";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Listbox, ListboxItem } from "@nextui-org/react";
+import {
+  Input,
+  Listbox,
+  ListboxItem,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  useDisclosure,
+  Button,
+  Spinner,
+} from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { useRecoilState } from "recoil";
 import { courseIdAtom, currentUserRoleAtom } from "@/store/atoms";
 
+import {
+  deleteCourse,
+  getUserAnalytics,
+  updateCourseTitle,
+} from "@/services/lesson.service";
+import { admin } from "@/lib/constants";
+
 function CourseCard({
   course,
   index,
+  fetchCurrentCourse,
 }: {
   course: { id: string; title: string; lessons: any[] };
   index: number;
+  fetchCurrentCourse: () => void;
 }) {
   const { user } = useUser();
   const router = useRouter();
@@ -25,6 +42,16 @@ function CourseCard({
   const [videoOption, setVideoOption] = useState(false);
   const videoOptionRef = useRef<HTMLDivElement>(null);
   const [userAnalytics, setUserAnalytics] = useState<any>(null);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: onDeleteModalOpen,
+    onOpenChange: onDeleteModalOpenChange,
+  } = useDisclosure();
+  const [newTitle, setNewTitle] = useState(course.title);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
 
   useEffect(() => {
     if (!user) return;
@@ -56,27 +83,55 @@ function CourseCard({
     setVideoOption(true);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        videoOptionRef.current &&
-        !videoOptionRef.current.contains(event.target as Node)
-      ) {
-        setVideoOption(false);
-      }
-    };
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      videoOptionRef.current &&
+      !videoOptionRef.current.contains(event.target as Node)
+    ) {
+      setVideoOption(false);
+    }
+  };
 
+  useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [videoOptionRef]);
 
-  const {
-    isOpen: isCreateLessonModalOpen,
-    onOpen: onCreateLessonModalOpen,
-    onClose: onCreateLessonModalClose,
-  } = useCreateCourseModal(false);
+  const handleTitleUpdate = async () => {
+    setIsLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      await updateCourseTitle(course.id, newTitle);
+      setSuccess(true);
+      fetchCurrentCourse();
+      onOpenChange();
+    } catch (err) {
+      // setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteCourse = async () => {
+    setIsLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    try {
+      await deleteCourse(course.id);
+      setSuccess(true);
+      fetchCurrentCourse();
+      onDeleteModalOpenChange();
+    } catch (err) {
+      // setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -136,7 +191,7 @@ function CourseCard({
               <ListboxItem
                 key="new"
                 onClick={() => {
-                  onCreateLessonModalOpen();
+                  onOpen();
                   setVideoOption(false);
                 }}
               >
@@ -146,6 +201,7 @@ function CourseCard({
                 key="delete"
                 color="danger"
                 onClick={() => {
+                  onDeleteModalOpen();
                   setVideoOption(false);
                 }}
                 className="text-danger"
@@ -156,6 +212,85 @@ function CourseCard({
           </div>
         )}
       </div>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Edit Course Title
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  fullWidth
+                  color="primary"
+                  size="lg"
+                  placeholder="New Course Title"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                />
+                {error && <p color="error">{error}</p>}
+                {success && (
+                  <p color="success">Course title updated successfully!</p>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  onClick={handleTitleUpdate}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Spinner size="sm" color="white" /> Updating...
+                    </>
+                  ) : (
+                    "Update"
+                  )}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isDeleteModalOpen} onOpenChange={onDeleteModalOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Delete Course
+              </ModalHeader>
+              <ModalBody>
+                <p className="test-sm">
+                  Are you sure you want to delete this course?
+                </p>
+                {error && <p color="error">{error}</p>}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  color="danger"
+                  onClick={handleDeleteCourse}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Spinner size="sm" color="white" /> Deleting...
+                    </>
+                  ) : (
+                    "Delete"
+                  )}
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
   );
 }

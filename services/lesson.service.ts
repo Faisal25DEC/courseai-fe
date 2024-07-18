@@ -82,7 +82,9 @@ export const updateLessonForUser = async ({
 }) => {
   try {
     const response = await axios.patch(
-      `${baseUrl}/users/${user_id}/analytics/${course_id}/lessons/${lesson_id}?course_status=${data.course_status || null}`,
+      `${baseUrl}/users/${user_id}/analytics/${course_id}/lessons/${lesson_id}?course_status=${
+        data.course_status || null
+      }`,
       data
     );
 
@@ -122,7 +124,7 @@ export const getCourseAnalytics = async (courseId: string) => {
     const response = await axios.get(
       `${baseUrl}/courses/${courseId}/analytics`
     );
-    
+
     return response.data;
   } catch (error) {
     console.error("Error:", error);
@@ -157,6 +159,7 @@ export const enrollUser = async (courseId: string, userId: string) => {
     console.error("Error:", error);
   }
 };
+
 export const expelUser = async (courseId: string, userId: string) => {
   try {
     const response = await axios.patch(`${baseUrl}/courses/${courseId}/expel`, {
@@ -217,3 +220,49 @@ export const getEnrolledUsersInACourseWithAnalytics = async (
     console.error(error);
   }
 };
+
+export async function updateCourseTitle(course_id: any, new_title: any) {
+  try {
+    const response = await fetch("/api/update-course-name", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ course_id, new_title }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to update course title");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error updating course title:", error);
+    throw error;
+  }
+}
+
+export async function deleteCourse(course_id: string) {
+  try {
+    const response = await fetch("/api/delete-course", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ course_id }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to delete course");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error deleting course:", error);
+    throw error;
+  }
+}

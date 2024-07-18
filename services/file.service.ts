@@ -26,7 +26,7 @@ export const uploadFile = async (file: File) => {
   formData.append("file", file);
 
   try {
-    const response = await fetch("/api/upload-content", {
+    const response = await fetch("https://api-gateway-dev.permian.ai/api/v1/upload-pdf", {
       method: "POST",
       body: formData,
     });

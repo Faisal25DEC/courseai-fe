@@ -1,32 +1,8 @@
 import { Storage } from "@google-cloud/storage";
-import { PassThrough, Readable } from "stream";
+import { Readable } from "stream";
 
 export class GCSUploader {
-  static uploadFile(
-    bucketName: string | undefined,
-    objectKey: string,
-    buffer: Buffer,
-    size: number,
-    contentType: string
-  ) {
-    throw new Error("Method not implemented.");
-  }
-  uploadFileStream(
-    bucketName: string,
-    outputFilename: string,
-    videoStream: PassThrough,
-    contentType: string
-  ) {
-    throw new Error("Method not implemented.");
-  }
   storage: Storage;
-
-  // constructor() {
-  //   this.storage = new Storage({
-  //     keyFilename: './src/keys/ali-bufayo-9203c0ac8b29.json',
-  //     projectId: "ali-bufayo",
-  //   });
-  // }
 
   constructor(base64: string = "") {
     const credentialsBase64 =
@@ -43,11 +19,11 @@ export class GCSUploader {
   }
 
   async uploadFile(
-    bucketName: any,
-    objectKey: any,
-    fileContents: any,
-    fileSize: any,
-    contentType: any
+    bucketName: string,
+    objectKey: string,
+    fileContents: Buffer,
+    fileSize: number,
+    contentType: string
   ) {
     try {
       const bucket = this.storage.bucket(bucketName);
@@ -59,7 +35,6 @@ export class GCSUploader {
         },
       });
 
-      // Convert the buffer to a Readable stream
       const readableStream = new Readable();
       readableStream._read = () => {};
       readableStream.push(fileContents);
@@ -72,26 +47,10 @@ export class GCSUploader {
           .on("finish", () => resolve());
       });
 
-      await file.makePublic(); // Make the file publicly accessible
-
       return file;
     } catch (error) {
       console.error("Error uploading file:", error);
       throw new Error("Failed to upload file to Google Cloud Storage");
-    }
-  }
-
-  async deleteFile(bucketName: any, objectKey: any) {
-    try {
-      const bucket = this.storage.bucket(bucketName);
-      const file = bucket.file(objectKey);
-
-      await file.delete();
-
-      return true;
-    } catch (error) {
-      console.error("Error deleting file:", error);
-      throw new Error("Failed to delete file from Google Cloud Storage");
     }
   }
 }

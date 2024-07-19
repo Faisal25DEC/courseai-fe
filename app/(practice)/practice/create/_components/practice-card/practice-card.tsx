@@ -23,6 +23,17 @@ import { toast } from "sonner";
 import Tag from "@/components/shared/tag/tag";
 import { Avatar, Chip } from "@nextui-org/react";
 import useCreatePracticeLessonModal from "@/hooks/useCreatePracticeLessonModal";
+
+const hashCode = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return (Math.abs(hash) % 50) + 51; // Ensure a number between 51 and 100
+};
+
 const PracticeCard = ({
   lesson,
   index,
@@ -32,7 +43,6 @@ const PracticeCard = ({
   index: number;
   isPractice: boolean;
 }) => {
-  // const currentCourseId = useRecoilValue(courseIdAtom);
   const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string;
   
   const [currentLesson, setCurrentLesson] = useRecoilState<any>(lessonAtom);
@@ -42,18 +52,10 @@ const PracticeCard = ({
     useRecoilState<any>(currentCourseAtom);
   const [lessonsArray, setLessonsArray] = useRecoilState<any>(lessonsArrayAtom);
   const [activeLesson, setActiveLesson] = useRecoilState(activeLessonAtom);
-  const [randomNumber, setRandomNumber] = useState(0);
-
   const [currentUserRole, setCurrentUserRole] =
     useRecoilState(currentUserRoleAtom);
 
-  useEffect(() => {
-    const generateRandomNumber = () => {
-      return Math.floor(Math.random() * 60) + 1;
-    };
-
-    setRandomNumber(generateRandomNumber());
-  }, []);
+    const bookRate = hashCode(`${lesson.id}-${index}`);
 
   const {
     isOpen: isCreateLessonModalOpen,
@@ -101,10 +103,7 @@ const PracticeCard = ({
   const lastItem = popoverContent[popoverContent.length - 1];
 
   useEffect(() => {
-    // #TODO: temp fix until practice table is separated from course
-    // if (index === 0) setActiveLesson(index);
-    setActiveLesson(index)
-
+    setActiveLesson(index);
     console.log("active lesson in practice ", activeLesson, index);
   }, []);
 
@@ -128,8 +127,6 @@ const PracticeCard = ({
         >
           <div className="w-full px-5 p-4 rounded-[10px] shadow-1 flex justify-between items-center">
             <div className="flex items-center gap-2">
-              {/* <Icon icon="ri:draggable" className="" /> */}
-
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
                   <div className="flex items-start gap-5">
@@ -165,7 +162,7 @@ const PracticeCard = ({
                       </div>
                       <div className="mt-2 border px-2 py-[2px] text-xs rounded-lg font-semibold bg-black text-white">
                         {" "}
-                        Book rate : {randomNumber}%
+                        Book rate : {bookRate}%
                       </div>
                     </div>
                   </div>

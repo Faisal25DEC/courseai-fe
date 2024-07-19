@@ -1,4 +1,3 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { responseLoadingAtom, userTranscriptLoadingAtom } from "@/store/atoms";
 import { useUser } from "@clerk/nextjs";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -18,15 +17,24 @@ const AvatarConversationsLive = ({
     userTranscriptLoadingAtom
   );
 
-  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const isUserAtBottomRef = useRef(true);
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   };
+
+  const handleScroll = () => {
+    if (scrollAreaRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
+      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10;
+      isUserAtBottomRef.current = isAtBottom;
+    }
+  };
+
   useEffect(() => {
-    if (!isUserScrolling) {
+    if (isUserAtBottomRef.current) {
       scrollToBottom();
     }
   }, [conversationsRef.current.length, userTranscriptLoading, responseLoading]);
@@ -36,33 +44,13 @@ const AvatarConversationsLive = ({
       const isStreaming = conversationsRef.current.some(
         (item: any) => item.isStreaming
       );
-      if (isStreaming && !isUserScrolling) {
+      if (isStreaming && isUserAtBottomRef.current) {
         scrollToBottom();
       }
     }, 100);
 
     return () => clearInterval(interval);
   }, [conversationsRef]);
-
-  const handleScroll = () => {
-    if (scrollAreaRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
-      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10; 
-
-      setIsUserScrolling(!isAtBottom);
-    }
-  };
-
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
-      const isAtBottom = scrollHeight - scrollTop <= clientHeight + 10; 
-
-      if (isAtBottom) {
-        setIsUserScrolling(false);
-      }
-    }
-  }, [conversationsRef.current.length]);
 
   return (
     <div className="bg-white flex flex-col h-[70vh] w-[320px] rounded-r-[20px] shadow-1">
@@ -82,7 +70,6 @@ const AvatarConversationsLive = ({
         ref={scrollAreaRef}
         className="h-[70vh] flex flex-col gap-2 overflow-auto"
         onScroll={handleScroll}
-
       >
         {conversationsRef.current.length > 0 &&
           conversationsRef.current.map((item: any, index: any) => (

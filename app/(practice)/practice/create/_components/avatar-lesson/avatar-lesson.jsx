@@ -11,6 +11,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import {
   activeLessonAtom,
   courseIdAtom,
+  selectedCameraAtom,
   userAnalyticsAtom,
   userTranscriptLoadingAtom,
 } from "@/store/atoms";
@@ -48,6 +49,7 @@ import openIcon from "../../../../../../public/images/open.png";
 import Image from "next/image";
 import { generateRandomSegment } from "@/utils/helpers";
 import Configure from "@/app/(video)/video/components/Configure";
+import CameraAllow from "@/components/shared/camera-allow/camera-allow";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
@@ -138,7 +140,13 @@ function AvatarPracticeLesson({
   const [randomNumber, setRandomNumber] = useState(0);
   const [sessionActive, setSessionActive] = useState(false);
   const markCompleteCalledRef = useRef(false);
+  const [selectedCamera, setSelectedCamera] =
+    useRecoilState(selectedCameraAtom);
   const promptCount = useRef(0);
+  const isWelcomeMessage = useRef(true);
+  const isAvatarSpeaking = useRef(false);
+  const isInterrupted = useRef(false);
+  const timeouts = useRef([]);
 
   const heygen_API = {
     apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
@@ -213,6 +221,8 @@ function AvatarPracticeLesson({
     }
   }, [mediaStream, stream]);
 
+  console.log("media stream", mediaStream.current, data.current);
+
   async function talkToOpenAI(prompt, newPrompt) {
     const _data = await axios.post(`/api/complete`, {
       prompt,
@@ -231,6 +241,10 @@ function AvatarPracticeLesson({
 
   async function repeat(session_id, text) {
     avartarStreamingRef.current = true;
+    isInterrupted.current = false; // Reset interruption flag at the start of the function
+    timeouts.current.forEach(clearTimeout); // Clear any previous timeouts
+    timeouts.current = []; // Reset the timeouts array
+  
     const response = await fetch(`${SERVER_URL}/v1/streaming.task`, {
       method: "POST",
       headers: {
@@ -239,6 +253,9 @@ function AvatarPracticeLesson({
       },
       body: JSON.stringify({ session_id, text }),
     });
+  
+    console.log("stream response ", response, session_id);
+  
     if (response.status === 500) {
       throw new Error("Server error");
     } else {
@@ -247,29 +264,30 @@ function AvatarPracticeLesson({
       const words = text.split(" ");
       const duration = data.data.duration_ms;
       const interval = duration / words.length;
-
-      conversationsRef.current = [
-        ...conversationsRef.current,
-        { role: "assistant", content: "", isStreaming: true },
-      ];
-
+  
+      const assistantMessage = { role: "assistant", content: "", isStreaming: true };
+      conversationsRef.current = [...conversationsRef.current, assistantMessage];
+  
       for (let i = 0; i < words.length; i++) {
-        setTimeout(() => {
-          conversationsRef.current[
-            conversationsRef.current.length - 1
-          ].content += ` ${words[i]}`;
+        if (isInterrupted.current) return;
+        const timeout = setTimeout(() => {
+          if (isInterrupted.current) return;
+          assistantMessage.content += ` ${words[i]}`;
           setConversations([...conversationsRef.current]);
         }, interval * i);
+        timeouts.current.push(timeout);
       }
-
-      setTimeout(() => {
-        conversationsRef.current[
-          conversationsRef.current.length - 1
-        ].isStreaming = false;
+  
+      const endTimeout = setTimeout(() => {
+        if (isInterrupted.current) return;
+        assistantMessage.isStreaming = false;
         setConversations([...conversationsRef.current]);
       }, duration);
-
+      timeouts.current.push(endTimeout);
+  
       setUserTranscriptLoading(0);
+      isWelcomeMessage.current = false;
+  
       return data.data;
     }
   }
@@ -279,8 +297,13 @@ function AvatarPracticeLesson({
       console.log("return talkHandler");
       return;
     }
+
+    if (isAvatarSpeaking.current) {
+      await handleInterrupt();
+    }
+
     console.log(text);
-    const prompt = text; // Using the same input for simplicity
+    const prompt = text;
     if (prompt.trim() === "") {
       toast.error("Please provide a valid input");
       return;
@@ -457,10 +480,13 @@ function AvatarPracticeLesson({
 
     const startTalkCallback = (e) => {
       console.log("Avatar started talking", e);
+      isInterrupted.current = false;
+      isAvatarSpeaking.current = true;
     };
 
     const stopTalkCallback = (e) => {
       console.log("Avatar stopped talking", e);
+      isAvatarSpeaking.current = false;
     };
 
     console.log("Adding event handlers:", avatar.current);
@@ -471,10 +497,16 @@ function AvatarPracticeLesson({
   }
 
   async function handleInterrupt() {
+
     if (!initialized || !avatar.current) {
       setDebug("Avatar API not initialized");
       return;
     }
+
+    isInterrupted.current = true;
+    timeouts.current.forEach(clearTimeout); // Clear all timeouts
+    timeouts.current = [];
+    
     await avatar.current
       .interrupt({ interruptRequest: { sessionId: data?.current?.sessionId } })
       .catch((e) => {
@@ -548,6 +580,7 @@ function AvatarPracticeLesson({
 
   useEffect(() => {
     if (data.current?.sessionId) {
+      isWelcomeMessage.current === true;
       setTimeout(() => {
         const welcome_message =
           "Hey welcome to the interactive video." + " " + lesson?.description;
@@ -685,7 +718,7 @@ function AvatarPracticeLesson({
                   }}
                 />
 
-                {cameraAllowed.current ? (
+                {selectedCamera !== "off" ? (
                   data?.current?.sessionId && (
                     <WebCamRecording
                       recorderRef={recorderRef}
@@ -697,7 +730,11 @@ function AvatarPracticeLesson({
                   <>
                     {data?.current?.sessionId && (
                       <div className="shadow-lg border border-gray-300 bg-gray-700 absolute bottom-[1rem] h-[120px] w-[180px] right-5 rounded-[20px] flex items-center justify-center">
-                        <UserButton className="w-40 h-40" />
+                        {user ? (
+                          <UserButton className="w-40 h-40" />
+                        ) : (
+                          <Icon icon="fa-solid:user-alt" className="w-6 h-6" />
+                        )}
                       </div>
                     )}
                   </>
@@ -724,7 +761,7 @@ function AvatarPracticeLesson({
                       </div>
                     </div>
                     {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-
+                    {/* {!isWelcomeMessage.current && ( */}
                     <AudioRecorderComp
                       conversationsRef={conversationsRef}
                       sessionInfo={data}
@@ -732,6 +769,11 @@ function AvatarPracticeLesson({
                       talkHandler={talkHandler}
                       promptCount={promptCount}
                     />
+                    {/* )} */}
+                    {/* <CameraAllow
+                    
+                    /> */}
+
                     <div
                       onClick={handleEnd}
                       className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[10px]"

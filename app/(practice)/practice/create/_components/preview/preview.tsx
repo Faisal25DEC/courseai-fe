@@ -37,7 +37,11 @@ const PreivewPractice = ({ setIsPracticeList }: any) => {
                 lessonsArray[activeLesson].content?.avatar
                   ?.normal_thumbnail_medium
               }
-              avatar_name={lessonsArray[activeLesson].content?.avatar?.id? lessonsArray[activeLesson].content?.avatar?.id : lessonsArray[activeLesson].content?.avatar?.avatar_id}
+              avatar_name={
+                lessonsArray[activeLesson].content?.avatar?.id
+                  ? lessonsArray[activeLesson].content?.avatar?.id
+                  : lessonsArray[activeLesson].content?.avatar?.avatar_id
+              }
               lesson={lessonsArray[activeLesson]}
               setIsPracticeList={setIsPracticeList}
             />

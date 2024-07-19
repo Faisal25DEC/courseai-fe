@@ -143,6 +143,10 @@ function AvatarPracticeLesson({
   const [selectedCamera, setSelectedCamera] =
     useRecoilState(selectedCameraAtom);
   const promptCount = useRef(0);
+  const isWelcomeMessage = useRef(true);
+  const isAvatarSpeaking = useRef(false);
+  const isInterrupted = useRef(false);
+  const timeouts = useRef([]);
 
   const heygen_API = {
     apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
@@ -217,6 +221,8 @@ function AvatarPracticeLesson({
     }
   }, [mediaStream, stream]);
 
+  console.log("media stream", mediaStream.current, data.current);
+
   async function talkToOpenAI(prompt, newPrompt) {
     const _data = await axios.post(`/api/complete`, {
       prompt,
@@ -235,6 +241,10 @@ function AvatarPracticeLesson({
 
   async function repeat(session_id, text) {
     avartarStreamingRef.current = true;
+    isInterrupted.current = false; // Reset interruption flag at the start of the function
+    timeouts.current.forEach(clearTimeout); // Clear any previous timeouts
+    timeouts.current = []; // Reset the timeouts array
+  
     const response = await fetch(`${SERVER_URL}/v1/streaming.task`, {
       method: "POST",
       headers: {
@@ -243,9 +253,9 @@ function AvatarPracticeLesson({
       },
       body: JSON.stringify({ session_id, text }),
     });
-
+  
     console.log("stream response ", response, session_id);
-
+  
     if (response.status === 500) {
       throw new Error("Server error");
     } else {
@@ -254,29 +264,30 @@ function AvatarPracticeLesson({
       const words = text.split(" ");
       const duration = data.data.duration_ms;
       const interval = duration / words.length;
-
-      conversationsRef.current = [
-        ...conversationsRef.current,
-        { role: "assistant", content: "", isStreaming: true },
-      ];
-
+  
+      const assistantMessage = { role: "assistant", content: "", isStreaming: true };
+      conversationsRef.current = [...conversationsRef.current, assistantMessage];
+  
       for (let i = 0; i < words.length; i++) {
-        setTimeout(() => {
-          conversationsRef.current[
-            conversationsRef.current.length - 1
-          ].content += ` ${words[i]}`;
+        if (isInterrupted.current) return;
+        const timeout = setTimeout(() => {
+          if (isInterrupted.current) return;
+          assistantMessage.content += ` ${words[i]}`;
           setConversations([...conversationsRef.current]);
         }, interval * i);
+        timeouts.current.push(timeout);
       }
-
-      setTimeout(() => {
-        conversationsRef.current[
-          conversationsRef.current.length - 1
-        ].isStreaming = false;
+  
+      const endTimeout = setTimeout(() => {
+        if (isInterrupted.current) return;
+        assistantMessage.isStreaming = false;
         setConversations([...conversationsRef.current]);
       }, duration);
-
+      timeouts.current.push(endTimeout);
+  
       setUserTranscriptLoading(0);
+      isWelcomeMessage.current = false;
+  
       return data.data;
     }
   }
@@ -286,8 +297,13 @@ function AvatarPracticeLesson({
       console.log("return talkHandler");
       return;
     }
+
+    if (isAvatarSpeaking.current) {
+      await handleInterrupt();
+    }
+
     console.log(text);
-    const prompt = text; // Using the same input for simplicity
+    const prompt = text;
     if (prompt.trim() === "") {
       toast.error("Please provide a valid input");
       return;
@@ -464,10 +480,13 @@ function AvatarPracticeLesson({
 
     const startTalkCallback = (e) => {
       console.log("Avatar started talking", e);
+      isInterrupted.current = false;
+      isAvatarSpeaking.current = true;
     };
 
     const stopTalkCallback = (e) => {
       console.log("Avatar stopped talking", e);
+      isAvatarSpeaking.current = false;
     };
 
     console.log("Adding event handlers:", avatar.current);
@@ -478,10 +497,16 @@ function AvatarPracticeLesson({
   }
 
   async function handleInterrupt() {
+
     if (!initialized || !avatar.current) {
       setDebug("Avatar API not initialized");
       return;
     }
+
+    isInterrupted.current = true;
+    timeouts.current.forEach(clearTimeout); // Clear all timeouts
+    timeouts.current = [];
+    
     await avatar.current
       .interrupt({ interruptRequest: { sessionId: data?.current?.sessionId } })
       .catch((e) => {
@@ -555,6 +580,7 @@ function AvatarPracticeLesson({
 
   useEffect(() => {
     if (data.current?.sessionId) {
+      isWelcomeMessage.current === true;
       setTimeout(() => {
         const welcome_message =
           "Hey welcome to the interactive video." + " " + lesson?.description;
@@ -584,7 +610,10 @@ function AvatarPracticeLesson({
                       isBordered
                       radius="full"
                       size="md"
-                      src={lesson.content.avatar.normal_thumbnail_small || lesson?.content?.avatar?.preview_image_url}
+                      src={
+                        lesson.content.avatar.normal_thumbnail_small ||
+                        lesson?.content?.avatar?.preview_image_url
+                      }
                     />
                     <div className="flex flex-col pl-2">
                       <p className="max-w-[300px] truncate text-sm font-semibold capitalize">
@@ -611,7 +640,9 @@ function AvatarPracticeLesson({
 
                   <div className="relative mt-4">
                     <img
-                      src={thumbnail || lesson?.content?.avatar?.preview_image_url}
+                      src={
+                        thumbnail || lesson?.content?.avatar?.preview_image_url
+                      }
                       alt="ai-avatar"
                       className="object-cover w-[150px] h-[150px] md:rounded-full shadow-lg"
                     />
@@ -673,8 +704,6 @@ function AvatarPracticeLesson({
             )}
             <div className="flex">
               <div className="relative">
-
-
                 <video
                   align="center"
                   className={`h-[70vh] ${
@@ -732,7 +761,7 @@ function AvatarPracticeLesson({
                       </div>
                     </div>
                     {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-
+                    {/* {!isWelcomeMessage.current && ( */}
                     <AudioRecorderComp
                       conversationsRef={conversationsRef}
                       sessionInfo={data}
@@ -740,6 +769,7 @@ function AvatarPracticeLesson({
                       talkHandler={talkHandler}
                       promptCount={promptCount}
                     />
+                    {/* )} */}
                     {/* <CameraAllow
                     
                     /> */}

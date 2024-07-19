@@ -27,13 +27,18 @@ const PreivewCourse = () => {
   const [showContent, setshowContent] = useState(true);
 
   useEffect(() => {
+    setActiveLesson(0)
     getCourse(currentCourseId).then((res) => {
       const practiceLessons = res.lessons.filter(
         (lesson: any) => lesson.is_practice_lesson !== true
       );
       setLessonsArray(practiceLessons);
     });
-  }, [currentCourseId,lessonsArray]);
+
+    return()=>{
+      setLessonsArray([])
+    }
+  }, [currentCourseId]);
 
   const handleChangeLesson = (idx: number) => {
     setActiveLesson(idx);

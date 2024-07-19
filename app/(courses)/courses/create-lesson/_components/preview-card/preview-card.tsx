@@ -90,6 +90,8 @@ function PreviewCard({
     }
   }, []);
 
+  console.log("preview ", lesson)
+
   return (
     <>
       <Draggable
@@ -130,7 +132,7 @@ function PreviewCard({
                           overflowWrap: "break-word",
                         }}
                       >
-                        {lesson.title}
+                        {lesson.title || "title"}
                       </span>
 
                       <p

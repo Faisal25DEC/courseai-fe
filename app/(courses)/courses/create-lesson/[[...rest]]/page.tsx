@@ -24,7 +24,7 @@ import LessonCard from "../_components/lesson-card/lesson-card";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { admin, apiKey, heygenBaseUrl } from "@/lib/constants";
 import { toast } from "sonner";
-import { StrictModeDroppable } from "@/components/shared/strict-mode-droppable/strict-mode-droppable";
+
 import Link from "next/link";
 import { getFilteredVoiceAndAvatarObjects } from "@/lib/ArrayHelpers/ArrayHelpers";
 import { updateCourse } from "@/services/lesson.service";
@@ -41,8 +41,7 @@ const CreateCourse = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [currentCourseId, setCurrentCourseId] = useState<string>("");
-  const [currentUserRole, setCurrentUserRole] =
-    useRecoilState(currentUserRoleAtom);
+
   const [avatars, setAvatars] = useRecoilState<any>(avatarsAtom);
   const [voices, setVoices] = useRecoilState<any>(voicesAtom);
   const [currentCourse, setCurrentCourse] =
@@ -54,7 +53,6 @@ const CreateCourse = () => {
   const [lessonCreateSteps, setLessonCreateSteps] = useRecoilState(
     lessonCreateStepsAtom
   );
-  const [isLoading, setIsLoading] = useState(true);
   const [isPageView, setIsPageView] = useState("preview");
   const [courseTitle, setCourseTitle] = useState("");
 
@@ -63,7 +61,7 @@ const CreateCourse = () => {
     const courseId = pathParts[pathParts.length - 1];
     setCurrentCourseId(courseId);
     console.log("lessons array", lessonsArray);
-  }, [pathname]);
+  }, [pathname, isPageView]);
 
   useEffect(() => {
     const fetchCurrentCourse = async () => {
@@ -71,21 +69,17 @@ const CreateCourse = () => {
         try {
           const res = await axios.get(`${baseUrl}/courses/${currentCourseId}`);
           setCurrentCourse(res.data);
-          setLessonsArray(res.data.lessons);
+          // setLessonsArray(res.data.lessons);
           setCourseTitle(res.data.title);
         } catch (error) {
           console.log(error);
         } finally {
-          setIsLoading(false);
+
         }
       }
     };
     fetchCurrentCourse();
-
-    // return () => {
-    //   setLessonsArray([]);
-    // };
-  }, [currentCourseId, setCurrentCourse, setLessonsArray]);
+  }, [setCurrentCourse]);
 
   const fetchAvatarsAndVoices = async () => {
     if (avatars.length > 0 && voices.length > 0) return;
@@ -294,84 +288,7 @@ const CreateCourse = () => {
         </div>
         {/* <hr /> */}
         {isPageView === "edit" && (
-          <div className="overflow-hidden w-[100%] h-[92vh] flex flex-row justify-center border-t">
-            <div className="relative w-[30%] border-r">
-              <div className="flex justify-between items-center border-b-1 border-gray-500  w-full py-5 px-4">
-                <div className="flex ">
-                  <Icon icon="gridicons:menus" className="text-gray-800 w-6 h-6" />
-                  <h1 className="text-[15px] text-gray-800 font-semibold pl-2">
-                    Contents
-                  </h1>
-                </div>
-                {/* <Icon
-                  // onClick={() => setshowContent(false)}
-                  icon="carbon:close-outline"
-                  className="cursor-pointer w-7 h-7 text-white"
-                /> */}
-              </div>
-              <StrictModeDroppable droppableId="Visuals">
-                {(provided) => (
-                  <>
-                    <div
-                      className="w-[100%] pb-40 h-full my-element overflow-auto flex flex-col"
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      {isLoading ? (
-                        <div className="flex flex-col h-[60vh] justify-center items-center"></div>
-                      ) : lessonsArray.length !== 0 ? (
-                        lessonsArray
-                          .filter(
-                            (lesson: any) => lesson.is_practice_lesson !== true
-                          )
-                          .map((lesson: any, idx: number) => (
-                            <PreviewCard
-                              key={idx}
-                              lesson={lesson}
-                              index={idx}
-                              isPractice={false}
-                            />
-                          ))
-                      ) : (
-                        <div className="flex flex-col h-[60vh] justify-center items-center">
-                          <p className="text-sm mt-10 text-center text-gray-800 px-10">
-                            It looks like there are no lessons available. Please{" "}
-                            <span
-                              className="text-blue-500 cursor-pointer"
-                              onClick={() => onCreateLessonModalOpen()}
-                            >
-                              create a new lesson{" "}
-                            </span>
-                            to get started.
-                          </p>
-                        </div>
-                      )}
-                      {provided.placeholder}
-                    </div>
-                  </>
-                )}
-              </StrictModeDroppable>
-              {currentUserRole === admin && (
-                <div className="absolute left-0 right-0 bottom-0 h-[80px] flex p-4 bg-white shadow-[0px_-1px_0px_rgba(17,_24,_39,_0.08)]">
-                  <Button
-                    color="primary"
-                    className="bg-gray-800 cursor-pointer w-full font-semibold border-1 mt-2"
-                    size={"sm"}
-                    onClick={() => onCreateLessonModalOpen()}
-                  >
-                    <Icon
-                      icon="fluent:add-28-filled"
-                      className="font-semibold"
-                    />
-                    Add Lesson
-                  </Button>
-                </div>
-              )}
-            </div>
-            <div className="flex justify-center items-center w-[70%] px-2">
-              <PreivewLesson />
-            </div>
-          </div>
+         <PreivewLesson/>
         )}
         {isPageView === "preview" && (
           <div className="h-[92vh] w-full flex items-center justify-center">
@@ -384,5 +301,4 @@ const CreateCourse = () => {
   );
 };
 
-
-export default  CreateCourse;
+export default CreateCourse;

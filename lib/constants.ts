@@ -99,4 +99,18 @@ export const lessonStatusText: {
   "approval-pending": "Requested Approval",
 };
 
-export const specificAvatarIds = ["josh_lite3_20230714","Angela-inblackskirt-20220820","Anna_public_3_20240108","Briana_public_3_20240110","Eric_public_pro2_20230608","Justin_public_3_20240308","Kayla-incasualsuit-20220818","Kristin_public_2_20240108","Tyler-inshirt-20220721","Wade_public_2_20240228"];
+export const specificAvatarIds = [
+  "josh_lite3_20230714",
+  "Angela-inblackskirt-20220820",
+  "Anna_public_3_20240108",
+  "Briana_public_3_20240110",
+  "Eric_public_pro2_20230608",
+  "Justin_public_3_20240308",
+  "Kayla-incasualsuit-20220818",
+  "Kristin_public_2_20240108",
+  "Tyler-inshirt-20220721",
+  "Wade_public_2_20240228",
+  "Tyler-incasualsuit-20220721",
+  "Wade_public_2_20240228",
+  "Anna_public_20240108",
+];

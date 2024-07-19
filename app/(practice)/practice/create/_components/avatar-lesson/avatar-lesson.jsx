@@ -577,7 +577,10 @@ function AvatarPracticeLesson({
                       isBordered
                       radius="full"
                       size="md"
-                      src={lesson.content.avatar.normal_thumbnail_small}
+                      src={
+                        lesson.content.avatar.normal_thumbnail_small ||
+                        lesson?.content?.avatar?.preview_image_url
+                      }
                     />
                     <div className="flex flex-col pl-2">
                       <p className="max-w-[300px] truncate text-sm font-semibold capitalize">
@@ -604,7 +607,9 @@ function AvatarPracticeLesson({
 
                   <div className="relative mt-4">
                     <img
-                      src={thumbnail}
+                      src={
+                        thumbnail || lesson?.content?.avatar?.preview_image_url
+                      }
                       alt="ai-avatar"
                       className="object-cover w-[150px] h-[150px] md:rounded-full shadow-lg"
                     />
@@ -668,7 +673,11 @@ function AvatarPracticeLesson({
               <div className="relative">
                 <video
                   align="center"
-                  className="h-[70vh] shadow-lg w-full md:w-auto md:rounded-l-[20px] object-cover mx-auto self-center"
+                  className={`h-[70vh] ${
+                    avatar_name === "josh_lite3_20230714"
+                      ? "md:w-auto object-cover mx-auto"
+                      : "w-[900px]"
+                  }  bg-[#01FF00] shadow-lg md:rounded-l-[20px] self-center`}
                   ref={mediaStream}
                   autoPlay
                   style={{

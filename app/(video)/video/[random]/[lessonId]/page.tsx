@@ -12,7 +12,7 @@ import AvatarPracticeLesson from "../../components/AvatarLesson";
 import { useParams } from "next/navigation";
 const PreivewPractice = () => {
   const { lessonId } = useParams();
-  
+
   console.log("lesson id ", typeof lessonId);
   // const currentCourseId = useRecoilValue(courseIdAtom);
   const currentCourseId = process.env.NEXT_PUBLIC_CURRENT_COURSE_ID as string;
@@ -47,7 +47,11 @@ const PreivewPractice = () => {
           thumbnail={
             lessonsArray[activeLesson].content?.avatar?.normal_thumbnail_medium
           }
-          avatar_name={lessonsArray[activeLesson].content?.avatar?.id}
+          avatar_name={
+            lessonsArray[activeLesson].content?.avatar?.id
+              ? lessonsArray[activeLesson].content?.avatar?.id
+              : lessonsArray[activeLesson].content?.avatar?.avatar_id
+          }
           lesson={lessonsArray[activeLesson]}
           setIsPracticeList={setIsPracticeList}
         />

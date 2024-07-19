@@ -217,3 +217,9 @@ export const selectedMicrophoneAtom = atom({
   default: "",
 });
 
+export const selectedAvatarAtom = atom({
+  key: 'selectedAvatarAtom',
+  default: "",
+});
+
+

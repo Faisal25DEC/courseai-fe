@@ -138,7 +138,7 @@ const PracticeCard = ({
                         isBordered
                         radius="full"
                         size="md"
-                        src={lesson?.content?.avatar?.normal_thumbnail_small}
+                        src={lesson?.content?.avatar?.normal_thumbnail_small || lesson?.content?.avatar?.preview_image_url}
                       />
                       <Icon
                         icon="fluent-emoji-flat:green-circle"

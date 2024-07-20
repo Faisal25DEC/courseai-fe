@@ -742,7 +742,7 @@ li {
 }
 
 .card-gradient {
-  background: linear-gradient(to top, #111827, #2b465e); 
+  background: linear-gradient(to top, #111827, #2b465e);
 }
 
 .custom-select {
@@ -755,6 +755,23 @@ li {
 
 .custom-select:focus {
   outline: none;
-  border-color: #d1d5db; /* Same as the border color to prevent the blue border */
-  box-shadow: none; /* Remove any shadow if present */
+  border-color: #d1d5db;
+  /* Same as the border color to prevent the blue border */
+  box-shadow: none;
+  /* Remove any shadow if present */
 }
+
+.avatar_background {
+ background-image: url("https://images.pexels.com/photos/380769/pexels-photo-380769.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+ background-position: center;
+object-fit: cover;
+background-size: cover;
+}
+
+.avatar_background {
+  background-image: url("https://images.pexels.com/photos/380769/pexels-photo-380769.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
+  background-position: center;
+ object-fit: cover;
+ background-size: cover;
+
+ }

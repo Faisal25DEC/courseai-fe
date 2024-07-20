@@ -50,6 +50,7 @@ import Image from "next/image";
 import { generateRandomSegment } from "@/utils/helpers";
 import Configure from "@/app/(video)/video/components/Configure";
 import CameraAllow from "@/components/shared/camera-allow/camera-allow";
+import { CanvasRender } from "@/components/shared/canvas-render/canvas-render";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
@@ -147,6 +148,7 @@ function AvatarPracticeLesson({
   const isAvatarSpeaking = useRef(false);
   const isInterrupted = useRef(false);
   const timeouts = useRef([]);
+  const [canPlay, setCanPlay] = useState(false);
 
   const heygen_API = {
     apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
@@ -244,7 +246,7 @@ function AvatarPracticeLesson({
     isInterrupted.current = false; // Reset interruption flag at the start of the function
     timeouts.current.forEach(clearTimeout); // Clear any previous timeouts
     timeouts.current = []; // Reset the timeouts array
-  
+
     const response = await fetch(`${SERVER_URL}/v1/streaming.task`, {
       method: "POST",
       headers: {
@@ -253,9 +255,9 @@ function AvatarPracticeLesson({
       },
       body: JSON.stringify({ session_id, text }),
     });
-  
+
     console.log("stream response ", response, session_id);
-  
+
     if (response.status === 500) {
       throw new Error("Server error");
     } else {
@@ -264,10 +266,17 @@ function AvatarPracticeLesson({
       const words = text.split(" ");
       const duration = data.data.duration_ms;
       const interval = duration / words.length;
-  
-      const assistantMessage = { role: "assistant", content: "", isStreaming: true };
-      conversationsRef.current = [...conversationsRef.current, assistantMessage];
-  
+
+      const assistantMessage = {
+        role: "assistant",
+        content: "",
+        isStreaming: true,
+      };
+      conversationsRef.current = [
+        ...conversationsRef.current,
+        assistantMessage,
+      ];
+
       for (let i = 0; i < words.length; i++) {
         if (isInterrupted.current) return;
         const timeout = setTimeout(() => {
@@ -277,17 +286,17 @@ function AvatarPracticeLesson({
         }, interval * i);
         timeouts.current.push(timeout);
       }
-  
+
       const endTimeout = setTimeout(() => {
         if (isInterrupted.current) return;
         assistantMessage.isStreaming = false;
         setConversations([...conversationsRef.current]);
       }, duration);
       timeouts.current.push(endTimeout);
-  
+
       setUserTranscriptLoading(0);
       isWelcomeMessage.current = false;
-  
+
       return data.data;
     }
   }
@@ -497,7 +506,6 @@ function AvatarPracticeLesson({
   }
 
   async function handleInterrupt() {
-
     if (!initialized || !avatar.current) {
       setDebug("Avatar API not initialized");
       return;
@@ -506,7 +514,7 @@ function AvatarPracticeLesson({
     isInterrupted.current = true;
     timeouts.current.forEach(clearTimeout); // Clear all timeouts
     timeouts.current = [];
-    
+
     await avatar.current
       .interrupt({ interruptRequest: { sessionId: data?.current?.sessionId } })
       .catch((e) => {
@@ -704,7 +712,36 @@ function AvatarPracticeLesson({
             )}
             <div className="flex">
               <div className="relative">
-                <video
+                {avatar_name === "josh_lite3_20230714" ? (
+                  <video
+                    align="center"
+                    className={`h-[70vh] ${
+                      avatar_name === "josh_lite3_20230714"
+                        ? "md:w-auto object-cover mx-auto"
+                        : "w-[900px]"
+                    }  bg-[#01FF00] shadow-lg md:rounded-l-[20px] self-center`}
+                    ref={mediaStream}
+                    autoPlay
+                    style={{
+                      display: data?.current?.sessionId ? "block" : "none",
+                    }}
+                  />
+                ) : (
+                  <div className="shadow-lg avatar_background w-[800px] bg-black flex justify-center rounded-l-[20px]">
+                    <video
+                      className="hidden"
+                      playsInline
+                      autoPlay
+                      width={300}
+                      ref={mediaStream}
+                      onCanPlay={() => {
+                        setCanPlay(true);
+                      }}
+                    />
+                    {canPlay && <CanvasRender videoRef={mediaStream} />}
+                  </div>
+                )}
+                {/* <video
                   align="center"
                   className={`h-[70vh] ${
                     avatar_name === "josh_lite3_20230714"
@@ -716,7 +753,7 @@ function AvatarPracticeLesson({
                   style={{
                     display: data?.current?.sessionId ? "block" : "none",
                   }}
-                />
+                /> */}
 
                 {selectedCamera !== "off" ? (
                   data?.current?.sessionId && (

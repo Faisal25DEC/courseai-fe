@@ -703,26 +703,28 @@ function AvatarPracticeLesson({
               )}
             </>
           )}
-          <div className="h-fit pl-10 flex flex-col justify-center gap-3 items-center relative py-8">
-            {data?.current?.sessionId && (
-              <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
-                <Avatar
-                  isBordered
-                  radius="full"
-                  size="md"
-                  src={lesson.content.avatar.normal_thumbnail_small}
-                />
-                <div className="flex flex-col pl-2">
-                  <h1 className="text-sm text-black font-semibold self-start">
-                    {StringFormats.capitalizeFirstLetterOfEachWord(
-                      lesson?.title
-                    )}
-                  </h1>
-                  <p className="text-gray-800 text-sm">{lesson?.description}</p>
+          {isStartCall && data?.current?.sessionId && (
+            <div className="h-fit pl-10 flex flex-col justify-center gap-3 items-center relative py-8">
+              {data?.current?.sessionId && (
+                <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
+                  <Avatar
+                    isBordered
+                    radius="full"
+                    size="md"
+                    src={lesson.content.avatar.normal_thumbnail_small}
+                  />
+                  <div className="flex flex-col pl-2">
+                    <h1 className="text-sm text-black font-semibold self-start">
+                      {StringFormats.capitalizeFirstLetterOfEachWord(
+                        lesson?.title
+                      )}
+                    </h1>
+                    <p className="text-gray-800 text-sm">
+                      {lesson?.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
-            {isStartCall && (
+              )}
               <div className="flex">
                 <div className="relative">
                   {avatar_name === "josh_lite3_20230714" ? (
@@ -742,8 +744,8 @@ function AvatarPracticeLesson({
                   ) : (
                     <div
                       className={`shadow-lg  ${
-                        isStartCall ? "w-[800px] avatar_background" : "w-fit"
-                      }  bg-black flex justify-center rounded-l-[20px]`}
+                        isStartCall ? "w-[800px]" : "w-fit"
+                      }  bg-black avatar_background flex justify-center rounded-l-[20px]`}
                     >
                       <video
                         className="hidden"
@@ -844,9 +846,9 @@ function AvatarPracticeLesson({
                   />
                 )}
               </div>
-            )}
-            <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
-          </div>
+              <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
+            </div>
+          )}
         </div>
         {/* {conversationsRef.current.map((item) => {
         return <div key={item.content}>{item.content}</div>;
@@ -862,9 +864,11 @@ function AvatarPracticeLesson({
           console.log("ended session");
           markComplete();
           handleStopAndUpload();
+          setIsStartCall(false);
         }}
         handleRetry={() => {
           conversationsRef.current = [];
+          setIsStartCall(false);
           endSession();
         }}
       />

@@ -1,5 +1,5 @@
-import React, {useEffect, useRef} from 'react';
-import styles from './styles.module.css'
+import React, { useEffect, useRef } from 'react';
+import styles from './styles.module.css';
 
 type CanvasRenderProps = {
   style?: React.CSSProperties;
@@ -11,55 +11,57 @@ export function CanvasRender(props: CanvasRenderProps) {
   const refCanvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!refCanvas.current) return;
-    if (!videoRef.current) return;
+    if (!refCanvas.current || !videoRef.current) return;
 
-    // Set the canvas size to be the same as the video size
-    refCanvas.current.width = videoRef.current.videoWidth;
-    refCanvas.current.height = videoRef.current.videoHeight;
-    const ctx = refCanvas.current?.getContext('2d');
+    const canvas = refCanvas.current;
+    const video = videoRef.current;
     let show = true;
 
-    function processFrame() {
-      if (!refCanvas.current) return;
-      if (!videoRef.current) return;
-      if (!ctx) return;
-      if (!show) return;
+    const setCanvasSize = () => {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+    };
 
-      // Draw the current frame of the video on the canvas
-      ctx.drawImage(videoRef.current, 0, 0, refCanvas.current.width, refCanvas.current.height);
-      ctx.getContextAttributes().willReadFrequently = true;
-      // Get image data from canvas
-      const imageData = ctx?.getImageData(0, 0, refCanvas.current.width, refCanvas.current.height);
+    const processFrame = () => {
+      if (!canvas || !video || !show) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
 
-      // Process image data, remove green background
       for (let i = 0; i < data.length; i += 4) {
         const red = data[i];
         const green = data[i + 1];
         const blue = data[i + 2];
 
-        // Determine whether it is green, can be adjusted according to actual scenario
         if (green > 90 && red < 90 && blue < 90) {
-          // Set the green background to transparent
           data[i + 3] = 0;
         }
       }
 
-      // Put the processed image data back into the canvas
       ctx.putImageData(imageData, 0, 0);
-
-      // Continue processing the next frame
       requestAnimationFrame(processFrame);
-    }
+    };
 
-    // Start processing video frames
-    processFrame();
+    const onLoadedMetadata = () => {
+      setCanvasSize();
+      processFrame();
+    };
+
+    if (video.readyState >= 1) {
+      setCanvasSize();
+      processFrame();
+    } else {
+      video.addEventListener('loadedmetadata', onLoadedMetadata);
+    }
 
     return () => {
       show = false;
+      video.removeEventListener('loadedmetadata', onLoadedMetadata);
     };
   }, [videoRef]);
 
-  return <canvas  className={styles.wrap} style={style} ref={refCanvas} />;
+  return <canvas className={styles.wrap} style={style} ref={refCanvas} />;
 }

@@ -1,13 +1,24 @@
 import { selectedCameraAtom, selectedMicrophoneAtom } from "@/store/atoms";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button, Spinner } from "@nextui-org/react";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  Spinner,
+  useDisclosure,
+} from "@nextui-org/react";
 import React, {
   useState,
   useEffect,
   ChangeEvent,
   MutableRefObject,
+  useRef,
 } from "react";
 import { useRecoilState } from "recoil";
+import webinar from "../../../../assets/images/Webinar-pana.png";
+import Image from "next/image";
 
 interface MediaDeviceInfo {
   deviceId: string;
@@ -28,26 +39,19 @@ const Configure: React.FC<ConfigureProps> = ({
 }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
-  
   const [selectedCamera, setSelectedCamera] =
     useRecoilState<string>(selectedCameraAtom);
-
   const [selectedMicrophone, setSelectedMicrophone] = useRecoilState<string>(
     selectedMicrophoneAtom
   );
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+
+  const { isOpen: isConfigOpen, onOpenChange: onConfigOpenChange } =
+    useDisclosure();
+  const { isOpen: isInitialOpen, onOpenChange: onInitialOpenChange } =
+    useDisclosure({ defaultOpen: true });
 
   useEffect(() => {
-    async function getDevices() {
-      try {
-        // Request permission to access media devices
-        await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        setDevices(devices);
-      } catch (error) {
-        console.error("Error fetching media devices:", error);
-      }
-    }
-
     getDevices();
   }, []);
 
@@ -67,14 +71,33 @@ const Configure: React.FC<ConfigureProps> = ({
       setSelectedMicrophone(""); // No microphones available
     }
 
-    setSelectedCamera("off");
+    if (videoDevices.length > 0) {
+      setSelectedCamera(videoDevices[0].deviceId);
+    } else {
+      setSelectedCamera("off"); // No cameras available
+    }
   };
 
   const handleError = (error: any) => {
     console.error("Error: ", error);
   };
 
+  const getDevices = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      setDevices(devices);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
   const getMediaStream = async (cameraId: string, microphoneId: string) => {
+    if (mediaStreamRef.current) {
+      console.log("Stopping existing media stream");
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+
     if (cameraId === "off" && !microphoneId) {
       cameraAllowed.current = false;
       console.log("camera allowed ", false);
@@ -87,9 +110,11 @@ const Configure: React.FC<ConfigureProps> = ({
     };
 
     try {
+      console.log("Requesting new media stream with constraints:", constraints);
       const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+      mediaStreamRef.current = newStream;
       cameraAllowed.current = cameraId !== "off";
-      console.log("camera allowed ", cameraId !== "off");
+      console.log("New media stream created, camera allowed:", cameraId !== "off");
     } catch (error) {
       handleError(error);
       cameraAllowed.current = false;
@@ -97,19 +122,63 @@ const Configure: React.FC<ConfigureProps> = ({
     }
   };
 
-  const handleCameraChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  const handleCameraChange = async (event: ChangeEvent<HTMLSelectElement>) => {
     const cameraId = event.target.value;
+    console.log("Selected Camera ID:", cameraId);
     setSelectedCamera(cameraId);
+
+    if (cameraId === "off") {
+      if (mediaStreamRef.current) {
+        console.log("Stopping all tracks as camera is switched off");
+        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+        cameraAllowed.current = false;
+        console.log("camera allowed ", false);
+      }
+    } else {
+      await getMediaStream(cameraId, selectedMicrophone);
+    }
   };
 
-  const handleMicrophoneChange = (event: ChangeEvent<HTMLSelectElement>) => {
+  const handleMicrophoneChange = async (
+    event: ChangeEvent<HTMLSelectElement>
+  ) => {
     const microphoneId = event.target.value;
     setSelectedMicrophone(microphoneId);
+
+    if (selectedCamera !== "off") {
+      await getMediaStream(selectedCamera, microphoneId);
+    }
   };
 
   const handleStartSession = async () => {
-    await getMediaStream(selectedCamera, selectedMicrophone);
+    if (selectedCamera && selectedMicrophone) {
+      await getMediaStream(selectedCamera, selectedMicrophone);
+    }
     startSession();
+  };
+
+  const handleAllowDevices = async (onClose: () => void) => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      await getDevices();
+      onClose();
+      onConfigOpenChange();
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  const handleContinueWithoutDevices = (onClose: () => void) => {
+    setSelectedCamera("off");
+    setSelectedMicrophone("");
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+    cameraAllowed.current = false;
+    onClose();
+    onConfigOpenChange();
   };
 
   const cameraOptions = [
@@ -129,11 +198,44 @@ const Configure: React.FC<ConfigureProps> = ({
     </option>
   ));
 
-  console.log("Selected Camera:", selectedCamera);
-  console.log("Selected Microphone:", selectedMicrophone);
-
   return (
     <>
+      <Modal isOpen={isInitialOpen} onOpenChange={onInitialOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <div className="py-5">
+                <ModalBody>
+                  <p className="text-md pt-2">Allow Access to Devices</p>
+                </ModalBody>
+                <div className="flex justify-center">
+                  <Image src={webinar} alt="" width={250} height={250} />
+                </div>
+                <ModalFooter>
+                  <div className="w-full gap-4 flex flex-col items-center justify-center">
+                    <Button
+                      size="sm"
+                      className="rounded-full cursor-pointer"
+                      color="primary"
+                      onClick={() => handleAllowDevices(onClose)}
+                    >
+                      Allow Microphone and Camera
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="rounded-full cursor-pointer"
+                      onClick={() => handleContinueWithoutDevices(onClose)}
+                    >
+                      Continue without Camera and Microphone
+                    </Button>
+                  </div>
+                </ModalFooter>
+              </div>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
       <div className="flex flex-col items-center justify-center w-[400px]">
         <div className="flex gap-2 items-center flex-col">
           <h1 className="font-semibold text-lg text-gray-600">
@@ -174,7 +276,6 @@ const Configure: React.FC<ConfigureProps> = ({
           color="primary"
           className="start-gradient mt-8"
           onClick={handleStartSession}
-          disabled={selectedCamera === "" || selectedMicrophone === ""}
         >
           {isLoadingSession ? (
             <>

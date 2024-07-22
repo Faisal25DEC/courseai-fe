@@ -722,7 +722,7 @@ function AvatarPracticeLesson({
                 </div>
               </div>
             )}
-            {isStartCall && (
+            {isStartCall && data?.current?.sessionId  && (
               <div className="flex">
                 <div className="relative">
                   {avatar_name === "josh_lite3_20230714" ? (

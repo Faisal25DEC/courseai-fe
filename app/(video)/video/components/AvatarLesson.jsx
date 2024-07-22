@@ -523,6 +523,18 @@ function AvatarPracticeLesson({
   }
 
   async function endSession() {
+    document.addEventListener("DOMContentLoaded", function () {
+      document
+        .getElementById("removeButton")
+        .addEventListener("click", function () {
+          const divToRemove = document.getElementById("divToRemove");
+          if (divToRemove) {
+            divToRemove.remove();
+          }
+        });
+    });
+
+    setIsStartCall(false);
     if (!initialized || !avatar.current) {
       setDebug("Avatar API not initialized");
       return;
@@ -710,117 +722,112 @@ function AvatarPracticeLesson({
                 </div>
               </div>
             )}
-            <div className="flex">
-              <div className="relative">
-                {avatar_name === "josh_lite3_20230714" ? (
-                  <video
-                    align="center"
-                    className={`h-[70vh] ${
-                      avatar_name === "josh_lite3_20230714"
-                        ? "md:w-auto object-cover mx-auto"
-                        : "w-[900px]"
-                    }  bg-[#01FF00] shadow-lg md:rounded-l-[20px] self-center`}
-                    ref={mediaStream}
-                    autoPlay
-                    style={{
-                      display: data?.current?.sessionId ? "block" : "none",
-                    }}
-                  />
-                ) : (
-                  <div className="shadow-lg avatar_background w-[800px] bg-black flex justify-center rounded-l-[20px]">
+            {isStartCall && (
+              <div className="flex">
+                <div className="relative">
+                  {avatar_name === "josh_lite3_20230714" ? (
                     <video
-                      className="hidden"
-                      playsInline
-                      autoPlay
-                      width={300}
+                      align="center"
+                      className={`h-[70vh] ${
+                        avatar_name === "josh_lite3_20230714"
+                          ? "md:w-auto object-cover mx-auto"
+                          : "w-[900px]"
+                      }  bg-[#01FF00] shadow-lg md:rounded-l-[20px] self-center`}
                       ref={mediaStream}
-                      onCanPlay={() => {
-                        setCanPlay(true);
+                      autoPlay
+                      style={{
+                        display: data?.current?.sessionId ? "block" : "none",
                       }}
                     />
-                    {canPlay && <CanvasRender videoRef={mediaStream} />}
-                  </div>
-                )}
-                {/* <video
-                  align="center"
-                  className={`h-[70vh] ${
-                    avatar_name === "josh_lite3_20230714"
-                      ? "md:w-auto object-cover mx-auto"
-                      : "w-[900px]"
-                  }  bg-[#01FF00] shadow-lg md:rounded-l-[20px] self-center`}
-                  ref={mediaStream}
-                  autoPlay
-                  style={{
-                    display: data?.current?.sessionId ? "block" : "none",
-                  }}
-                /> */}
-
-                {selectedCamera !== "off" ? (
-                  data?.current?.sessionId && (
-                    <WebCamRecording
-                      recorderRef={recorderRef}
-                      mediaElementRef={mediaStream}
-                      handleStopAndUpload={handleStopAndUpload}
-                    />
-                  )
-                ) : (
-                  <>
-                    {data?.current?.sessionId && (
-                      <div className="shadow-lg border border-gray-300 bg-gray-700 absolute bottom-[1rem] h-[120px] w-[180px] right-5 rounded-[20px] flex items-center justify-center">
-                        {user ? (
-                          <UserButton className="w-40 h-40" />
-                        ) : (
-                          <Icon icon="fa-solid:user-alt" className="w-6 h-6" />
-                        )}
-                      </div>
-                    )}
-                  </>
-                )}
-                {data?.current?.sessionId && (
-                  <div className="flex gap-2  right-[27%] absolute bottom-[1rem]">
-                    <div className="flex flex-col gap-2">
-                      <div className="relative">
-                        <input
-                          value={chat}
-                          onChange={(e) => {
-                            setChat(e.target.value);
-                          }}
-                          placeholder="Type a message here..."
-                          className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 text-sm pr-8 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[150px] md:w-[220px] rounded-[20px] bg-transparent "
-                          onKeyDown={sendChat}
-                          type="text"
-                        />
-                        <Icon
-                          icon="lets-icons:send-hor"
-                          className="rounded-full w-6 h-6 absolute right-2 top-1.5 cursor-pointer text-white"
-                          onClick={sendChatFromIcon}
-                        />
-                      </div>
+                  ) : (
+                    <div
+                      className={`shadow-lg  ${
+                        isStartCall ? "w-[800px] avatar_background" : "w-fit"
+                      }  bg-black flex justify-center rounded-l-[20px]`}
+                    >
+                      <video
+                        className="hidden"
+                        playsInline
+                        autoPlay
+                        width={300}
+                        ref={mediaStream}
+                        onCanPlay={() => {
+                          setCanPlay(true);
+                        }}
+                      />
+                      {canPlay && <CanvasRender videoRef={mediaStream} />}
                     </div>
-                    {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
-                    {/* {!isWelcomeMessage.current && ( */}
-                    <AudioRecorderComp
-                      conversationsRef={conversationsRef}
-                      sessionInfo={data}
-                      repeat={repeat}
-                      talkHandler={talkHandler}
-                      promptCount={promptCount}
-                    />
-                    {/* )} */}
-                    {/* <CameraAllow
+                  )}
+
+                  {selectedCamera !== "off" ? (
+                    data?.current?.sessionId && (
+                      <WebCamRecording
+                        recorderRef={recorderRef}
+                        mediaElementRef={mediaStream}
+                        handleStopAndUpload={handleStopAndUpload}
+                      />
+                    )
+                  ) : (
+                    <>
+                      {data?.current?.sessionId && (
+                        <div className="shadow-lg border border-gray-300 bg-gray-700 absolute bottom-[1rem] h-[120px] w-[180px] right-5 rounded-[20px] flex items-center justify-center">
+                          {user ? (
+                            <UserButton className="w-40 h-40" />
+                          ) : (
+                            <Icon
+                              icon="fa-solid:user-alt"
+                              className="w-6 h-6"
+                            />
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                  {data?.current?.sessionId && (
+                    <div className="flex gap-2  right-[27%] absolute bottom-[1rem]">
+                      <div className="flex flex-col gap-2">
+                        <div className="relative">
+                          <input
+                            value={chat}
+                            onChange={(e) => {
+                              setChat(e.target.value);
+                            }}
+                            placeholder="Type a message here..."
+                            className="text-gray-100 px-2 glassmorphic-effect-1 placeholder:text-gray-300 text-sm pr-8 placeholder:text-[13px] pb-1 h-9 !outline-none !border-none focus:outline-none focus:border-none w-[150px] md:w-[220px] rounded-[20px] bg-transparent "
+                            onKeyDown={sendChat}
+                            type="text"
+                          />
+                          <Icon
+                            icon="lets-icons:send-hor"
+                            className="rounded-full w-6 h-6 absolute right-2 top-1.5 cursor-pointer text-white"
+                            onClick={sendChatFromIcon}
+                          />
+                        </div>
+                      </div>
+                      {/* <Button onClick={() => talkHandler()}>Talk</Button> */}
+                      {/* {!isWelcomeMessage.current && ( */}
+                      <AudioRecorderComp
+                        conversationsRef={conversationsRef}
+                        sessionInfo={data}
+                        repeat={repeat}
+                        talkHandler={talkHandler}
+                        promptCount={promptCount}
+                      />
+                      {/* )} */}
+                      {/* <CameraAllow
                     
                     /> */}
 
-                    <div
-                      onClick={handleEnd}
-                      className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[10px]"
-                    >
-                      <Icon
-                        className="hover:scale-[1.3] simple-transition"
-                        icon="icomoon-free:phone-hang-up"
-                      />
-                    </div>
-                    {/* <MicrophoneContextProvider>
+                      <div
+                        onClick={handleEnd}
+                        className="bg-red-500 hover:bg-red-600 simple-transition icon-hover h-[35px] flex justify-center items-center shadow-1 text-white cursor-pointer px-4 py-2 rounded-[10px]"
+                      >
+                        <Icon
+                          className="hover:scale-[1.3] simple-transition"
+                          icon="icomoon-free:phone-hang-up"
+                        />
+                      </div>
+                      {/* <MicrophoneContextProvider>
                     <DeepgramContextProvider>
                       <Microphone
                         talkHandler={talkHandler}
@@ -828,13 +835,16 @@ function AvatarPracticeLesson({
                         />
                         </DeepgramContextProvider>
                         </MicrophoneContextProvider> */}
-                  </div>
+                    </div>
+                  )}
+                </div>
+                {data?.current?.sessionId && (
+                  <AvatarConversationsLive
+                    conversationsRef={conversationsRef}
+                  />
                 )}
               </div>
-              {data?.current?.sessionId && (
-                <AvatarConversationsLive conversationsRef={conversationsRef} />
-              )}
-            </div>
+            )}
             <canvas ref={canvasElementRef} style={{ display: "none" }} />{" "}
           </div>
         </div>

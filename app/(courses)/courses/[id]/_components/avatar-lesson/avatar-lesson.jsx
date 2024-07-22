@@ -50,6 +50,7 @@ import Image from "next/image";
 import { generateRandomSegment } from "@/utils/helpers";
 import Configure from "@/app/(video)/video/components/Configure";
 import CameraAllow from "@/components/shared/camera-allow/camera-allow";
+import { CanvasRender } from "@/components/shared/canvas-render/canvas-render";
 const WebCamRecording = dynamic(
   () => import("./webcam-recording/webcam-recording"),
   { ssr: false }
@@ -147,6 +148,7 @@ function AvatarPracticeLesson({
   const isAvatarSpeaking = useRef(false);
   const isInterrupted = useRef(false);
   const timeouts = useRef([]);
+  const [canPlay, setCanPlay] = useState(false);
 
   const heygen_API = {
     apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
@@ -704,19 +706,35 @@ function AvatarPracticeLesson({
             )}
             <div className="flex">
               <div className="relative">
-                <video
-                  align="center"
-                  className={`h-[70vh] ${
-                    avatar_name === "josh_lite3_20230714"
-                      ? "md:w-auto object-cover mx-auto"
-                      : "w-[900px]"
-                  }  bg-[#01FF00] shadow-lg md:rounded-l-[20px] self-center`}
-                  ref={mediaStream}
-                  autoPlay
-                  style={{
-                    display: data?.current?.sessionId ? "block" : "none",
-                  }}
-                />
+              {avatar_name === "josh_lite3_20230714" ? (
+                  <video
+                    align="center"
+                    className={`h-[70vh] ${
+                      avatar_name === "josh_lite3_20230714"
+                        ? "md:w-auto object-cover mx-auto"
+                        : "w-[900px]"
+                    }  bg-[#01FF00] shadow-lg md:rounded-l-[20px] self-center`}
+                    ref={mediaStream}
+                    autoPlay
+                    style={{
+                      display: data?.current?.sessionId ? "block" : "none",
+                    }}
+                  />
+                ) : (
+                  <div className="shadow-lg avatar_background-two w-[500px] bg-black flex justify-center rounded-l-[20px]">
+                    <video
+                      className="hidden"
+                      playsInline
+                      autoPlay
+                      width={300}
+                      ref={mediaStream}
+                      onCanPlay={() => {
+                        setCanPlay(true);
+                      }}
+                    />
+                    {canPlay && <CanvasRender videoRef={mediaStream} />}
+                  </div>
+                )}
 
                 {selectedCamera !== "off" ? (
                   data?.current?.sessionId && (

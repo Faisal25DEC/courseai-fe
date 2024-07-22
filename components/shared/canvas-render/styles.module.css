@@ -1,0 +1,9 @@
+.wrap {
+  width: 50%; /* Set to 100% to make the image cover the entire width of the parent */
+  height: 530px; /* Adjust as needed to match your desired height */
+  /* background-image: url("https://images.pexels.com/photos/1005768/pexels-photo-1005768.jpeg?auto=compress&cs=tinysrgb&w=800");
+  background-size: cover; */
+  background-position: center;
+  object-fit: cover;
+
+}

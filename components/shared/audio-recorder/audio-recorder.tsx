@@ -15,13 +15,13 @@ const AudioRecorderComp = ({
   sessionInfo,
   repeat,
   conversationsRef,
-  promptCount
+  promptCount,
 }: {
   talkHandler: any;
   sessionInfo: any;
   repeat: any;
   conversationsRef?: any;
-  promptCount:any
+  promptCount: any;
 }) => {
   const [isCanceling, setIsCanceling] = useState(false);
   const [responseLoading, setResponseLoading] =
@@ -164,14 +164,21 @@ const AudioRecorderComp = ({
 
                 <div
                   onClick={() => handleSend()}
-                  className="w-5 flex items-center  justify-center shrink-0"
+                  className="w-fit flex text-black text-xs items-center  justify-center shrink-0"
                 >
                   {microphoneState === "mute" && (
                     <Icon
                       icon="mingcute:mic-off-line"
-                      className="text-gray-700 w-[22px] h-[22px]"
+                      className="text-gray-700 w-4 h-4"
                     />
-                  )}
+                  )}{" "}
+                  {/* <span className="mx-1">|</span>
+                  <span>
+                    <Icon
+                      icon="icon-park:up"
+                      className="text-gray-700 w-4 h-4"
+                    />
+                  </span> */}
                 </div>
               </a>
             </div>

@@ -533,6 +533,7 @@ function AvatarPracticeLesson({
             divToRemove.remove();
           }
         });
+
     });
 
     setIsStartCall(false);
@@ -547,6 +548,7 @@ function AvatarPracticeLesson({
     // setData(null);
     data.current = null;
     setStream(undefined);
+    window.location.reload();
   }
 
   const evaluate = async () => {
@@ -623,7 +625,7 @@ function AvatarPracticeLesson({
       console.log("No media stream to stop");
     }
   };
-  
+
   return (
     <div className="w-full relative">
       <div className="h-[90vh] w-full flex">
@@ -880,13 +882,13 @@ function AvatarPracticeLesson({
       <EndCallModal
         handleSubmit={() => {
           console.log("ended session");
-          stopMediaTracks()
+          stopMediaTracks();
           markComplete();
           handleStopAndUpload();
           setIsStartCall(false);
         }}
         handleRetry={() => {
-          stopMediaTracks()
+          stopMediaTracks();
           conversationsRef.current = [];
           setIsStartCall(false);
           endSession();

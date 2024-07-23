@@ -29,9 +29,9 @@ interface ConfigureProps {
   startSession: () => void;
   cameraAllowed: MutableRefObject<boolean>;
   isLoadingSession: boolean;
-  setMediaStream:any
-  mediaStreamDevices:any
-  stopMediaTracks:() => void;
+  setMediaStream: any;
+  mediaStreamDevices: any;
+  stopMediaTracks: () => void;
 }
 
 const Configure: React.FC<ConfigureProps> = ({
@@ -40,7 +40,7 @@ const Configure: React.FC<ConfigureProps> = ({
   isLoadingSession,
   setMediaStream,
   mediaStreamDevices,
-  stopMediaTracks
+  stopMediaTracks,
 }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
@@ -99,14 +99,13 @@ const Configure: React.FC<ConfigureProps> = ({
     }
   };
 
-
-
   const ensureMediaStreamStopped = async () => {
     console.log("Ensuring media stream is fully stopped");
     await new Promise((resolve) => setTimeout(resolve, 100)); // Give some time for the tracks to stop
     const devices = await navigator.mediaDevices.enumerateDevices();
     const activeCameras = devices.filter(
-      (device) => device.kind === "videoinput" && device.deviceId === selectedCamera
+      (device) =>
+        device.kind === "videoinput" && device.deviceId === selectedCamera
     );
     if (activeCameras.length > 0) {
       console.log("Camera is still active, stopping again");
@@ -117,7 +116,12 @@ const Configure: React.FC<ConfigureProps> = ({
   };
 
   const getMediaStream = async (cameraId: string, microphoneId: string) => {
-    console.log("Getting media stream for cameraId:", cameraId, "microphoneId:", microphoneId);
+    console.log(
+      "Getting media stream for cameraId:",
+      cameraId,
+      "microphoneId:",
+      microphoneId
+    );
     stopMediaTracks();
 
     if (cameraId === "off" && !microphoneId) {
@@ -156,7 +160,7 @@ const Configure: React.FC<ConfigureProps> = ({
     if (cameraId === "off") {
       console.log("Switching off the camera");
       stopMediaTracks();
-      await ensureMediaStreamStopped();  // Ensures the media stream is fully stopped
+      await ensureMediaStreamStopped(); // Ensures the media stream is fully stopped
       cameraAllowed.current = false;
       console.log("Camera allowed:", false);
     } else {
@@ -185,25 +189,25 @@ const Configure: React.FC<ConfigureProps> = ({
     startSession();
   };
 
-  const handleAllowDevices = async (onClose: () => void) => {
+  const handleAllowDevices = async () => {
     try {
+      startSession();
       await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       await getDevices();
-      onClose();
       onConfigOpenChange();
     } catch (error) {
       handleError(error);
     }
   };
 
-  const handleContinueWithoutDevices = async (onClose: () => void) => {
+  const handleContinueWithoutDevices = async () => {
+    startSession();
     console.log("Continuing without camera and microphone");
     setSelectedCamera("off");
     setSelectedMicrophone("");
     stopMediaTracks();
-    await ensureMediaStreamStopped();  // Ensures the media stream is fully stopped
+    await ensureMediaStreamStopped(); // Ensures the media stream is fully stopped
     cameraAllowed.current = false;
-    onClose();
     onConfigOpenChange();
   };
 
@@ -226,7 +230,7 @@ const Configure: React.FC<ConfigureProps> = ({
 
   return (
     <>
-      <Modal isOpen={isInitialOpen} onOpenChange={onInitialOpenChange}>
+      {/* <Modal isOpen={isInitialOpen} onOpenChange={onInitialOpenChange}>
         <ModalContent>
           {(onClose) => (
             <>
@@ -243,14 +247,14 @@ const Configure: React.FC<ConfigureProps> = ({
                       size="sm"
                       className="rounded-full cursor-pointer"
                       color="primary"
-                      onClick={() => handleAllowDevices(onClose)}
+                      onClick={() => handleAllowDevices()}
                     >
                       Allow Microphone and Camera
                     </Button>
                     <Button
                       size="sm"
                       className="rounded-full cursor-pointer"
-                      onClick={() => handleContinueWithoutDevices(onClose)}
+                      onClick={() => handleContinueWithoutDevices()}
                     >
                       Continue without Camera and Microphone
                     </Button>
@@ -260,16 +264,13 @@ const Configure: React.FC<ConfigureProps> = ({
             </>
           )}
         </ModalContent>
-      </Modal>
+      </Modal> */}
 
       <div className="flex flex-col items-center justify-center w-[400px]">
         <div className="flex gap-2 items-center flex-col">
           <h1 className="font-semibold text-lg text-gray-600">
-            Configure your devices
+            Allow Access to Devices
           </h1>
-          <p className="w-[70%] text-center text-[16px] text-gray-400">
-            Please configure your camera and microphone below
-          </p>
         </div>
         <div className="flex pt-10">
           <Icon icon="lucide:ear" className="text-gray-400 w-5 h-5" />
@@ -278,40 +279,38 @@ const Configure: React.FC<ConfigureProps> = ({
             connectivity.
           </p>
         </div>
-        <div className="flex flex-col w-full my-4">
-          <label className="text-sm pb-2 text-gray-400">Camera:</label>
-          <select
-            className="custom-select"
-            onChange={handleCameraChange}
-            value={selectedCamera}
+        <Image src={webinar} alt="" width={250} height={250} />
+
+        {isLoadingSession && (
+          <Button
+            size="sm"
+            className="start-gradient rounded-full cursor-pointer"
+            color="primary"
+            onClick={() => handleAllowDevices()}
           >
-            {cameraOptions}
-          </select>
-        </div>
-        <div className="flex flex-col w-full my-4">
-          <label className="text-sm pb-2 text-gray-400">Microphone:</label>
-          <select
-            className="custom-select"
-            onChange={handleMicrophoneChange}
-            value={selectedMicrophone}
-          >
-            {microphoneOptions}
-          </select>
-        </div>
-        <Button
-          color="primary"
-          className="start-gradient mt-8"
-          onClick={handleStartSession}
-        >
-          {isLoadingSession ? (
-            <>
-              <Spinner size="sm" color="default" className="text-white" />{" "}
-              Requesting agent...
-            </>
-          ) : (
-            "Let's go"
-          )}
-        </Button>
+            <Spinner size="sm" color="default" className="text-white" />{" "}
+            Requesting agent...
+          </Button>
+        )}
+        {!isLoadingSession && (
+          <div className="w-full gap-4 flex flex-col items-center justify-center">
+            <Button
+              size="sm"
+              className="start-gradient rounded-full cursor-pointer"
+              color="primary"
+              onClick={() => handleAllowDevices()}
+            >
+              Allow Microphone and Camera
+            </Button>
+            <Button
+              size="sm"
+              className="rounded-full cursor-pointer"
+              onClick={() => handleContinueWithoutDevices()}
+            >
+              Continue without Camera and Microphone
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );

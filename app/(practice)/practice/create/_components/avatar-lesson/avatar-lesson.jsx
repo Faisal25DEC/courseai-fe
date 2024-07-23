@@ -547,6 +547,7 @@ function AvatarPracticeLesson({
     // setData(null);
     data.current = null;
     setStream(undefined);
+    window.location.reload();
   }
 
   const evaluate = async () => {
@@ -740,7 +741,7 @@ function AvatarPracticeLesson({
                 </div>
               </div>
             )}
-            {isStartCall && data?.current?.sessionId  && (
+            {isStartCall && data?.current?.sessionId && (
               <div className="flex">
                 <div className="relative">
                   {avatar_name === "josh_lite3_20230714" ? (
@@ -877,13 +878,13 @@ function AvatarPracticeLesson({
       /> */}
       <EndCallModal
         handleSubmit={() => {
-          stopMediaTracks()
+          stopMediaTracks();
           console.log("ended session");
           markComplete();
           handleStopAndUpload();
         }}
         handleRetry={() => {
-          stopMediaTracks()
+          stopMediaTracks();
           conversationsRef.current = [];
           endSession();
         }}

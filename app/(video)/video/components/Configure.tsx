@@ -14,7 +14,6 @@ import React, {
   useEffect,
   ChangeEvent,
   MutableRefObject,
-  useRef,
 } from "react";
 import { useRecoilState } from "recoil";
 import webinar from "../../../../assets/images/Webinar-pana.png";
@@ -44,7 +43,7 @@ const Configure: React.FC<ConfigureProps> = ({
   const [selectedMicrophone, setSelectedMicrophone] = useRecoilState<string>(
     selectedMicrophoneAtom
   );
-  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 
   const { isOpen: isConfigOpen, onOpenChange: onConfigOpenChange } =
     useDisclosure();
@@ -52,7 +51,11 @@ const Configure: React.FC<ConfigureProps> = ({
     useDisclosure({ defaultOpen: true });
 
   useEffect(() => {
+    console.log("Initializing media devices and stream");
     getDevices();
+    if (selectedCamera && selectedCamera !== "off") {
+      getMediaStream(selectedCamera, selectedMicrophone);
+    }
   }, []);
 
   const setDevices = (deviceInfos: MediaDeviceInfo[]) => {
@@ -76,6 +79,7 @@ const Configure: React.FC<ConfigureProps> = ({
     } else {
       setSelectedCamera("off"); // No cameras available
     }
+    console.log("Set devices: ", { videoDevices, audioDevices });
   };
 
   const handleError = (error: any) => {
@@ -91,16 +95,43 @@ const Configure: React.FC<ConfigureProps> = ({
     }
   };
 
-  const getMediaStream = async (cameraId: string, microphoneId: string) => {
-    if (mediaStreamRef.current) {
-      console.log("Stopping existing media stream");
-      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
-      mediaStreamRef.current = null;
+  const stopMediaTracks = () => {
+    console.log("Attempting to stop media tracks", mediaStream);
+    if (mediaStream) {
+      const tracks = mediaStream.getTracks();
+      tracks.forEach((track) => {
+        track.stop();
+        console.log(`Stopped track: ${track.kind}`);
+      });
+      setMediaStream(null);
+      console.log("Media tracks stopped and media stream cleared");
+    } else {
+      console.log("No media stream to stop");
     }
+  };
+
+  const ensureMediaStreamStopped = async () => {
+    console.log("Ensuring media stream is fully stopped");
+    await new Promise((resolve) => setTimeout(resolve, 100)); // Give some time for the tracks to stop
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const activeCameras = devices.filter(
+      (device) => device.kind === "videoinput" && device.deviceId === selectedCamera
+    );
+    if (activeCameras.length > 0) {
+      console.log("Camera is still active, stopping again");
+      stopMediaTracks();
+    } else {
+      console.log("Camera is inactive");
+    }
+  };
+
+  const getMediaStream = async (cameraId: string, microphoneId: string) => {
+    console.log("Getting media stream for cameraId:", cameraId, "microphoneId:", microphoneId);
+    stopMediaTracks();
 
     if (cameraId === "off" && !microphoneId) {
       cameraAllowed.current = false;
-      console.log("camera allowed ", false);
+      console.log("No camera or microphone selected. Camera allowed:", false);
       return;
     }
 
@@ -112,38 +143,43 @@ const Configure: React.FC<ConfigureProps> = ({
     try {
       console.log("Requesting new media stream with constraints:", constraints);
       const newStream = await navigator.mediaDevices.getUserMedia(constraints);
-      mediaStreamRef.current = newStream;
+      if (newStream) {
+        console.log("New media stream created: ", newStream);
+        setMediaStream(newStream);
+      } else {
+        console.log("Failed to create media stream");
+      }
       cameraAllowed.current = cameraId !== "off";
-      console.log("New media stream created, camera allowed:", cameraId !== "off");
+      console.log("Camera allowed:", cameraId !== "off");
     } catch (error) {
       handleError(error);
       cameraAllowed.current = false;
-      console.log("camera allowed ", false);
+      console.log("Failed to get media stream. Camera allowed:", false);
     }
   };
 
   const handleCameraChange = async (event: ChangeEvent<HTMLSelectElement>) => {
     const cameraId = event.target.value;
     console.log("Selected Camera ID:", cameraId);
-    setSelectedCamera(cameraId);
 
     if (cameraId === "off") {
-      if (mediaStreamRef.current) {
-        console.log("Stopping all tracks as camera is switched off");
-        mediaStreamRef.current.getTracks().forEach((track) => track.stop());
-        mediaStreamRef.current = null;
-        cameraAllowed.current = false;
-        console.log("camera allowed ", false);
-      }
+      console.log("Switching off the camera");
+      stopMediaTracks();
+      await ensureMediaStreamStopped();  // Ensures the media stream is fully stopped
+      cameraAllowed.current = false;
+      console.log("Camera allowed:", false);
     } else {
       await getMediaStream(cameraId, selectedMicrophone);
     }
+
+    setSelectedCamera(cameraId);
   };
 
   const handleMicrophoneChange = async (
     event: ChangeEvent<HTMLSelectElement>
   ) => {
     const microphoneId = event.target.value;
+    console.log("Selected Microphone ID:", microphoneId);
     setSelectedMicrophone(microphoneId);
 
     if (selectedCamera !== "off") {
@@ -169,13 +205,12 @@ const Configure: React.FC<ConfigureProps> = ({
     }
   };
 
-  const handleContinueWithoutDevices = (onClose: () => void) => {
+  const handleContinueWithoutDevices = async (onClose: () => void) => {
+    console.log("Continuing without camera and microphone");
     setSelectedCamera("off");
     setSelectedMicrophone("");
-    if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
-      mediaStreamRef.current = null;
-    }
+    stopMediaTracks();
+    await ensureMediaStreamStopped();  // Ensures the media stream is fully stopped
     cameraAllowed.current = false;
     onClose();
     onConfigOpenChange();

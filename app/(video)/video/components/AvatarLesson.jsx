@@ -135,6 +135,7 @@ function AvatarPracticeLesson({
   const [scorecardAns, setScorecardAns] = useState([]);
   const [chat, setChat] = useState("");
   const [isStartCall, setIsStartCall] = useState(false);
+  const [mediaStreamDevices, setMediaStreamDevices] = useState(null);
 
   const { user } = useUser();
 
@@ -609,9 +610,23 @@ function AvatarPracticeLesson({
     }
   }, [data.current?.sessionId]);
 
+  const stopMediaTracks = () => {
+    console.log("Attempting to stop media tracks", mediaStream);
+    if (mediaStreamDevices) {
+      mediaStreamDevices.getTracks().forEach((track) => {
+        track.stop();
+        console.log(`Stopped track: ${track.kind}`);
+      });
+      setMediaStreamDevices(null);
+      console.log("Media tracks stopped and media stream cleared");
+    } else {
+      console.log("No media stream to stop");
+    }
+  };
+  
   return (
     <div className="w-full relative">
-      <div className="h-[90vh] w-full flex  flex-col">
+      <div className="h-[90vh] w-full flex">
         <div className="w-full flex flex-col gap-3 mt-5 relative justify-center items-center">
           {!data?.current?.sessionId && (
             <>
@@ -621,10 +636,13 @@ function AvatarPracticeLesson({
                     startSession={startSession}
                     cameraAllowed={cameraAllowed}
                     isLoadingSession={isLoadingSession}
+                    setMediaStream={setMediaStreamDevices}
+                    mediaStreamDevices={mediaStreamDevices}
+                    stopMediaTracks={stopMediaTracks}
                   />
                 </div>
               ) : (
-                <div className="border-1 shadow-lg border-gray-300 flex justify-center flex-col items-center h-fit p-5 rounded-xl relative">
+                <div className="bg-white border-1 shadow-lg border-gray-300 flex justify-center flex-col items-center h-fit p-5 rounded-xl relative">
                   <div className="flex self-start gap-2 py-3 items-center justify-between pl-2">
                     <Avatar
                       isBordered
@@ -862,11 +880,13 @@ function AvatarPracticeLesson({
       <EndCallModal
         handleSubmit={() => {
           console.log("ended session");
+          stopMediaTracks()
           markComplete();
           handleStopAndUpload();
           setIsStartCall(false);
         }}
         handleRetry={() => {
+          stopMediaTracks()
           conversationsRef.current = [];
           setIsStartCall(false);
           endSession();

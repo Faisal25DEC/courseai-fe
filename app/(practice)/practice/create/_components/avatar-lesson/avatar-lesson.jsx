@@ -149,6 +149,7 @@ function AvatarPracticeLesson({
   const isInterrupted = useRef(false);
   const timeouts = useRef([]);
   const [canPlay, setCanPlay] = useState(false);
+  const [mediaStreamDevices, setMediaStreamDevices] = useState(null);
 
   const heygen_API = {
     apiKey: "NWJlZjg2M2FkMTlhNDdkYmE4YTQ5YjlkYTE1NjI2MmQtMTcxNTYyNTMwOQ==",
@@ -609,6 +610,20 @@ function AvatarPracticeLesson({
     }
   }, [data.current?.sessionId]);
 
+  const stopMediaTracks = () => {
+    console.log("Attempting to stop media tracks", mediaStream);
+    if (mediaStreamDevices) {
+      mediaStreamDevices.getTracks().forEach((track) => {
+        track.stop();
+        console.log(`Stopped track: ${track.kind}`);
+      });
+      setMediaStreamDevices(null);
+      console.log("Media tracks stopped and media stream cleared");
+    } else {
+      console.log("No media stream to stop");
+    }
+  };
+
   return (
     <div className="w-full relative">
       <div className="h-[90vh] w-full flex  flex-col">
@@ -621,6 +636,9 @@ function AvatarPracticeLesson({
                     startSession={startSession}
                     cameraAllowed={cameraAllowed}
                     isLoadingSession={isLoadingSession}
+                    setMediaStream={setMediaStreamDevices}
+                    mediaStreamDevices={mediaStreamDevices}
+                    stopMediaTracks={stopMediaTracks}
                   />
                 </div>
               ) : (
@@ -732,7 +750,7 @@ function AvatarPracticeLesson({
                         avatar_name === "josh_lite3_20230714"
                           ? "md:w-auto object-cover mx-auto"
                           : "w-[900px]"
-                      }  bg-[#01FF00] shadow-lg md:rounded-l-[20px] self-center`}
+                      } shadow-lg md:rounded-l-[20px] self-center`}
                       ref={mediaStream}
                       autoPlay
                       style={{
@@ -859,11 +877,13 @@ function AvatarPracticeLesson({
       /> */}
       <EndCallModal
         handleSubmit={() => {
+          stopMediaTracks()
           console.log("ended session");
           markComplete();
           handleStopAndUpload();
         }}
         handleRetry={() => {
+          stopMediaTracks()
           conversationsRef.current = [];
           endSession();
         }}

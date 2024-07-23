@@ -29,12 +29,18 @@ interface ConfigureProps {
   startSession: () => void;
   cameraAllowed: MutableRefObject<boolean>;
   isLoadingSession: boolean;
+  setMediaStream:any
+  mediaStreamDevices:any
+  stopMediaTracks:() => void;
 }
 
 const Configure: React.FC<ConfigureProps> = ({
   startSession,
   cameraAllowed,
   isLoadingSession,
+  setMediaStream,
+  mediaStreamDevices,
+  stopMediaTracks
 }) => {
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
@@ -43,8 +49,6 @@ const Configure: React.FC<ConfigureProps> = ({
   const [selectedMicrophone, setSelectedMicrophone] = useRecoilState<string>(
     selectedMicrophoneAtom
   );
-  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
-
   const { isOpen: isConfigOpen, onOpenChange: onConfigOpenChange } =
     useDisclosure();
   const { isOpen: isInitialOpen, onOpenChange: onInitialOpenChange } =
@@ -95,20 +99,7 @@ const Configure: React.FC<ConfigureProps> = ({
     }
   };
 
-  const stopMediaTracks = () => {
-    console.log("Attempting to stop media tracks", mediaStream);
-    if (mediaStream) {
-      const tracks = mediaStream.getTracks();
-      tracks.forEach((track) => {
-        track.stop();
-        console.log(`Stopped track: ${track.kind}`);
-      });
-      setMediaStream(null);
-      console.log("Media tracks stopped and media stream cleared");
-    } else {
-      console.log("No media stream to stop");
-    }
-  };
+
 
   const ensureMediaStreamStopped = async () => {
     console.log("Ensuring media stream is fully stopped");

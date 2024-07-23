@@ -713,7 +713,7 @@ function AvatarPracticeLesson({
                       avatar_name === "josh_lite3_20230714"
                         ? "md:w-auto object-cover mx-auto"
                         : "w-[900px]"
-                    }  bg-[#01FF00] shadow-lg md:rounded-l-[20px] self-center`}
+                    } shadow-lg md:rounded-l-[20px] self-center`}
                     ref={mediaStream}
                     autoPlay
                     style={{
